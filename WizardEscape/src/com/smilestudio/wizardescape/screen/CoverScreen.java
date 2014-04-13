@@ -105,7 +105,7 @@ public class CoverScreen implements Screen, InputProcessor {
     @Override
     public void dispose() {
         // TODO Auto-generated method stub
-
+        mStage.dispose();
     }
 
     @Override
