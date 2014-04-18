@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.MissionButton;
 import com.smilestudio.wizardescape.utils.Constants;
 
@@ -68,7 +68,7 @@ public class MissionSelectScreen implements Screen, InputProcessor {
         mb2.setPosition(500, 300);
         mb2.setTouchable(Touchable.disabled);
         mStage.addActor(mb2);
-        
+
         Gdx.input.setInputProcessor(this);
     }
 
@@ -123,8 +123,10 @@ public class MissionSelectScreen implements Screen, InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Vector2 stagePoint = mStage.screenToStageCoordinates(new Vector2(screenX, screenY));
-        Actor actor = mStage.hit(stagePoint.x, stagePoint.y, true);
-        if (actor != null) {
+        MissionButton mission = (MissionButton)mStage.hit(stagePoint.x, stagePoint.y, true);
+
+        if (mission != null) {
+            GameManager.getInstance().setMission(mission.getMission(), mission.getSubMission());
             mGame.setScreen(new GameScreen(mGame));
         }
         return true;

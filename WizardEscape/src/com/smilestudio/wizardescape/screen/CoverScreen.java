@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SizeToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.smilestudio.wizardescape.actors.AnimationActor;
+import com.smilestudio.wizardescape.actors.AdvanceActor;
 import com.smilestudio.wizardescape.utils.Constants;
 
 public class CoverScreen implements Screen, InputProcessor {
@@ -66,7 +66,7 @@ public class CoverScreen implements Screen, InputProcessor {
 
         mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, true);
 
-        AnimationActor logoActor = new AnimationActor(0.1f, logoRegions, Animation.LOOP_PINGPONG);
+        AdvanceActor logoActor = new AdvanceActor(0.1f, logoRegions, Animation.LOOP_PINGPONG);
         logoActor.setPosition(200, 200);
         logoActor.setSize(logoTexture.getWidth() / 2, logoTexture.getHeight() / 2);
         mStage.addActor(logoActor);
