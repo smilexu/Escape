@@ -56,7 +56,7 @@ public class GameScreen implements Screen, InputProcessor, GestureListener {
         mManager.initActors(mStage);
 
         GestureDetector gd = new GestureDetector(this);
-        Gdx.input.setInputProcessor(this);
+        Gdx.input.setInputProcessor(gd);
 
     }
 
@@ -152,8 +152,26 @@ public class GameScreen implements Screen, InputProcessor, GestureListener {
 
     @Override
     public boolean fling(float velocityX, float velocityY, int button) {
-        // TODO Auto-generated method stub
-        return false;
+        int flingDirection = GameManager.FLING_IDLE;
+        float value;
+        if(Math.abs(velocityX) > Math.abs(velocityY)) {
+            if (velocityX < 0) {
+                flingDirection = GameManager.FLING_LEFT;
+            } else if (velocityX > 0){
+                flingDirection = GameManager.FLING_RIGHT;
+            }
+            value = velocityX;
+        } else {
+            if (velocityY < 0) {
+                flingDirection = GameManager.FLING_UP;
+            } else if(velocityY > 0) {
+                flingDirection = GameManager.FLING_DOWN;
+            }
+            value = velocityY;
+        }
+        
+        mManager.onFling(flingDirection, value);
+        return true;
     }
 
     @Override
