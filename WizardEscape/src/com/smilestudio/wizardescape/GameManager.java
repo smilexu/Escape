@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.smilestudio.wizardescape.actors.AdvanceActor;
 import com.smilestudio.wizardescape.utils.Constants;
 import com.smilestudio.wizardescape.utils.MapHelper;
 
@@ -58,7 +57,7 @@ public class GameManager {
     private final static String NAME_MOVABLE = "movable";
     private final static String NAME_STAR = "star";
     private final static String NAME_TARGET = "target";
-    private static final float ANIMATION_DURATION_PER_BLOCK_NORMAL = 0.2f;
+    private static final float ANIMATION_DURATION_PER_BLOCK_NORMAL = 0.1f;
     private static final float ANIMATION_DURATION_PER_BLOCK_PUSH = 0.5f;
 
     private int[][]             mMapBlock = null;
@@ -78,9 +77,9 @@ public class GameManager {
     public void initMapBlock() {
         // TODO get data from file
         mMapBlock = new int[COLUMN][ROW];
-        for (int i = 0; i < COLUMN; i++) {
-            for (int j = 0; j < ROW; j++) {
-                mMapBlock[i][j] = 0;
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COLUMN; j++) {
+                mMapBlock[j][i] = 0;
             }
         }
         mMapBlock[3][1] = 1;
@@ -161,17 +160,21 @@ public class GameManager {
 
         switch (type) {
             case INVALID:
+                mInAnimation = false;
                 return false;
             case TYPE_ME:
+                mInAnimation = false;
                 return false;
             case TYPE_OBSTACLE:
+                mInAnimation = false;
                 return false;
             case TYPE_MOVABLE:
                 break;
             case TYPE_STAR:
                 break;
             case TYPE_TARGET:
-                break;
+                mInAnimation = false;
+                return false;
             case TYPE_EMPTY:
                 mInAnimation = true;
                 Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
@@ -190,7 +193,8 @@ public class GameManager {
                             mCurrentCellY = (int) cell.y;
                             mMapBlock[(int)cell.x][(int)cell.y] = getActorType(actor);
                             mActorMap.put(mCurrentCellY * COLUMN + mCurrentCellX, actor);
-                            mInAnimation = false;
+
+                            moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, actor);
                         }
 
                     });
@@ -284,9 +288,11 @@ public class GameManager {
 
     private int getNextActorType(int direction, int cellX, int cellY) {
         Actor actor = null;
+        System.out.println("=============== getNextActorType cellX:" + cellX + ", cellY:" + cellY);
         switch (direction) {
             case FLING_UP:
-                if ((cellY + 1) > ROW) {
+                System.out.println("===============  celly+1:" + (cellY + 1) + ", ROW:" + ROW);
+                if ((cellY + 1) >= ROW) {
                     return INVALID;
                 } else {
                     actor = mActorMap.get((cellY + 1) * COLUMN + cellX);
@@ -307,7 +313,7 @@ public class GameManager {
                 }
                 break;
             case FLING_RIGHT:
-                if ((cellX + 1) > COLUMN) {
+                if ((cellX + 1) >= COLUMN) {
                     return INVALID;
                 } else {
                     actor = mActorMap.get(cellY * COLUMN + cellX + 1);
