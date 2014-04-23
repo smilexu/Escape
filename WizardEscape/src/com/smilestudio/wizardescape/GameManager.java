@@ -82,10 +82,14 @@ public class GameManager {
                 mMapBlock[j][i] = 0;
             }
         }
-        mMapBlock[3][1] = 1;
+        mMapBlock[5][1] = 1;
         mMapBlock[6][6] = 2;
         mMapBlock[5][4] = 2;
         mMapBlock[7][1] = 2;
+        mMapBlock[1][1] = 3;
+        mMapBlock[2][1] = 3;
+        mMapBlock[3][1] = 3;
+        mMapBlock[4][1] = 3;
         mMapBlock[6][5] = 4;
         mMapBlock[0][1] = 4;
         mMapBlock[6][1] = 4;
@@ -160,15 +164,19 @@ public class GameManager {
 
         switch (type) {
             case INVALID:
-                mInAnimation = false;
                 return false;
             case TYPE_ME:
-                mInAnimation = false;
                 return false;
             case TYPE_OBSTACLE:
-                mInAnimation = false;
                 return false;
             case TYPE_MOVABLE:
+                //TODO: max move 2 movable one time, need while ?
+                Actor nextActor = getNextActor(flingDirection, cellX, cellY);
+                Vector2 nextCell = getNextBlockCell(flingDirection, cellX, cellY);
+                boolean succ = moveToNextBlock(flingDirection, (int)nextCell.x, (int)nextCell.y, nextActor);
+                if (succ) {
+                    return moveToNextBlock(flingDirection, cellX, cellY, actor);
+                }
                 break;
             case TYPE_STAR:
                 break;
@@ -182,32 +190,81 @@ public class GameManager {
                 moveto.setDuration(ANIMATION_DURATION_PER_BLOCK_NORMAL);
                 SequenceAction sequence;
                 if(actor == mMe) {
+                    //TODO: refactor this part
                     RunnableAction runnable = Actions.run(new Runnable() {
                         public void run() {
-                             //TODO: update status
                             Vector2 cell = getNextBlockCell(flingDirection, cellX, cellY);
-                            mMapBlock[mCurrentCellX][mCurrentCellY] = TYPE_EMPTY;
-                            mActorMap.remove(mCurrentCellY * COLUMN + mCurrentCellX);
+                            mMapBlock[cellX][cellY] = TYPE_EMPTY;
+                            mActorMap.remove(cellY * COLUMN + cellX);
 
                             mCurrentCellX = (int) cell.x;
                             mCurrentCellY = (int) cell.y;
                             mMapBlock[(int)cell.x][(int)cell.y] = getActorType(actor);
                             mActorMap.put(mCurrentCellY * COLUMN + mCurrentCellX, actor);
 
+                            mInAnimation = false;
+
                             moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, actor);
                         }
 
                     });
                     sequence = Actions.sequence(moveto, runnable);
+                    actor.addAction(sequence);
                 } else {
-                    sequence = Actions.sequence(moveto, null);
+                    //if the moved block is not hero, we just leave a empty at previous position,
+                    //to let the hero goes into
+                    Vector2 cell = getNextBlockCell(flingDirection, cellX, cellY);
+                    mMapBlock[cellX][cellY] = TYPE_EMPTY;
+                    mActorMap.remove(cellY * COLUMN + cellX);
+
+                    mMapBlock[(int) cell.x][(int) cell.y] = getActorType(actor);
+                    mActorMap.put((int)cell.y * COLUMN + (int)cell.x, actor);
+                    
+                    mInAnimation = false;
+                    
+                    sequence = Actions.sequence(moveto);
+                    actor.addAction(moveto);
                 }
-                actor.addAction(sequence);
                 return true;
-            default:
-                return false;
         }
         return false;
+    }
+
+    private Actor getNextActor(int direction, int cellX, int cellY) {
+        Actor actor = null;
+        switch (direction) {
+            case FLING_UP:
+                if ((cellY + 1) > ROW) {
+                    return null;
+                } else {
+                    actor = mActorMap.get((cellY + 1) * COLUMN + cellX);
+                }
+                break;
+            case FLING_DOWN:
+                if ((cellY - 1) < 0) {
+                    return null;
+                } else {
+                    actor = mActorMap.get((cellY - 1) * COLUMN + cellX);
+                }
+                break;
+            case FLING_LEFT:
+                if ((cellX - 1) < 0) {
+                    return null;
+                } else {
+                    actor = mActorMap.get(cellY * COLUMN + (cellX - 1));
+                }
+                break;
+            case FLING_RIGHT:
+                if ((cellX + 1) > COLUMN) {
+                    return null;
+                } else {
+                    actor = mActorMap.get(cellY * COLUMN + (cellX + 1));
+                }
+                break;
+            default:
+                return null;
+        }
+        return actor;
     }
 
     private Vector2 getNextBlockCell(final int direction, final int cellX, final int cellY) {
@@ -288,10 +345,8 @@ public class GameManager {
 
     private int getNextActorType(int direction, int cellX, int cellY) {
         Actor actor = null;
-        System.out.println("=============== getNextActorType cellX:" + cellX + ", cellY:" + cellY);
         switch (direction) {
             case FLING_UP:
-                System.out.println("===============  celly+1:" + (cellY + 1) + ", ROW:" + ROW);
                 if ((cellY + 1) >= ROW) {
                     return INVALID;
                 } else {
