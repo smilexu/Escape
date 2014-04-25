@@ -10,7 +10,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
+import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -57,8 +60,6 @@ public class GameManager {
     private final static String NAME_MOVABLE = "movable";
     private final static String NAME_STAR = "star";
     private final static String NAME_TARGET = "target";
-    private static final float ANIMATION_DURATION_PER_BLOCK_NORMAL = 0.1f;
-    private static final float ANIMATION_DURATION_PER_BLOCK_PUSH = 0.5f;
 
     private int[][]             mMapBlock = null;
     private int                 mMission;
@@ -129,6 +130,11 @@ public class GameManager {
                         actor = (Actor)movable;
                         break;
                     case TYPE_STAR:
+                        Texture texure = new Texture(Gdx.files.internal("misc/img_star.png"));
+                        Image star = new Image(new TextureRegion(texure, 57, 49));
+                        star.setName(NAME_STAR);
+                        actor = (Actor)star;
+                        stage.addActor(actor);
                         break;
                     case TYPE_TARGET:
                         Image target = new Image(new Texture(Gdx.files.internal("misc/img_target.png")));
@@ -156,10 +162,10 @@ public class GameManager {
             return;
         }
 
-       moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, mMe);
+       moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, mMe, false);
     }
 
-    private boolean moveToNextBlock(final int flingDirection, final int cellX, final int cellY, final Actor actor) {
+    private boolean moveToNextBlock(final int flingDirection, final int cellX, final int cellY, final Actor actor, final boolean isPushStatus) {
         int type = getNextActorType(flingDirection, cellX, cellY);
 
         switch (type) {
@@ -173,21 +179,41 @@ public class GameManager {
                 //TODO: max move 2 movable one time, need while ?
                 Actor nextActor = getNextActor(flingDirection, cellX, cellY);
                 Vector2 nextCell = getNextBlockCell(flingDirection, cellX, cellY);
-                boolean succ = moveToNextBlock(flingDirection, (int)nextCell.x, (int)nextCell.y, nextActor);
+                boolean succ = moveToNextBlock(flingDirection, (int)nextCell.x, (int)nextCell.y, nextActor, false);
                 if (succ) {
-                    return moveToNextBlock(flingDirection, cellX, cellY, actor);
+                    return moveToNextBlock(flingDirection, cellX, cellY, actor, true);
                 }
                 break;
-            case TYPE_STAR:
-                break;
             case TYPE_TARGET:
-                mInAnimation = false;
+                mInAnimation = true;
+                if (actor == mMe) {
+                    mMe.toFront();
+                    Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
+                    MoveToAction moveto = Actions.moveTo(position.x, position.y);
+                    moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
+                    AlphaAction alpha = Actions.alpha(0, Constants.ANIMATION_HERO_PASS);
+                    SequenceAction sequence = Actions.sequence(moveto, alpha);
+                    mMe.addAction(sequence);
+                    return true;
+                }
                 return false;
+            case TYPE_STAR:
+                Image star = (Image)getNextActor(flingDirection, cellX, cellY);
+                star.toFront();
+                MoveByAction moveBy = Actions.moveBy(0, Constants.ANIMATION_STAR_MOVEBY, Constants.ANIMATION_STAR_DURATION);
+                AlphaAction alPha = Actions.alpha(0, Constants.ANIMATION_STAR_DURATION);
+                ParallelAction actions = Actions.parallel(moveBy, alPha);
+                star.addAction(actions);
             case TYPE_EMPTY:
                 mInAnimation = true;
                 Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
                 MoveToAction moveto = Actions.moveTo(position.x, position.y);
-                moveto.setDuration(ANIMATION_DURATION_PER_BLOCK_NORMAL);
+                if (isPushStatus) {
+                    moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_PUSH);
+                } else {
+                    moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
+                }
+
                 SequenceAction sequence;
                 if(actor == mMe) {
                     //TODO: refactor this part
@@ -204,13 +230,15 @@ public class GameManager {
 
                             mInAnimation = false;
 
-                            moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, actor);
+                            moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, actor, isPushStatus);
                         }
 
                     });
                     sequence = Actions.sequence(moveto, runnable);
                     actor.addAction(sequence);
                 } else {
+                    moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_PUSH);
+
                     //if the moved block is not hero, we just leave a empty at previous position,
                     //to let the hero goes into
                     Vector2 cell = getNextBlockCell(flingDirection, cellX, cellY);
