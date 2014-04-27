@@ -13,15 +13,22 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.MissionButton;
+import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.utils.Constants;
 
 public class MissionSelectScreen implements Screen, InputProcessor {
 
-    private Game  mGame;
-    private Stage mStage;
+    private Game    mGame;
+    private Stage   mStage;
+    private int     mMission;
 
     public MissionSelectScreen(Game game) {
+        this(game, 1);
+    }
+
+    public MissionSelectScreen(Game game, int mission) {
         mGame = game;
+        mMission = mission;
     }
 
     @Override
@@ -47,29 +54,60 @@ public class MissionSelectScreen implements Screen, InputProcessor {
         Image mission1Image = new Image(mission1Texture);
         mission1Image.setSize(mission1Texture.getWidth(), mission1Texture.getHeight());
         mission1Image.setPosition(100, (Constants.STAGE_HEIGHT - mission1Texture.getHeight()) / 2);
+        mission1Image.setTouchable(Touchable.disabled);
 
         mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, true);
         mStage.addActor(mission1Image);
 
+        initMissionGroup();
+
+        Gdx.input.setInputProcessor(this);
+    }
+
+    private void initMissionGroup() {
         Texture availableButton = new Texture(Gdx.files.internal("buttons/img_mission_available.png"));
         Texture unavailableButton = new Texture(Gdx.files.internal("buttons/img_mission_unavailable.png"));
         Texture stars = new Texture(Gdx.files.internal("buttons/img_star.png"));
         TextureRegion unavailableStar = new TextureRegion(stars, stars.getWidth() / 2, stars.getHeight());
         TextureRegion availableStar = new TextureRegion(stars, stars.getWidth() / 2, 0, stars.getWidth() / 2, stars.getHeight());
 
-        MissionButton mb1 = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, 1, 1, 3, true);
-        mb1.setSize(availableButton.getWidth(), MissionButton.ITEM_HEIGHT);
-        mb1.setPosition(400, 300);
-        mb1.setTouchable(Touchable.enabled);
-        mStage.addActor(mb1);
-        
-        MissionButton mb2 = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, 1, 1, 0, false);
-        mb2.setSize(availableButton.getWidth(), MissionButton.ITEM_HEIGHT);
-        mb2.setPosition(500, 300);
-        mb2.setTouchable(Touchable.disabled);
-        mStage.addActor(mb2);
+        GameManager gm = GameManager.getInstance();
 
-        Gdx.input.setInputProcessor(this);
+        boolean first = true;
+        GameData currentData = null;
+        GameData preData = null;
+
+        for (int i = 0; i < Constants.MISSION_SCREEN_MAX_BUTTONS; i++) {
+            if (i >= 1) {
+                preData = gm.getGameData(mMission, i);
+                first = false;
+            }
+            currentData = gm.getGameData(mMission, i+1);
+            boolean passed = first || ((null == currentData) ? false : currentData.getPassed());
+            if (preData != null) {
+                passed = passed || preData.getPassed();
+            }
+            MissionButton mb = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, mMission, i+1,
+                    (null == currentData) ? 0 : currentData.getStars(), passed);
+            mb.setSize(availableButton.getWidth(), MissionButton.ITEM_HEIGHT);
+            int indexInRow = i % Constants.MISSION_SCREEN_MAX_COLUMN;
+            int indexInColumn = i / Constants.MISSION_SCREEN_MAX_COLUMN;
+            mb.setPosition(Constants.MISSION_SCREEN_GROUP_LEFT_TOP_X + (availableButton.getWidth() + Constants.MISSION_SCREEN_GROUP_OFFSET_X) * indexInRow,
+                    Constants.MISSION_SCREEN_GROUP_LEFT_TOP_Y - (MissionButton.ITEM_HEIGHT + Constants.MISSION_SCREEN_GROUP_OFFSET_Y) * indexInColumn);
+            mStage.addActor(mb);
+        }
+
+//        MissionButton mb1 = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, 1, 1, 3, true);
+//        mb1.setSize(availableButton.getWidth(), MissionButton.ITEM_HEIGHT);
+//        mb1.setPosition(400, 300);
+//        mb1.setTouchable(Touchable.enabled);
+//        mStage.addActor(mb1);
+//
+//        MissionButton mb2 = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, 1, 1, 0, false);
+//        mb2.setSize(availableButton.getWidth(), MissionButton.ITEM_HEIGHT);
+//        mb2.setPosition(500, 300);
+//        mb2.setTouchable(Touchable.disabled);
+//        mStage.addActor(mb2);
     }
 
     @Override

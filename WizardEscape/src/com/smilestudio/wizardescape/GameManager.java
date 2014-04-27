@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
@@ -17,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.utils.Constants;
 import com.smilestudio.wizardescape.utils.MapHelper;
 
@@ -60,6 +63,7 @@ public class GameManager {
     private final static String NAME_MOVABLE = "movable";
     private final static String NAME_STAR = "star";
     private final static String NAME_TARGET = "target";
+    private final static String PREFERENCES_NAME = "save";
 
     private int[][]             mMapBlock = null;
     private int                 mMission;
@@ -69,15 +73,27 @@ public class GameManager {
     private Image               mMe;
     private int                 mCurrentCellX;
     private int                 mCurrentCellY;
+    private int                 mStarGot = 0;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
         mSubmission = submission;
     }
 
+    public int getMission() {
+        return mMission;
+    }
+
+    public int getSubMission() {
+        return mSubmission;
+    }
+
     public void initMapBlock() {
         // TODO get data from file
-        mMapBlock = new int[COLUMN][ROW];
+        if (null == mMapBlock) {
+            mMapBlock = new int[COLUMN][ROW];
+        }
+
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COLUMN; j++) {
                 mMapBlock[j][i] = 0;
@@ -97,12 +113,23 @@ public class GameManager {
         mMapBlock[2][5] = 5;
     }
 
-    public void initActors(Stage stage) {
+    public void initActors(final Group group, final Stage stage) {
         if (null == mMapBlock) {
             return;
         }
 
-        mActorMap = new HashMap<Integer, Actor>();
+        if (stage != null) {
+            stage.clear();
+        }
+
+        stage.addActor(group);
+
+        if (mActorMap != null) {
+            mActorMap.clear();
+        } else {
+            mActorMap = new HashMap<Integer, Actor>();
+        }
+
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COLUMN; j++) {
                 Actor actor = null;
@@ -176,7 +203,6 @@ public class GameManager {
             case TYPE_OBSTACLE:
                 return false;
             case TYPE_MOVABLE:
-                //TODO: max move 2 movable one time, need while ?
                 Actor nextActor = getNextActor(flingDirection, cellX, cellY);
                 Vector2 nextCell = getNextBlockCell(flingDirection, cellX, cellY);
                 boolean succ = moveToNextBlock(flingDirection, (int)nextCell.x, (int)nextCell.y, nextActor, false);
@@ -185,14 +211,22 @@ public class GameManager {
                 }
                 break;
             case TYPE_TARGET:
-                mInAnimation = true;
                 if (actor == mMe) {
+                    mInAnimation = true;
                     mMe.toFront();
                     Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
                     MoveToAction moveto = Actions.moveTo(position.x, position.y);
                     moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
                     AlphaAction alpha = Actions.alpha(0, Constants.ANIMATION_HERO_PASS);
-                    SequenceAction sequence = Actions.sequence(moveto, alpha);
+                    RunnableAction runnable = Actions.run(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            saveGame();
+                        }
+                        
+                    });
+                    SequenceAction sequence = Actions.sequence(moveto, alpha, runnable);
                     mMe.addAction(sequence);
                     return true;
                 }
@@ -204,6 +238,7 @@ public class GameManager {
                 AlphaAction alPha = Actions.alpha(0, Constants.ANIMATION_STAR_DURATION);
                 ParallelAction actions = Actions.parallel(moveBy, alPha);
                 star.addAction(actions);
+                mStarGot++;
             case TYPE_EMPTY:
                 mInAnimation = true;
                 Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
@@ -425,5 +460,48 @@ public class GameManager {
             return TYPE_TARGET;
         }
         return INVALID;
+    }
+
+    public void initStatus() {
+        mInAnimation = false;
+        mStarGot = 0;
+    }
+
+    public void saveGame() {
+        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
+        prefs.putInteger(generateStarKey(), mStarGot);
+        prefs.putBoolean(generatePassKey(), true);
+        prefs.flush();
+    }
+
+    public void saveGame(GameData data) {
+        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
+        prefs.putInteger(generateStarKey(), data.getStars());
+        prefs.putBoolean(generatePassKey(), data.getPassed());
+        prefs.flush();
+    }
+
+    public GameData getGameData(int mission, int submission) {
+        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
+        int star = prefs.getInteger(generateStarKey(mission, submission), -1);
+        if(-1 == star) {
+            return null;
+        }
+        boolean pass = prefs.getBoolean(generatePassKey(mission, submission), false);
+        return new GameData(star, pass);
+    }
+
+    private String generateStarKey() {
+        return generateStarKey(mMission, mSubmission);
+    }
+    private String generateStarKey(int mission, int submission) {
+        return mission + "-" + submission;
+    }
+
+    private String generatePassKey() {
+        return generatePassKey(mMission, mSubmission);
+    }
+    private String generatePassKey(int mission, int submission) {
+        return mission + "-" + submission + "-pass";
     }
 }

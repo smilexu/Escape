@@ -9,16 +9,23 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
+import com.smilestudio.wizardescape.actors.MissionLabelActor;
 import com.smilestudio.wizardescape.utils.Constants;
 
-public class GameScreen implements Screen, InputProcessor, GestureListener {
+public class GameScreen implements Screen, GestureListener, EventListener {
 
     private Game        mGame;
     private Stage       mStage;
     private GameManager mManager;
+    private Image mRefreshButton;
+    private Group mBackgroudActors;
+    private Image mSelectMissionButton;
 
     public GameScreen(Game game) {
         mGame = game;
@@ -28,7 +35,6 @@ public class GameScreen implements Screen, InputProcessor, GestureListener {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-        // TODO Auto-generated method stub
 
         mStage.act();
 
@@ -45,6 +51,7 @@ public class GameScreen implements Screen, InputProcessor, GestureListener {
     public void show() {
         mManager = GameManager.getInstance();
         mManager.initMapBlock();
+        mManager.initStatus();
 
         mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, true);
 
@@ -53,11 +60,40 @@ public class GameScreen implements Screen, InputProcessor, GestureListener {
         bgImage.setPosition(0, 0);
         mStage.addActor(bgImage);
 
-        mManager.initActors(mStage);
+        Texture refreshTexture = new Texture(Gdx.files.internal("buttons/img_restart.png"));
+        mRefreshButton = new Image(refreshTexture);
+        mRefreshButton.setSize(refreshTexture.getWidth(), refreshTexture.getHeight());
+        mRefreshButton.setPosition(Constants.GAME_SCREEN_POSITION_X_REFRESH, Constants.GAME_SCREEN_POSITION_Y_REFRESH);
+        mRefreshButton.addListener(this);
+        mStage.addActor(mRefreshButton);
+
+        Texture selectTexture = new Texture(Gdx.files.internal("buttons/img_select_mission.png"));
+        mSelectMissionButton = new Image(selectTexture);
+        mSelectMissionButton.setSize(selectTexture.getWidth(), selectTexture.getHeight());
+        mSelectMissionButton.setPosition(Constants.GAME_SCREEN_POSITION_X_SELECT, Constants.GAME_SCREEN_POSITION_Y_SELECT);
+        mSelectMissionButton.addListener(this);
+        mStage.addActor(mSelectMissionButton);
+
+        MissionLabelActor missionLabel = new MissionLabelActor(mManager.getMission(), mManager.getSubMission());
+        missionLabel.setPosition(Constants.GAME_SCREEN_POSITION_X_LEVEL, Constants.GAME_SCREEN_POSITION_Y_LEVEL);
+        mStage.addActor(missionLabel);
+
+        mBackgroudActors = new Group();
+        mBackgroudActors.addActor(bgImage);
+        mBackgroudActors.addActor(mRefreshButton);
+        mBackgroudActors.addActor(mSelectMissionButton);
+        mBackgroudActors.addActor(missionLabel);
+        mManager.initActors(mBackgroudActors, mStage);
 
         GestureDetector gd = new GestureDetector(this);
         Gdx.input.setInputProcessor(gd);
 
+    }
+
+    private void resetGame() {
+        mManager.initMapBlock();
+        mManager.initActors(mBackgroudActors, mStage);
+        mManager.initStatus();
     }
 
     @Override
@@ -85,62 +121,15 @@ public class GameScreen implements Screen, InputProcessor, GestureListener {
     }
 
     @Override
-    public boolean keyDown(int keycode) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(float x, float y, int pointer, int button) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
     public boolean tap(float x, float y, int count, int button) {
-        // TODO Auto-generated method stub
+        Vector2 stagePoint = mStage.screenToStageCoordinates(new Vector2(x, y));
+        if (mRefreshButton == mStage.hit(stagePoint.x, stagePoint.y, true)) {
+            resetGame();
+            return true;
+        } else if (mSelectMissionButton == mStage.hit(stagePoint.x, stagePoint.y, true)) {
+            mGame.setScreen(new MissionSelectScreen(mGame));
+            return true;
+        }
         return false;
     }
 
@@ -196,6 +185,20 @@ public class GameScreen implements Screen, InputProcessor, GestureListener {
     public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean handle(Event event) {
+        if (mRefreshButton == event.getTarget()) {
+            resetGame();
+        }
+        return true;
     }
 
 }

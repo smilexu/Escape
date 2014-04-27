@@ -15,4 +15,18 @@ public class Constants {
     public final static int ANIMATION_STAR_MOVEBY = 80;
     public final static float ANIMATION_STAR_DURATION = 0.8f;
     public final static float ANIMATION_HERO_PASS = 1.0f;
+
+    public final static int GAME_SCREEN_POSITION_X_REFRESH = 850;
+    public final static int GAME_SCREEN_POSITION_Y_REFRESH = 400;
+    public final static int GAME_SCREEN_POSITION_X_SELECT = 850;
+    public final static int GAME_SCREEN_POSITION_Y_SELECT = 500;
+    public final static int GAME_SCREEN_POSITION_X_LEVEL = 850;
+    public final static int GAME_SCREEN_POSITION_Y_LEVEL = 370;
+
+    public final static int MISSION_SCREEN_GROUP_LEFT_TOP_X = 450;
+    public final static int MISSION_SCREEN_GROUP_LEFT_TOP_Y = 400;
+    public final static int MISSION_SCREEN_GROUP_OFFSET_X = 30;
+    public final static int MISSION_SCREEN_GROUP_OFFSET_Y = 40;
+    public final static int MISSION_SCREEN_MAX_BUTTONS = 15;
+    public final static int MISSION_SCREEN_MAX_COLUMN = 5;
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 
 public class MissionButton extends Actor {
 
@@ -48,8 +49,10 @@ public class MissionButton extends Actor {
         
         if (mAvailable) {
             batch.draw(mAvailableButton, getX(), getY() + MARGIN_INSIDE);
+            setTouchable(Touchable.enabled);
         } else {
             batch.draw(mUnavailableButton, getX(), getY() + MARGIN_INSIDE);
+            setTouchable(Touchable.disabled);
         }
     }
     
