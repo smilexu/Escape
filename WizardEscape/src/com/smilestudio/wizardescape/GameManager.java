@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -89,28 +90,39 @@ public class GameManager {
     }
 
     public void initMapBlock() {
-        // TODO get data from file
         if (null == mMapBlock) {
             mMapBlock = new int[COLUMN][ROW];
         }
 
+        
+        // TODO get data from file
+        String filePath = "data/" + mMission + "-" + mSubmission;
+        FileHandle fd = Gdx.files.internal(filePath);
+        if (null == fd) {
+            return;
+        }
+
+        String content = fd.readString();
+        content = content.replace("\n", "");
+
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COLUMN; j++) {
-                mMapBlock[j][i] = 0;
+                String tmp = String.valueOf(content.charAt(i * COLUMN + j));
+                mMapBlock[j][i] = Integer.valueOf(tmp);
             }
         }
-        mMapBlock[5][1] = 1;
-        mMapBlock[6][6] = 2;
-        mMapBlock[5][4] = 2;
-        mMapBlock[7][1] = 2;
-        mMapBlock[1][1] = 3;
-        mMapBlock[2][1] = 3;
-        mMapBlock[3][1] = 3;
-        mMapBlock[4][1] = 3;
-        mMapBlock[6][5] = 4;
-        mMapBlock[0][1] = 4;
-        mMapBlock[6][1] = 4;
-        mMapBlock[2][5] = 5;
+//        mMapBlock[5][1] = 1;
+//        mMapBlock[6][6] = 2;
+//        mMapBlock[5][4] = 2;
+//        mMapBlock[7][1] = 2;
+//        mMapBlock[1][1] = 3;
+//        mMapBlock[2][1] = 3;
+//        mMapBlock[3][1] = 3;
+//        mMapBlock[4][1] = 3;
+//        mMapBlock[6][5] = 4;
+//        mMapBlock[0][1] = 4;
+//        mMapBlock[6][1] = 4;
+//        mMapBlock[2][5] = 5;
     }
 
     public void initActors(final Group group, final Stage stage) {
