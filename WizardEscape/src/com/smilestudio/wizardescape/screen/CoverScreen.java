@@ -48,7 +48,7 @@ public class CoverScreen implements Screen, InputProcessor {
     @Override
     public void show() {
         initResource();
-        
+
         Gdx.input.setInputProcessor(this);
     }
 

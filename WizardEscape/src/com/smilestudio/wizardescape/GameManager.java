@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.smilestudio.wizardescape.actors.AdvanceActor;
 import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.utils.Constants;
 import com.smilestudio.wizardescape.utils.MapHelper;
@@ -58,12 +60,15 @@ public class GameManager {
     private final static int    TYPE_MOVABLE   = 3;
     private final static int    TYPE_STAR      = 4;
     private final static int    TYPE_TARGET    = 5;
+    private final static int    TYPE_TRANSPORT = 6;
 
     private final static String NAME_ME = "me";
     private final static String NAME_OBSTACLE = "obstacle";
     private final static String NAME_MOVABLE = "movable";
     private final static String NAME_STAR = "star";
     private final static String NAME_TARGET = "target";
+    private final static String NAME_TRANSPORT = "transport";
+
     private final static String PREFERENCES_NAME = "save";
 
     private int[][]             mMapBlock = null;
@@ -92,7 +97,7 @@ public class GameManager {
     public void initMapBlock() {
         if (null == mMapBlock) {
             mMapBlock = new int[COLUMN][ROW];
-        }
+        }   
 
         
         // TODO get data from file
@@ -111,18 +116,6 @@ public class GameManager {
                 mMapBlock[j][i] = Integer.valueOf(tmp);
             }
         }
-//        mMapBlock[5][1] = 1;
-//        mMapBlock[6][6] = 2;
-//        mMapBlock[5][4] = 2;
-//        mMapBlock[7][1] = 2;
-//        mMapBlock[1][1] = 3;
-//        mMapBlock[2][1] = 3;
-//        mMapBlock[3][1] = 3;
-//        mMapBlock[4][1] = 3;
-//        mMapBlock[6][5] = 4;
-//        mMapBlock[0][1] = 4;
-//        mMapBlock[6][1] = 4;
-//        mMapBlock[2][5] = 5;
     }
 
     public void initActors(final Group group, final Stage stage) {
@@ -173,13 +166,26 @@ public class GameManager {
                         Image star = new Image(new TextureRegion(texure, 57, 49));
                         star.setName(NAME_STAR);
                         actor = (Actor)star;
-                        stage.addActor(actor);
                         break;
                     case TYPE_TARGET:
                         Image target = new Image(new Texture(Gdx.files.internal("misc/img_target.png")));
                         target.setName(NAME_TARGET);
                         actor = (Actor)target;
-                        stage.addActor(target);
+                        break;
+                    case TYPE_TRANSPORT:
+                        Texture tmpTexture = new Texture(Gdx.files.internal("misc/img_transport.png"));
+                        TextureRegion[][] tmpRegions = TextureRegion.split(tmpTexture, tmpTexture.getWidth() / 3, tmpTexture.getHeight() / 2);
+                        TextureRegion[] regions = new TextureRegion[6];
+                        int index = 0;
+                        for (int row = 0; row < 2; row++) {
+                            for (int col = 0; col < 3; col++) {
+                                regions[index] = tmpRegions[row][col];
+                                index++;
+                            }
+                        }
+                        AdvanceActor transport = new AdvanceActor(0.1f, regions, Animation.LOOP_PINGPONG);
+                        transport.setName(NAME_TRANSPORT);
+                        actor = (Actor) transport;
                         break;
                     default:
                         break;
