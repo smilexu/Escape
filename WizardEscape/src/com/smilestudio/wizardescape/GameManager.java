@@ -99,8 +99,6 @@ public class GameManager {
             mMapBlock = new int[COLUMN][ROW];
         }   
 
-        
-        // TODO get data from file
         String filePath = "data/" + mMission + "-" + mSubmission;
         FileHandle fd = Gdx.files.internal(filePath);
         if (null == fd) {
@@ -207,25 +205,40 @@ public class GameManager {
             return;
         }
 
-       moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, mMe, false);
+       moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, mMe, false, true);
     }
 
-    private boolean moveToNextBlock(final int flingDirection, final int cellX, final int cellY, final Actor actor, final boolean isPushStatus) {
+    /*
+     * int flingDirection: the direction of fling, UP, DOWN, LEFT and RIGHT
+     * int cellX: current cell - x
+     * int cellY: current cell - y
+     * Action actor: which actor to move
+     * boolean isPushStatus: which animation and duration to display
+     * boolean updateCellStatus: whether or not update current cell status. Used for overlapped status, such as move from a transport position
+     */
+    private boolean moveToNextBlock(final int flingDirection, final int cellX, final int cellY, final Actor actor, final boolean isPushStatus,
+            final boolean updateCellStatus) {
         int type = getNextActorType(flingDirection, cellX, cellY);
 
         switch (type) {
             case INVALID:
+                if (actor == mMe) {
+                    mInAnimation = false;
+                }
                 return false;
             case TYPE_ME:
                 return false;
             case TYPE_OBSTACLE:
+                if (actor == mMe) {
+                    mInAnimation = false;
+                }
                 return false;
             case TYPE_MOVABLE:
                 Actor nextActor = getNextActor(flingDirection, cellX, cellY);
                 Vector2 nextCell = getNextBlockCell(flingDirection, cellX, cellY);
-                boolean succ = moveToNextBlock(flingDirection, (int)nextCell.x, (int)nextCell.y, nextActor, false);
+                boolean succ = moveToNextBlock(flingDirection, (int)nextCell.x, (int)nextCell.y, nextActor, false, updateCellStatus);
                 if (succ) {
-                    return moveToNextBlock(flingDirection, cellX, cellY, actor, true);
+                    return moveToNextBlock(flingDirection, cellX, cellY, actor, true, updateCellStatus);
                 }
                 break;
             case TYPE_TARGET:
@@ -273,8 +286,10 @@ public class GameManager {
                     RunnableAction runnable = Actions.run(new Runnable() {
                         public void run() {
                             Vector2 cell = getNextBlockCell(flingDirection, cellX, cellY);
-                            mMapBlock[cellX][cellY] = TYPE_EMPTY;
-                            mActorMap.remove(cellY * COLUMN + cellX);
+                            if (updateCellStatus) {
+                                mMapBlock[cellX][cellY] = TYPE_EMPTY;
+                                mActorMap.remove(cellY * COLUMN + cellX);
+                            }
 
                             mCurrentCellX = (int) cell.x;
                             mCurrentCellY = (int) cell.y;
@@ -283,7 +298,7 @@ public class GameManager {
 
                             mInAnimation = false;
 
-                            moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, actor, isPushStatus);
+                            moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, actor, isPushStatus, true);
                         }
 
                     });
@@ -307,8 +322,101 @@ public class GameManager {
                     actor.addAction(moveto);
                 }
                 return true;
+            case TYPE_TRANSPORT:
+                if (actor != mMe) {
+                    return false;
+                }
+
+                return actionTransportMove(flingDirection, cellX, cellY);
+
         }
         return false;
+    }
+
+    private boolean actionTransportMove(final int flingDirection, final int cellX, final int cellY) {
+        mMe.toFront();
+
+        Vector2 transport_position = getNextBlockPosition(flingDirection, cellX, cellY);
+        Vector2 transport_cell = getNextBlockCell(flingDirection, cellX, cellY);
+
+        final Vector2 otherTransportPosition = getOtherTransportPosition((int)transport_cell.x, (int)transport_cell.y);
+        final Vector2 otherTransportCell = getOtherTransportCell((int)transport_cell.x, (int)transport_cell.y);
+
+        switch (getNextActorType(flingDirection, (int)otherTransportCell.x, (int)otherTransportCell.y)) {
+            case TYPE_ME:
+            case TYPE_OBSTACLE:
+            case TYPE_TRANSPORT:
+                return false;
+            case TYPE_EMPTY:
+            case TYPE_MOVABLE:
+            case TYPE_STAR:
+            case TYPE_TARGET:
+        }
+
+        mInAnimation = true;
+
+        MoveToAction transport_moveto = Actions.moveTo(transport_position.x, transport_position.y);
+        transport_moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
+        RunnableAction runnable = Actions.run(new Runnable() {
+
+            @Override
+            public void run() {
+                mMapBlock[cellX][cellY] = TYPE_EMPTY;
+                mActorMap.remove(cellY * COLUMN + cellX);
+            }
+
+        });
+        MoveToAction moveBetweenTransport = Actions.moveTo(otherTransportPosition.x, otherTransportPosition.y);
+        moveBetweenTransport.setDuration(0);
+        Vector2 nextOfOther = getNextBlockPosition(flingDirection, (int)otherTransportCell.x, (int)otherTransportCell.y);
+        MoveToAction moveToNextOfOther = Actions.moveTo(nextOfOther.x, nextOfOther.y);
+        moveToNextOfOther.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
+        RunnableAction runnableOfNext = Actions.run(new Runnable() {
+
+            @Override
+            public void run() {
+                mCurrentCellX = (int) otherTransportCell.x;
+                mCurrentCellY = (int) otherTransportCell.y;
+                moveToNextBlock(flingDirection, (int)otherTransportCell.x, (int)otherTransportCell.y, mMe, false, false);
+            }
+
+        });
+        SequenceAction transport_sequence = Actions.sequence(transport_moveto, runnable, moveBetweenTransport, runnableOfNext);
+        mMe.addAction(transport_sequence);
+
+        return true;
+    }
+
+    private Vector2 getOtherTransportCell(int cellX, int cellY) {
+        Vector2 position = null;
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COLUMN; j++) {
+                if (TYPE_TRANSPORT == mMapBlock[j][i]) {
+                    if (j == cellX && i == cellY) {
+                        continue;
+                    } else {
+                        position = new Vector2(j, i);
+                    }
+                }
+            }
+        }
+        return position;
+    }
+
+    private Vector2 getOtherTransportPosition(int cellX, int cellY) {
+        Vector2 position = null;
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COLUMN; j++) {
+                if (TYPE_TRANSPORT == mMapBlock[j][i]) {
+                    if (j == cellX && i == cellY) {
+                        continue;
+                    } else {
+                        position = MapHelper.getPostionByCell(j, i);
+                    }
+                }
+            }
+        }
+        return position;
     }
 
     private Actor getNextActor(int direction, int cellX, int cellY) {
@@ -476,6 +584,8 @@ public class GameManager {
             return TYPE_STAR;
         } else if (actor.getName().equals(NAME_TARGET)) {
             return TYPE_TARGET;
+        } else if (actor.getName().equals(NAME_TRANSPORT)) {
+            return TYPE_TRANSPORT;
         }
         return INVALID;
     }
