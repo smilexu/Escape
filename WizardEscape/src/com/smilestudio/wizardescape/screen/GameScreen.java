@@ -3,15 +3,20 @@ package com.smilestudio.wizardescape.screen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.MissionLabelActor;
@@ -19,12 +24,15 @@ import com.smilestudio.wizardescape.utils.Constants;
 
 public class GameScreen implements Screen, GestureListener, EventListener {
 
+    private static final float MASK_FADE_DURATION = 1f;
     private Game        mGame;
     private Stage       mStage;
     private GameManager mManager;
     private Image mRefreshButton;
     private Group mBackgroudActors;
     private Image mSelectMissionButton;
+    private Image mBgImage;
+    private Image mBgMask;
 
     public GameScreen(Game game) {
         mGame = game;
@@ -36,7 +44,6 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
         mStage.act();
-
         mStage.draw();
     }
 
@@ -49,15 +56,21 @@ public class GameScreen implements Screen, GestureListener, EventListener {
     @Override
     public void show() {
         mManager = GameManager.getInstance();
-        mManager.initMapBlock();
-        mManager.initStatus();
+        mManager.initGame();
 
         mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, true);
 
-        Image bgImage = new Image(new Texture(Gdx.files.internal("background/img_mission1_bk.png")));
-        bgImage.setSize(bgImage.getWidth(), bgImage.getHeight());
-        bgImage.setPosition(0, 0);
-        mStage.addActor(bgImage);
+        mBgImage = new Image(new Texture(Gdx.files.internal("background/img_mission1_bk.png")));
+        mBgImage.setSize(mBgImage.getWidth(), mBgImage.getHeight());
+        mBgImage.setPosition(0, 0);
+        mStage.addActor(mBgImage);
+
+        //initial background mask， used for full screen effect, such as fade in / fade out
+        mBgMask = new Image(new Texture(Gdx.files.internal("background/img_background_mask.png")));
+        mBgMask.setSize(mBgImage.getWidth(), mBgImage.getHeight());
+        mBgMask.setPosition(0, 0);
+        Color color = mBgMask.getColor();
+        mBgMask.setColor(new Color(color.r, color.g, color.b, 0f));
 
         Texture refreshTexture = new Texture(Gdx.files.internal("buttons/img_restart.png"));
         mRefreshButton = new Image(refreshTexture);
@@ -78,21 +91,32 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         mStage.addActor(missionLabel);
 
         mBackgroudActors = new Group();
-        mBackgroudActors.addActor(bgImage);
+        mBackgroudActors.addActor(mBgImage);
         mBackgroudActors.addActor(mRefreshButton);
         mBackgroudActors.addActor(mSelectMissionButton);
         mBackgroudActors.addActor(missionLabel);
-        mManager.initActors(mBackgroudActors, mStage);
+        mManager.initActors(mBackgroudActors, mBgMask, mStage);
 
         GestureDetector gd = new GestureDetector(this);
         Gdx.input.setInputProcessor(gd);
-
     }
 
     private void resetGame() {
-        mManager.initMapBlock();
-        mManager.initActors(mBackgroudActors, mStage);
-        mManager.initStatus();
+        AlphaAction fadeinAction = Actions.fadeIn(MASK_FADE_DURATION);
+        AlphaAction fadeoutAction = Actions.fadeOut(MASK_FADE_DURATION);
+
+
+        Action resetAction = new Action() {
+
+            @Override
+            public boolean act(float delta) {
+                mManager.initGame();
+                mManager.initActors(mBackgroudActors, mBgMask, mStage);
+                return true;
+            }};
+
+        SequenceAction sequence = Actions.sequence(fadeinAction, resetAction, fadeoutAction);
+        mBgMask.addAction(sequence);
     }
 
     @Override

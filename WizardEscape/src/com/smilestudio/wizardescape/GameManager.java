@@ -94,7 +94,7 @@ public class GameManager {
         return mSubmission;
     }
 
-    public void initMapBlock() {
+    private void initMapBlock() {
         if (null == mMapBlock) {
             mMapBlock = new int[COLUMN][ROW];
         }   
@@ -116,7 +116,13 @@ public class GameManager {
         }
     }
 
-    public void initActors(final Group group, final Stage stage) {
+    /**
+     * Add actors into stage
+     * @param bkGrdActors Background actors, these should be added into stage first of all
+     * @param mask Used for full screen effect, like fade in / fade out. Must be added at last
+     * @param stage
+     */
+    public void initActors(final Group bkGrdActors, final Actor mask, final Stage stage) {
         if (null == mMapBlock) {
             return;
         }
@@ -125,7 +131,7 @@ public class GameManager {
             stage.clear();
         }
 
-        stage.addActor(group);
+        stage.addActor(bkGrdActors);
 
         if (mActorMap != null) {
             mActorMap.clear();
@@ -198,6 +204,7 @@ public class GameManager {
                 stage.addActor(actor);
             }
         }
+        stage.addActor(mask);
     }
 
     public void onFling(int flingDirection, float value) {
@@ -590,7 +597,7 @@ public class GameManager {
         return INVALID;
     }
 
-    public void initStatus() {
+    private void initStatus() {
         mInAnimation = false;
         mStarGot = 0;
     }
@@ -631,5 +638,10 @@ public class GameManager {
     }
     private String generatePassKey(int mission, int submission) {
         return mission + "-" + submission + "-pass";
+    }
+
+    public void initGame() {
+        initMapBlock();
+        initStatus();
     }
 }

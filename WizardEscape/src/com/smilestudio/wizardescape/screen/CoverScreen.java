@@ -34,9 +34,7 @@ public class CoverScreen implements Screen, InputProcessor {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 
         mStage.act();
-
         mStage.draw();
-
     }
 
     @Override
