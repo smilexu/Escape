@@ -61,6 +61,7 @@ public class GameManager {
     private final static int    TYPE_STAR      = 4;
     private final static int    TYPE_TARGET    = 5;
     private final static int    TYPE_TRANSPORT = 6;
+    private final static int    TYPE_KEY = 7;
 
     private final static String NAME_ME = "me";
     private final static String NAME_OBSTACLE = "obstacle";
@@ -68,6 +69,7 @@ public class GameManager {
     private final static String NAME_STAR = "star";
     private final static String NAME_TARGET = "target";
     private final static String NAME_TRANSPORT = "transport";
+    private final static String NAME_KEY = "key";
 
     private final static String PREFERENCES_NAME = "save";
 
@@ -80,6 +82,7 @@ public class GameManager {
     private int                 mCurrentCellX;
     private int                 mCurrentCellY;
     private int                 mStarGot = 0;
+    private boolean             mLocked;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -112,6 +115,9 @@ public class GameManager {
             for (int j = 0; j < COLUMN; j++) {
                 String tmp = String.valueOf(content.charAt(i * COLUMN + j));
                 mMapBlock[j][i] = Integer.valueOf(tmp);
+                if (TYPE_KEY == mMapBlock[j][i]) {
+                    mLocked = true;
+                }
             }
         }
     }
@@ -191,6 +197,11 @@ public class GameManager {
                         transport.setName(NAME_TRANSPORT);
                         actor = (Actor) transport;
                         break;
+                    case TYPE_KEY:
+                        Image key = new Image(new Texture(Gdx.files.internal("misc/img_key.png")));
+                        key.setName(NAME_KEY);
+                        actor = (Actor)key;
+                        break;
                     default:
                         break;
                 }
@@ -249,6 +260,9 @@ public class GameManager {
                 }
                 break;
             case TYPE_TARGET:
+                if (mLocked) {
+                    return false;
+                }
                 if (actor == mMe) {
                     mInAnimation = true;
                     mMe.toFront();
@@ -270,13 +284,18 @@ public class GameManager {
                 }
                 return false;
             case TYPE_STAR:
-                Image star = (Image)getNextActor(flingDirection, cellX, cellY);
-                star.toFront();
+            case TYPE_KEY:
+                Image image = (Image)getNextActor(flingDirection, cellX, cellY);
+                image.toFront();
                 MoveByAction moveBy = Actions.moveBy(0, Constants.ANIMATION_STAR_MOVEBY, Constants.ANIMATION_STAR_DURATION);
                 AlphaAction alPha = Actions.alpha(0, Constants.ANIMATION_STAR_DURATION);
                 ParallelAction actions = Actions.parallel(moveBy, alPha);
-                star.addAction(actions);
-                mStarGot++;
+                image.addAction(actions);
+                if (TYPE_STAR == type) {
+                    mStarGot++;
+                } else if (TYPE_KEY == type) {
+                    mLocked = false;
+                }
             case TYPE_EMPTY:
                 mInAnimation = true;
                 Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
@@ -333,9 +352,7 @@ public class GameManager {
                 if (actor != mMe) {
                     return false;
                 }
-
                 return actionTransportMove(flingDirection, cellX, cellY);
-
         }
         return false;
     }
@@ -593,6 +610,8 @@ public class GameManager {
             return TYPE_TARGET;
         } else if (actor.getName().equals(NAME_TRANSPORT)) {
             return TYPE_TRANSPORT;
+        } else if (actor.getName().equals(NAME_KEY)) {
+            return TYPE_KEY;
         }
         return INVALID;
     }
@@ -600,6 +619,7 @@ public class GameManager {
     private void initStatus() {
         mInAnimation = false;
         mStarGot = 0;
+        mLocked = false;
     }
 
     public void saveGame() {
@@ -641,7 +661,7 @@ public class GameManager {
     }
 
     public void initGame() {
-        initMapBlock();
         initStatus();
+        initMapBlock();
     }
 }

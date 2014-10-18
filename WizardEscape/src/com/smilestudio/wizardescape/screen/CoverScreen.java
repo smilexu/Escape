@@ -62,17 +62,16 @@ public class CoverScreen implements Screen, InputProcessor {
             }
         }
 
-        mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, true);
-
+        mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
         AdvanceActor logoActor = new AdvanceActor(0.1f, logoRegions, Animation.LOOP_PINGPONG);
-        logoActor.setPosition(200, 200);
+        logoActor.setPosition(Constants.COVER_SCREEN_POSITION_X_LOGO, Constants.COVER_SCREEN_POSITION_Y_LOGO);
         logoActor.setSize(logoTexture.getWidth() / 2, logoTexture.getHeight() / 2);
         mStage.addActor(logoActor);
 
         Texture startTexture = new Texture(Gdx.files.internal("buttons/img_start.png"));
         mStartButton = new Image(startTexture);
         mStartButton.setSize(startTexture.getWidth(), startTexture.getHeight());
-        mStartButton.setPosition(700, 230);
+        mStartButton.setPosition(Constants.COVER_SCREEN_POSITION_X_START, Constants.COVER_SCREEN_POSITION_Y_START);
 
         SizeToAction sizeUpAction = Actions.sizeTo(startTexture.getWidth() * 1.1f, startTexture.getHeight() * 1.1f, 0.8f);
         SizeToAction sizeDownAction = Actions.sizeTo(startTexture.getWidth(), startTexture.getHeight(), 0.8f);

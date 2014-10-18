@@ -10,6 +10,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -58,7 +59,7 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         mManager = GameManager.getInstance();
         mManager.initGame();
 
-        mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, true);
+        mStage = new Stage(Constants.STAGE_WIDTH, 600, true);
 
         mBgImage = new Image(new Texture(Gdx.files.internal("background/img_mission1_bk.png")));
         mBgImage.setSize(mBgImage.getWidth(), mBgImage.getHeight());
@@ -146,10 +147,11 @@ public class GameScreen implements Screen, GestureListener, EventListener {
     @Override
     public boolean tap(float x, float y, int count, int button) {
         Vector2 stagePoint = mStage.screenToStageCoordinates(new Vector2(x, y));
-        if (mRefreshButton == mStage.hit(stagePoint.x, stagePoint.y, true)) {
+        Actor actor = mStage.hit(stagePoint.x, stagePoint.y, true);
+        if (actor == mRefreshButton) {
             resetGame();
             return true;
-        } else if (mSelectMissionButton == mStage.hit(stagePoint.x, stagePoint.y, true)) {
+        } else if (actor == mSelectMissionButton) {
             mGame.setScreen(new MissionSelectScreen(mGame));
             return true;
         }

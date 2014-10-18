@@ -7,20 +7,29 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.input.GestureDetector.GestureListener;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.MissionButton;
 import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.utils.Constants;
 
-public class MissionSelectScreen implements Screen, InputProcessor {
+public class MissionSelectScreen implements Screen, InputProcessor, GestureListener{
 
     private Game    mGame;
-    private Stage   mStage;
+    private Stage   mMainStage; //used for all actors except arrows
+    private Stage   mArrowStage; //only used for arrows
     private int     mMission;
+    private Image mArrowLeft;
+    private Image mArrowRight;
 
     public MissionSelectScreen(Game game) {
         this(game, 1);
@@ -37,9 +46,18 @@ public class MissionSelectScreen implements Screen, InputProcessor {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         // TODO Auto-generated method stub
 
-        mStage.act();
-
-        mStage.draw();
+        mMainStage.act();
+        mMainStage.draw();
+        if (1 == mMission) {
+            mArrowLeft.setVisible(false);
+        } else if (3 == mMission) {
+            mArrowRight.setVisible(false);
+        } else {
+            mArrowLeft.setVisible(true);
+            mArrowRight.setVisible(true);
+        }
+        mArrowStage.act();
+        mArrowStage.draw();
     }
 
     @Override
@@ -50,21 +68,53 @@ public class MissionSelectScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
-        Texture mission1Texture = new Texture(Gdx.files.internal("misc/img_mission1_thumbnail.png"));
-        Image mission1Image = new Image(mission1Texture);
-        mission1Image.setSize(mission1Texture.getWidth(), mission1Texture.getHeight());
-        mission1Image.setPosition(100, (Constants.STAGE_HEIGHT - mission1Texture.getHeight()) / 2);
-        mission1Image.setTouchable(Touchable.disabled);
+        //initial left & right arrow
+        Texture arrowLeftTexture = new Texture(Gdx.files.internal("misc/img_arrow_left.png"));
+        mArrowLeft = new Image(arrowLeftTexture);
+        mArrowLeft.setSize(arrowLeftTexture.getWidth(), arrowLeftTexture.getHeight());
+        mArrowLeft.setPosition(50, 20);
 
-        mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, true);
-        mStage.addActor(mission1Image);
+        RepeatAction leftRepeat = Actions.forever(Actions.sequence(Actions.moveBy(20, 0, 0.3f), Actions.moveBy(-20, 0, 0.3f)));
+        RepeatAction rightRepeat = Actions.forever(Actions.sequence(Actions.moveBy(-20, 0, 0.3f), Actions.moveBy(20, 0, 0.3f)));
+        mArrowLeft.addAction(leftRepeat);
 
-        initMissionGroup();
+        Texture arrowRightTexture = new Texture(Gdx.files.internal("misc/img_arrow_right.png"));
+        mArrowRight = new Image(arrowRightTexture);
+        mArrowRight.setSize(arrowRightTexture.getWidth(), arrowRightTexture.getHeight());
+        mArrowRight.setPosition(600, 20);
+        mArrowRight.addAction(rightRepeat);
 
-        Gdx.input.setInputProcessor(this);
+        mMainStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
+        mArrowStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
+
+        for (int i = 0; i < Constants.COVER_SCREEN_MAX_PANE; i++) {
+            setupMissionThumbnail(i);
+            setupMissionGroup(i);
+        }
+
+        mArrowStage.addActor(mArrowLeft);
+        mArrowStage.addActor(mArrowRight);
+
+        GestureDetector gd = new GestureDetector(this);
+        Gdx.input.setInputProcessor(gd);
     }
 
-    private void initMissionGroup() {
+    private void setupMissionThumbnail(int indexOfPage) {
+        String path = "misc/img_mission_" + (indexOfPage + 1) + "_thumbnail.png";
+        Texture missionTexture = new Texture(Gdx.files.internal(path));
+        Image missionImage = new Image(missionTexture);
+        missionImage.setSize(missionTexture.getWidth(), missionTexture.getHeight());
+        int x = Constants.COVER_SCREEN_DELTA_X_MISSION_THUMBNAIL + indexOfPage * Constants.STAGE_WIDTH;
+        missionImage.setPosition(x, (Constants.STAGE_HEIGHT - missionTexture.getHeight()) / 2);
+        missionImage.setTouchable(Touchable.disabled);
+        mMainStage.addActor(missionImage);
+    }
+
+    /**
+     * set up mission icons
+     * @param indexOfPage indexOfpage + 1 = mission
+     */
+    private void setupMissionGroup(final int indexOfPage) {
         Texture availableButton = new Texture(Gdx.files.internal("buttons/img_mission_available.png"));
         Texture unavailableButton = new Texture(Gdx.files.internal("buttons/img_mission_unavailable.png"));
         Texture stars = new Texture(Gdx.files.internal("buttons/img_star.png"));
@@ -79,35 +129,23 @@ public class MissionSelectScreen implements Screen, InputProcessor {
 
         for (int i = 0; i < Constants.MISSION_SCREEN_MAX_BUTTONS; i++) {
             if (i >= 1) {
-                preData = gm.getGameData(mMission, i);
+                preData = gm.getGameData(indexOfPage + 1, i);
                 first = false;
             }
-            currentData = gm.getGameData(mMission, i+1);
+            currentData = gm.getGameData(indexOfPage + 1, i+1);
             boolean passed = first || ((null == currentData) ? false : currentData.getPassed());
             if (preData != null) {
                 passed = passed || preData.getPassed();
             }
-            MissionButton mb = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, mMission, i+1,
+            MissionButton mb = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, indexOfPage + 1, i+1,
                     (null == currentData) ? 0 : currentData.getStars(), passed);
             mb.setSize(availableButton.getWidth(), MissionButton.ITEM_HEIGHT);
             int indexInRow = i % Constants.MISSION_SCREEN_MAX_COLUMN;
             int indexInColumn = i / Constants.MISSION_SCREEN_MAX_COLUMN;
-            mb.setPosition(Constants.MISSION_SCREEN_GROUP_LEFT_TOP_X + (availableButton.getWidth() + Constants.MISSION_SCREEN_GROUP_OFFSET_X) * indexInRow,
+            mb.setPosition(Constants.MISSION_SCREEN_GROUP_LEFT_TOP_X + (availableButton.getWidth() + Constants.MISSION_SCREEN_GROUP_OFFSET_X) * indexInRow + indexOfPage * Constants.STAGE_WIDTH,
                     Constants.MISSION_SCREEN_GROUP_LEFT_TOP_Y - (MissionButton.ITEM_HEIGHT + Constants.MISSION_SCREEN_GROUP_OFFSET_Y) * indexInColumn);
-            mStage.addActor(mb);
+            mMainStage.addActor(mb);
         }
-
-//        MissionButton mb1 = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, 1, 1, 3, true);
-//        mb1.setSize(availableButton.getWidth(), MissionButton.ITEM_HEIGHT);
-//        mb1.setPosition(400, 300);
-//        mb1.setTouchable(Touchable.enabled);
-//        mStage.addActor(mb1);
-//
-//        MissionButton mb2 = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, 1, 1, 0, false);
-//        mb2.setSize(availableButton.getWidth(), MissionButton.ITEM_HEIGHT);
-//        mb2.setPosition(500, 300);
-//        mb2.setTouchable(Touchable.disabled);
-//        mStage.addActor(mb2);
     }
 
     @Override
@@ -160,14 +198,29 @@ public class MissionSelectScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        Vector2 stagePoint = mStage.screenToStageCoordinates(new Vector2(screenX, screenY));
-        MissionButton mission = (MissionButton)mStage.hit(stagePoint.x, stagePoint.y, true);
+        Vector2 stagePoint = mMainStage.screenToStageCoordinates(new Vector2(screenX, screenY));
+        Actor actor = mMainStage.hit(stagePoint.x, stagePoint.y, true);
 
-        if (mission != null) {
+        if (actor instanceof MissionButton) {
+            MissionButton mission = (MissionButton)actor;
             GameManager.getInstance().setMission(mission.getMission(), mission.getSubMission());
             mGame.setScreen(new GameScreen(mGame));
+            return true;
+        } else if (null == actor) {
+            actor = mArrowStage.hit(stagePoint.x, stagePoint.y, true);
+            if (actor == mArrowLeft) {
+                mMission = mMission - 1;
+                Group group = mMainStage.getRoot();
+                group.addAction(Actions.moveBy(Constants.STAGE_WIDTH, 0, 0.5f));
+                return true;
+            } else if (actor == mArrowRight) {
+                mMission = mMission + 1;
+                Group group = mMainStage.getRoot();
+                group.addAction(Actions.moveBy(-Constants.STAGE_WIDTH, 0, 0.5f));
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -184,6 +237,86 @@ public class MissionSelectScreen implements Screen, InputProcessor {
 
     @Override
     public boolean scrolled(int amount) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(float x, float y, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean tap(float x, float y, int count, int button) {
+        Vector2 stagePoint = mMainStage.screenToStageCoordinates(new Vector2(x, y));
+        Actor actor = mMainStage.hit(stagePoint.x, stagePoint.y, true);
+
+        if (actor instanceof MissionButton) {
+            MissionButton mission = (MissionButton)actor;
+            GameManager.getInstance().setMission(mission.getMission(), mission.getSubMission());
+            mGame.setScreen(new GameScreen(mGame));
+            return true;
+        } else if (null == actor) {
+            actor = mArrowStage.hit(stagePoint.x, stagePoint.y, true);
+            if (actor == mArrowLeft) {
+                mMission = mMission - 1;
+                Group group = mMainStage.getRoot();
+                group.addAction(Actions.moveBy(Constants.STAGE_WIDTH, 0, 0.5f));
+                return true;
+            } else if (actor == mArrowRight) {
+                mMission = mMission + 1;
+                Group group = mMainStage.getRoot();
+                group.addAction(Actions.moveBy(-Constants.STAGE_WIDTH, 0, 0.5f));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean longPress(float x, float y) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean fling(float velocityX, float velocityY, int button) {
+        if (Math.abs(velocityX) > 800) {
+            if (velocityX > 0) {
+                mMission = mMission - 1;
+                Group group = mMainStage.getRoot();
+                group.addAction(Actions.moveBy(Constants.STAGE_WIDTH, 0, 0.5f));
+            } else {
+                mMission = mMission + 1;
+                Group group = mMainStage.getRoot();
+                group.addAction(Actions.moveBy(-Constants.STAGE_WIDTH, 0, 0.5f));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean pan(float x, float y, float deltaX, float deltaY) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean panStop(float x, float y, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean zoom(float initialDistance, float distance) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
         // TODO Auto-generated method stub
         return false;
     }
