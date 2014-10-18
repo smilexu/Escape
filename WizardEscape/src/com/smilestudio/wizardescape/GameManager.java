@@ -61,7 +61,7 @@ public class GameManager {
     private final static int    TYPE_STAR      = 4;
     private final static int    TYPE_TARGET    = 5;
     private final static int    TYPE_TRANSPORT = 6;
-    private final static int    TYPE_KEY = 7;
+    private final static int    TYPE_KEY       = 7;
 
     private final static String NAME_ME = "me";
     private final static String NAME_OBSTACLE = "obstacle";
