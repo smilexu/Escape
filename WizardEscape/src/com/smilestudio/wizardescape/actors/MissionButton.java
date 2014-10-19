@@ -52,7 +52,7 @@ public class MissionButton extends Actor {
             setTouchable(Touchable.enabled);
         } else {
             batch.draw(mUnavailableButton, getX(), getY() + MARGIN_INSIDE);
-//            setTouchable(Touchable.disabled);
+            setTouchable(Touchable.disabled);
         }
     }
     
