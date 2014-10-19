@@ -60,16 +60,18 @@ public class GameManager {
     private final static int    TYPE_MOVABLE   = 3;
     private final static int    TYPE_STAR      = 4;
     private final static int    TYPE_TARGET    = 5;
-    private final static int    TYPE_TRANSPORT = 6;
+    private final static int    TYPE_PORTAL_A  = 6;
     private final static int    TYPE_KEY       = 7;
+    private final static int    TYPE_PORTAL_B  = 8;
 
     private final static String NAME_ME = "me";
     private final static String NAME_OBSTACLE = "obstacle";
     private final static String NAME_MOVABLE = "movable";
     private final static String NAME_STAR = "star";
     private final static String NAME_TARGET = "target";
-    private final static String NAME_TRANSPORT = "transport";
+    private final static String NAME_PORTAL_A = "portal_a";
     private final static String NAME_KEY = "key";
+    private final static String NAME_PORTAL_B = "portal_b";
 
     private final static String PREFERENCES_NAME = "save";
 
@@ -148,7 +150,8 @@ public class GameManager {
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COLUMN; j++) {
                 Actor actor = null;
-                switch (mMapBlock[j][i]) {
+                final int type = mMapBlock[j][i];
+                switch (type) {
                     case TYPE_EMPTY:
                         break;
                     case TYPE_ME:
@@ -182,19 +185,9 @@ public class GameManager {
                         target.setName(NAME_TARGET);
                         actor = (Actor)target;
                         break;
-                    case TYPE_TRANSPORT:
-                        Texture tmpTexture = new Texture(Gdx.files.internal("misc/img_transport.png"));
-                        TextureRegion[][] tmpRegions = TextureRegion.split(tmpTexture, tmpTexture.getWidth() / 3, tmpTexture.getHeight() / 2);
-                        TextureRegion[] regions = new TextureRegion[6];
-                        int index = 0;
-                        for (int row = 0; row < 2; row++) {
-                            for (int col = 0; col < 3; col++) {
-                                regions[index] = tmpRegions[row][col];
-                                index++;
-                            }
-                        }
-                        AdvanceActor transport = new AdvanceActor(0.1f, regions, Animation.LOOP_PINGPONG);
-                        transport.setName(NAME_TRANSPORT);
+                    case TYPE_PORTAL_A:
+                    case TYPE_PORTAL_B:
+                        AdvanceActor transport = genaratePortalActor(type);
                         actor = (Actor) transport;
                         break;
                     case TYPE_KEY:
@@ -216,6 +209,31 @@ public class GameManager {
             }
         }
         stage.addActor(mask);
+    }
+
+    private AdvanceActor genaratePortalActor(int type) {
+        Texture tmpTexture = null;
+        String name = null;
+        if (TYPE_PORTAL_A == type) {
+            tmpTexture = new Texture(Gdx.files.internal("misc/img_portal_a.png"));
+            name = NAME_PORTAL_A;
+        } else {
+            tmpTexture = new Texture(Gdx.files.internal("misc/img_portal_b.png"));
+            name = NAME_PORTAL_B;
+        }
+
+        TextureRegion[][] tmpRegions = TextureRegion.split(tmpTexture, tmpTexture.getWidth() / 3, tmpTexture.getHeight() / 2);
+        TextureRegion[] regions = new TextureRegion[6];
+        int index = 0;
+        for (int row = 0; row < 2; row++) {
+            for (int col = 0; col < 3; col++) {
+                regions[index] = tmpRegions[row][col];
+                index++;
+            }
+        }
+        AdvanceActor transport = new AdvanceActor(0.1f, regions, Animation.LOOP_PINGPONG);
+        transport.setName(name);
+        return transport;
     }
 
     public void onFling(int flingDirection, float value) {
@@ -348,28 +366,29 @@ public class GameManager {
                     actor.addAction(moveto);
                 }
                 return true;
-            case TYPE_TRANSPORT:
+            case TYPE_PORTAL_A:
+            case TYPE_PORTAL_B:
                 if (actor != mMe) {
                     return false;
                 }
-                return actionTransportMove(flingDirection, cellX, cellY);
+                return actionTransportMove(flingDirection, cellX, cellY, type);
         }
         return false;
     }
 
-    private boolean actionTransportMove(final int flingDirection, final int cellX, final int cellY) {
+    private boolean actionTransportMove(final int flingDirection, final int cellX, final int cellY, final int type) {
         mMe.toFront();
 
         Vector2 transport_position = getNextBlockPosition(flingDirection, cellX, cellY);
         Vector2 transport_cell = getNextBlockCell(flingDirection, cellX, cellY);
 
-        final Vector2 otherTransportPosition = getOtherTransportPosition((int)transport_cell.x, (int)transport_cell.y);
-        final Vector2 otherTransportCell = getOtherTransportCell((int)transport_cell.x, (int)transport_cell.y);
+        final Vector2 otherTransportPosition = getOtherPortalPosition((int)transport_cell.x, (int)transport_cell.y, type);
+        final Vector2 otherTransportCell = getOtherPortalCell((int)transport_cell.x, (int)transport_cell.y, type);
 
         switch (getNextActorType(flingDirection, (int)otherTransportCell.x, (int)otherTransportCell.y)) {
             case TYPE_ME:
             case TYPE_OBSTACLE:
-            case TYPE_TRANSPORT:
+            case TYPE_PORTAL_A:
                 return false;
             case TYPE_EMPTY:
             case TYPE_MOVABLE:
@@ -411,11 +430,11 @@ public class GameManager {
         return true;
     }
 
-    private Vector2 getOtherTransportCell(int cellX, int cellY) {
+    private Vector2 getOtherPortalCell(int cellX, int cellY, int type) {
         Vector2 position = null;
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COLUMN; j++) {
-                if (TYPE_TRANSPORT == mMapBlock[j][i]) {
+                if (type == mMapBlock[j][i]) {
                     if (j == cellX && i == cellY) {
                         continue;
                     } else {
@@ -427,11 +446,11 @@ public class GameManager {
         return position;
     }
 
-    private Vector2 getOtherTransportPosition(int cellX, int cellY) {
+    private Vector2 getOtherPortalPosition(int cellX, int cellY, int type) {
         Vector2 position = null;
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COLUMN; j++) {
-                if (TYPE_TRANSPORT == mMapBlock[j][i]) {
+                if (type == mMapBlock[j][i]) {
                     if (j == cellX && i == cellY) {
                         continue;
                     } else {
@@ -608,10 +627,12 @@ public class GameManager {
             return TYPE_STAR;
         } else if (actor.getName().equals(NAME_TARGET)) {
             return TYPE_TARGET;
-        } else if (actor.getName().equals(NAME_TRANSPORT)) {
-            return TYPE_TRANSPORT;
+        } else if (actor.getName().equals(NAME_PORTAL_A)) {
+            return TYPE_PORTAL_A;
         } else if (actor.getName().equals(NAME_KEY)) {
             return TYPE_KEY;
+        } else if (actor.getName().equals(NAME_PORTAL_B)) {
+            return TYPE_PORTAL_B;
         }
         return INVALID;
     }

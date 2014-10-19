@@ -48,9 +48,11 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
         mMainStage.act();
         mMainStage.draw();
-        if (1 == mMission) {
+        if (mMission <= 1) {
+            mMission = 1;
             mArrowLeft.setVisible(false);
-        } else if (3 == mMission) {
+        } else if (mMission >= 3) {
+            mMission = 3;
             mArrowRight.setVisible(false);
         } else {
             mArrowLeft.setVisible(true);
@@ -283,11 +285,11 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
     @Override
     public boolean fling(float velocityX, float velocityY, int button) {
         if (Math.abs(velocityX) > 800) {
-            if (velocityX > 0) {
+            if (velocityX > 0 && mMission > 1) {
                 mMission = mMission - 1;
                 Group group = mMainStage.getRoot();
                 group.addAction(Actions.moveBy(Constants.STAGE_WIDTH, 0, 0.5f));
-            } else {
+            } else if (velocityX < 0 && mMission < 3){
                 mMission = mMission + 1;
                 Group group = mMainStage.getRoot();
                 group.addAction(Actions.moveBy(-Constants.STAGE_WIDTH, 0, 0.5f));
