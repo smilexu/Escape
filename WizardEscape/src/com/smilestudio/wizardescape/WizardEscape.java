@@ -6,9 +6,15 @@ import com.smilestudio.wizardescape.screen.CoverScreen;
 
 public class WizardEscape extends Game{
 
+    private AdCallback mAdListener;
+
+    public WizardEscape(AdCallback listener) {
+        mAdListener = listener;
+    }
+
     @Override
     public void create() {
-        setScreen(new CoverScreen(this));
+        CoverScreen coverScreen = new CoverScreen(this, mAdListener);
+        setScreen(coverScreen);
     }
-    
 }

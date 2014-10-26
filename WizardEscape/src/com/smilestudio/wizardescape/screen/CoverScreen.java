@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SizeToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.smilestudio.wizardescape.AdCallback;
 import com.smilestudio.wizardescape.actors.AdvanceActor;
 import com.smilestudio.wizardescape.utils.Constants;
 
@@ -23,9 +24,11 @@ public class CoverScreen implements Screen, InputProcessor {
     private Stage mStage;
     private Image mStartButton;
     private Game mGame;
+    private AdCallback mAdListener;
 
-    public CoverScreen(Game game) {
+    public CoverScreen(Game game, AdCallback listener) {
         mGame = game;
+        mAdListener = listener;
     }
 
     @Override
@@ -133,6 +136,9 @@ public class CoverScreen implements Screen, InputProcessor {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Vector2 stagePoint = mStage.screenToStageCoordinates(new Vector2(screenX, screenY));
         if (mStage.hit(stagePoint.x, stagePoint.y, false) == mStartButton) {
+            System.out.println("================== start button");
+//            mAdListener.loadAppWallAd();
+//            mAdListener.loadInterstitialAd();
             mGame.setScreen(new MissionSelectScreen(mGame));
         }
         return true;

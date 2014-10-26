@@ -1,0 +1,34 @@
+# view res/layout/wdj_tab_fragment.xml #generated:25
+-keep class android.support.v4.view.ViewPager { <init>(...); }
+
+# view AndroidManifest.xml #generated:22
+-keep class com.wandoujia.ads.sdk.AppChangedReceiver { <init>(...); }
+
+# view AndroidManifest.xml #generated:10
+-keep class com.wandoujia.ads.sdk.AppWallActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:15
+-keep class com.wandoujia.ads.sdk.AppWidgetContainerActivity { <init>(...); }
+
+# view AndroidManifest.xml #generated:20
+-keep class com.wandoujia.ads.sdk.DownloadService { <init>(...); }
+
+# view res/layout/wdj_ad_banner_item_layout.xml #generated:9
+# view res/layout/wdj_ad_interstitial_big_picture.xml #generated:7
+# view res/layout/wdj_app_item_in_ads_view.xml #generated:9
+# view res/layout/wdj_app_widget_view.xml #generated:17
+# view res/layout/wdj_fragment_ad_widget.xml #generated:8
+# view res/layout/wdj_fragment_ads_detail.xml #generated:53
+# view res/layout/wdj_interstitial_activity_layout.xml #generated:22
+# view res/layout/wdj_smart_advew_default.xml #generated:11
+-keep class com.wandoujia.ads.sdk.volley.toolbox.NetworkImageView { <init>(...); }
+
+# view res/layout/wdj_app_widget_view.xml #generated:3
+-keep class com.wandoujia.ads.sdk.widget.AppWidget { <init>(...); }
+
+# view res/layout/wdj_ad_banner_layout.xml #generated:3
+-keep class com.wandoujia.ads.sdk.widget.ScrollBannerView { <init>(...); }
+
+# view res/layout/wdj_tab_fragment.xml #generated:8
+-keep class com.wandoujia.ads.sdk.widget.tabs.PagerSlidingTabStrip { <init>(...); }
+
