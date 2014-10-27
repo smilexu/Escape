@@ -34,6 +34,7 @@ public class GameScreen implements Screen, GestureListener, EventListener {
     private Image mSelectMissionButton;
     private Image mBgImage;
     private Image mBgMask;
+    private Image mGridImage;
 
     public GameScreen(Game game) {
         mGame = game;
@@ -59,12 +60,17 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         mManager = GameManager.getInstance();
         mManager.initGame();
 
-        mStage = new Stage(Constants.STAGE_WIDTH, 600, true);
+        mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
 
-        mBgImage = new Image(new Texture(Gdx.files.internal("background/img_mission1_bk.png")));
+        mBgImage = new Image(new Texture(Gdx.files.internal("background/img_wildfield.png")));
         mBgImage.setSize(mBgImage.getWidth(), mBgImage.getHeight());
         mBgImage.setPosition(0, 0);
         mStage.addActor(mBgImage);
+
+        mGridImage = new Image(new Texture(Gdx.files.internal("background/img_wild_background_grid.png")));
+        mGridImage.setSize(mGridImage.getWidth(), mGridImage.getHeight());
+        mGridImage.setPosition(0, 0);
+        mStage.addActor(mGridImage);
 
         //initial background mask， used for full screen effect, such as fade in / fade out
         mBgMask = new Image(new Texture(Gdx.files.internal("background/img_background_mask.png")));
@@ -93,6 +99,7 @@ public class GameScreen implements Screen, GestureListener, EventListener {
 
         mBackgroudActors = new Group();
         mBackgroudActors.addActor(mBgImage);
+        mBackgroudActors.addActor(mGridImage);
         mBackgroudActors.addActor(mRefreshButton);
         mBackgroudActors.addActor(mSelectMissionButton);
         mBackgroudActors.addActor(missionLabel);

@@ -85,6 +85,7 @@ public class GameManager {
     private int                 mCurrentCellY;
     private int                 mStarGot = 0;
     private boolean             mLocked;
+    private float mMovableObjectWidth;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -151,49 +152,71 @@ public class GameManager {
             for (int j = 0; j < COLUMN; j++) {
                 Actor actor = null;
                 final int type = mMapBlock[j][i];
+                Vector2 position = MapHelper.getPostionByCell(j, i);
                 switch (type) {
                     case TYPE_EMPTY:
                         break;
                     case TYPE_ME:
                         // TODO: support animation
-                        Texture texture = new Texture(Gdx.files.internal("character/img_leading_role.png"));
-                        TextureRegion region = new TextureRegion(texture, 53, 73);
-                        mMe = new Image(region);
+                        mMe = new Image(new Texture(Gdx.files.internal("character/img_fake_person.png")));
                         mMe.setName(NAME_ME);
                         mCurrentCellX = j;
                         mCurrentCellY = i;
                         actor = (Actor)mMe;
+                        actor.setSize(mMe.getWidth(), mMe.getHeight());
+                        actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - mMe.getWidth()) / 2, position.y);
                         break;
                     case TYPE_OBSTACLE:
-                        Image obstacle = new Image(new Texture(Gdx.files.internal("misc/img_box.png")));
+                        Image obstacle = new Image(new Texture(Gdx.files.internal("misc/img_tree1.png")));
                         obstacle.setName(NAME_OBSTACLE);
+                        obstacle.setSize(obstacle.getWidth(), obstacle.getHeight());
                         actor = (Actor)obstacle;
+                        actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - obstacle.getWidth()) / 2, position.y);
                         break;
                     case TYPE_MOVABLE:
-                        Image movable = new Image(new Texture(Gdx.files.internal("misc/img_plate_3.png")));
+                        Image movable = new Image(new Texture(Gdx.files.internal("misc/img_fountain.png")));
                         movable.setName(NAME_MOVABLE);
                         actor = (Actor)movable;
+                        actor.setSize(movable.getWidth(), movable.getHeight());
+                        actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - movable.getWidth()) / 2, position.y);
+                        mMovableObjectWidth = movable.getWidth();
                         break;
                     case TYPE_STAR:
-                        Texture texure = new Texture(Gdx.files.internal("misc/img_star.png"));
-                        Image star = new Image(new TextureRegion(texure, 57, 49));
+//                        Texture texure = new Texture(Gdx.files.internal("misc/img_star.png"));
+//                        Image star = new Image(new TextureRegion(texure, 57, 49));
+                        TextureRegion regions[] = new TextureRegion[6];
+                        regions[0] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_1.png")));
+                        regions[1] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_2.png")));
+                        regions[2] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_3.png")));
+                        regions[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_4.png")));
+                        regions[4] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_5.png")));
+                        regions[5] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_6.png")));
+                        AdvanceActor star = new AdvanceActor(0.2f, regions, Animation.LOOP);
                         star.setName(NAME_STAR);
                         actor = (Actor)star;
+                        actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
+                        actor.setPosition(position.x, position.y);
                         break;
                     case TYPE_TARGET:
                         Image target = new Image(new Texture(Gdx.files.internal("misc/img_target.png")));
                         target.setName(NAME_TARGET);
                         actor = (Actor)target;
+                        actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
+                        actor.setPosition(position.x, position.y);
                         break;
                     case TYPE_PORTAL_A:
                     case TYPE_PORTAL_B:
                         AdvanceActor transport = genaratePortalActor(type);
                         actor = (Actor) transport;
+                        actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
+                        actor.setPosition(position.x, position.y);
                         break;
                     case TYPE_KEY:
                         Image key = new Image(new Texture(Gdx.files.internal("misc/img_key.png")));
                         key.setName(NAME_KEY);
                         actor = (Actor)key;
+                        actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
+                        actor.setPosition(position.x, position.y);
                         break;
                     default:
                         break;
@@ -201,9 +224,7 @@ public class GameManager {
                 if (null == actor) {
                     continue;
                 }
-                actor.setSize(Constants.CELL_SIZE, Constants.CELL_SIZE);
-                Vector2 position = MapHelper.getPostionByCell(j, i);
-                actor.setPosition(position.x, position.y);
+
                 mActorMap.put(i * COLUMN + j, actor);
                 stage.addActor(actor);
             }
@@ -303,7 +324,7 @@ public class GameManager {
                 return false;
             case TYPE_STAR:
             case TYPE_KEY:
-                Image image = (Image)getNextActor(flingDirection, cellX, cellY);
+                Actor image = (Actor)getNextActor(flingDirection, cellX, cellY);
                 image.toFront();
                 MoveByAction moveBy = Actions.moveBy(0, Constants.ANIMATION_STAR_MOVEBY, Constants.ANIMATION_STAR_DURATION);
                 AlphaAction alPha = Actions.alpha(0, Constants.ANIMATION_STAR_DURATION);
@@ -317,6 +338,7 @@ public class GameManager {
             case TYPE_EMPTY:
                 mInAnimation = true;
                 Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
+                position = modifyPosition(position, actor.getName());
                 MoveToAction moveto = Actions.moveTo(position.x, position.y);
                 if (isPushStatus) {
                     moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_PUSH);
@@ -339,7 +361,6 @@ public class GameManager {
                             mCurrentCellY = (int) cell.y;
                             mMapBlock[(int)cell.x][(int)cell.y] = getActorType(actor);
                             mActorMap.put(mCurrentCellY * COLUMN + mCurrentCellX, actor);
-
                             mInAnimation = false;
 
                             moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, actor, isPushStatus, true);
@@ -359,9 +380,8 @@ public class GameManager {
 
                     mMapBlock[(int) cell.x][(int) cell.y] = getActorType(actor);
                     mActorMap.put((int)cell.y * COLUMN + (int)cell.x, actor);
-                    
                     mInAnimation = false;
-                    
+
                     sequence = Actions.sequence(moveto);
                     actor.addAction(moveto);
                 }
@@ -374,6 +394,21 @@ public class GameManager {
                 return actionTransportMove(flingDirection, cellX, cellY, type);
         }
         return false;
+    }
+
+    /**
+     * Since every item is center aligned, we should calculate the real position_x
+     * @param position The left and bottom position of current cell 
+     * @param name The name of current actor
+     * @return
+     */
+    private Vector2 modifyPosition(Vector2 position, String name) {
+        if (name.equals(NAME_ME)) {
+            position.x = position.x + (Constants.CELL_SIZE_WIDTH - mMe.getWidth()) / 2;
+        } else if (name.equals(NAME_MOVABLE)) {
+            position.x = position.x + (Constants.CELL_SIZE_WIDTH - mMovableObjectWidth) / 2;
+        }
+        return position;
     }
 
     private boolean actionTransportMove(final int flingDirection, final int cellX, final int cellY, final int type) {

@@ -1,11 +1,13 @@
 package com.smilestudio.wizardescape.actors;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.smilestudio.wizardescape.utils.Constants;
 
 public class AdvanceActor extends Actor {
 
@@ -40,9 +42,12 @@ public class AdvanceActor extends Actor {
         super.draw(batch, parentAlpha);
 
         mStateTime += Gdx.graphics.getDeltaTime();
+        Color color = getColor();
+        batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
 
         if(mType == ANIMATION) {
-            batch.draw(mAnimation.getKeyFrame(mStateTime), getX(), getY());
+            TextureRegion region = mAnimation.getKeyFrame(mStateTime);
+            batch.draw(region, getX() + (Constants.CELL_SIZE_WIDTH - region.getRegionWidth()) / 2, getY());
         } else if(mType == IMAGE) {
             batch.draw(mTextureRegion, getX(), getY());
         }
