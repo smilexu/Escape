@@ -38,9 +38,9 @@ public class GameManager {
 
     private static GameManager sInstance;
 
-    private final static int   COLUMN      = 10;
+    public final static int   COLUMN      = 10;
 
-    private final static int   ROW         = 8;
+    public final static int   ROW         = 8;
 
     public static synchronized GameManager getInstance() {
         if (sInstance == null) {
@@ -50,8 +50,8 @@ public class GameManager {
     }
 
     /**
-     * Map block define 0 - empty 1 - me 2 - can NOT be moved 3 - movable 4
-     * -star 5 - target
+     * Map block define 0 - empty, 1 - me, 2 - can NOT be moved, 3 - movable, 4
+     * -star, 5 - target, 6 - portal A, 7 - key, 8 - portal B
      */
     private final static int    INVALID  = -1;
     private final static int    TYPE_EMPTY     = 0;
@@ -86,6 +86,7 @@ public class GameManager {
     private int                 mStarGot = 0;
     private boolean             mLocked;
     private float mMovableObjectWidth;
+    private Group mGroup;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -140,7 +141,8 @@ public class GameManager {
             stage.clear();
         }
 
-        stage.addActor(bkGrdActors);
+        mGroup = stage.getRoot();
+        mGroup.addActorAt(0, mask);
 
         if (mActorMap != null) {
             mActorMap.clear();
@@ -229,7 +231,8 @@ public class GameManager {
                 stage.addActor(actor);
             }
         }
-        stage.addActor(mask);
+
+        mGroup.addActorAt(0, bkGrdActors);
     }
 
     private AdvanceActor genaratePortalActor(int type) {
@@ -269,7 +272,7 @@ public class GameManager {
      * int flingDirection: the direction of fling, UP, DOWN, LEFT and RIGHT
      * int cellX: current cell - x
      * int cellY: current cell - y
-     * Action actor: which actor to move
+     * Actor actor: which actor to move
      * boolean isPushStatus: which animation and duration to display
      * boolean updateCellStatus: whether or not update current cell status. Used for overlapped status, such as move from a transport position
      */
@@ -338,7 +341,9 @@ public class GameManager {
             case TYPE_EMPTY:
                 mInAnimation = true;
                 Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
+                //FIXME: modified position should be calculated by actor itself. We should fix that after moving hero into advance actor
                 position = modifyPosition(position, actor.getName());
+
                 MoveToAction moveto = Actions.moveTo(position.x, position.y);
                 if (isPushStatus) {
                     moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_PUSH);
@@ -361,6 +366,12 @@ public class GameManager {
                             mCurrentCellY = (int) cell.y;
                             mMapBlock[(int)cell.x][(int)cell.y] = getActorType(actor);
                             mActorMap.put(mCurrentCellY * COLUMN + mCurrentCellX, actor);
+
+                            //if direction is UP or DOWN, we should modify actor index
+                            if(FLING_UP == flingDirection || FLING_DOWN == flingDirection) {
+                                adjustActorIndex(mGroup, actor, flingDirection, mCurrentCellX, mCurrentCellY);
+                            }
+
                             mInAnimation = false;
 
                             moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, actor, isPushStatus, true);
@@ -382,8 +393,17 @@ public class GameManager {
                     mActorMap.put((int)cell.y * COLUMN + (int)cell.x, actor);
                     mInAnimation = false;
 
-                    sequence = Actions.sequence(moveto);
-                    actor.addAction(moveto);
+                    RunnableAction runnable = Actions.run(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            //if direction is UP or DOWN, we should modify actor index
+                            if(FLING_UP == flingDirection || FLING_DOWN == flingDirection) {
+                                adjustActorIndex(mGroup, actor, flingDirection, mCurrentCellX, mCurrentCellY);
+                            }
+                        }});
+                    sequence = Actions.sequence(moveto, runnable);
+                    actor.addAction(sequence);
                 }
                 return true;
             case TYPE_PORTAL_A:
@@ -394,6 +414,56 @@ public class GameManager {
                 return actionTransportMove(flingDirection, cellX, cellY, type);
         }
         return false;
+    }
+
+    private void adjustActorIndex(final Group group, final Actor targetActor, final int direction, final int cellX, final int cellY) {
+        if (FLING_UP == direction) {
+            int index = COLUMN * cellY - 1;
+            Actor actor = null;
+            while (index >= 0) {
+                actor = mActorMap.get(index);
+                if (actor != null) {
+                    break;
+                }
+                index = index - 1;
+            }
+            if (actor != null && actor != targetActor) {
+                group.addActorAfter(actor, targetActor);
+            } else {
+                index = 0;
+                while (index < COLUMN * ROW - 1) {
+                    actor = mActorMap.get(index);
+                    if (actor != null && actor != targetActor) {
+                        break;
+                    }
+                    index = index + 1;
+                }
+                group.addActorBefore(actor, targetActor);
+            }
+        } else if (FLING_DOWN == direction) {
+            int index = COLUMN * (cellY + 1);
+            Actor actor = null;
+            while (index <= COLUMN * ROW - 1) {
+                actor = mActorMap.get(index);
+                if (actor != null) {
+                    break;
+                }
+                index = index + 1;
+            }
+            if (actor != null && actor != targetActor) {
+                group.addActorBefore(actor, targetActor);
+            } else {
+                index = COLUMN * ROW - 1;
+                while (index >= 0) {
+                    actor = mActorMap.get(index);
+                    if (actor != null && actor != targetActor) {
+                        break;
+                    }
+                    index = index - 1;
+                }
+                group.addActorAfter(actor, targetActor);
+            }
+        }
     }
 
     /**
@@ -500,14 +570,14 @@ public class GameManager {
     private Actor getNextActor(int direction, int cellX, int cellY) {
         Actor actor = null;
         switch (direction) {
-            case FLING_UP:
+            case FLING_DOWN:
                 if ((cellY + 1) > ROW) {
                     return null;
                 } else {
                     actor = mActorMap.get((cellY + 1) * COLUMN + cellX);
                 }
                 break;
-            case FLING_DOWN:
+            case FLING_UP:
                 if ((cellY - 1) < 0) {
                     return null;
                 } else {
@@ -537,14 +607,14 @@ public class GameManager {
     private Vector2 getNextBlockCell(final int direction, final int cellX, final int cellY) {
         Vector2 result = null;
         switch (direction) {
-            case FLING_UP:
+            case FLING_DOWN:
                 if ((cellY + 1) > ROW) {
                     return null;
                 } else {
                     result = new Vector2(cellX, cellY + 1);
                 }
                 break;
-            case FLING_DOWN:
+            case FLING_UP:
                 if ((cellY - 1) < 0) {
                     return null;
                 } else {
@@ -574,14 +644,14 @@ public class GameManager {
     private Vector2 getNextBlockPosition(final int direction, final int cellX, final int cellY) {
         Vector2 position = null;
         switch (direction) {
-            case FLING_UP:
+            case FLING_DOWN:
                 if ((cellY + 1) > ROW) {
                     return null;
                 } else {
                     position = MapHelper.getPostionByCell(cellX, cellY + 1);
                 }
                 break;
-            case FLING_DOWN:
+            case FLING_UP:
                 if ((cellY - 1) < 0) {
                     return null;
                 } else {
@@ -613,14 +683,14 @@ public class GameManager {
     private int getNextActorType(int direction, int cellX, int cellY) {
         Actor actor = null;
         switch (direction) {
-            case FLING_UP:
+            case FLING_DOWN:
                 if ((cellY + 1) >= ROW) {
                     return INVALID;
                 } else {
                     actor = mActorMap.get((cellY + 1) * COLUMN + cellX);
                 }
                 break;
-            case FLING_DOWN:
+            case FLING_UP:
                 if ((cellY - 1) < 0) {
                     return INVALID;
                 } else {
