@@ -89,6 +89,7 @@ public class GameManager {
     private Group mGroup;
     private Group mBkGrdActors;
     private Actor mMask;
+    private AdvanceActor mTarget;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -172,14 +173,14 @@ public class GameManager {
                         actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - mMe.getWidth()) / 2, position.y);
                         break;
                     case TYPE_OBSTACLE:
-                        Image obstacle = new Image(new Texture(Gdx.files.internal("misc/img_tree_root.png")));
+                        Image obstacle = new Image(new Texture(Gdx.files.internal("misc/img_tree_root1.png")));
                         obstacle.setName(NAME_OBSTACLE);
                         obstacle.setSize(obstacle.getWidth(), obstacle.getHeight());
                         actor = (Actor)obstacle;
                         actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - obstacle.getWidth()) / 2, position.y);
                         break;
                     case TYPE_MOVABLE:
-                        Image movable = new Image(new Texture(Gdx.files.internal("misc/img_fountain.png")));
+                        Image movable = new Image(new Texture(Gdx.files.internal("misc/img_barrel.png")));
                         movable.setName(NAME_MOVABLE);
                         actor = (Actor)movable;
                         actor.setSize(movable.getWidth(), movable.getHeight());
@@ -189,23 +190,36 @@ public class GameManager {
                     case TYPE_STAR:
 //                        Texture texure = new Texture(Gdx.files.internal("misc/img_star.png"));
 //                        Image star = new Image(new TextureRegion(texure, 57, 49));
-                        TextureRegion regions[] = new TextureRegion[6];
-                        regions[0] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_1.png")));
-                        regions[1] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_2.png")));
-                        regions[2] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_3.png")));
-                        regions[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_4.png")));
-                        regions[4] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_5.png")));
-                        regions[5] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_6.png")));
-                        AdvanceActor star = new AdvanceActor(0.2f, regions, Animation.LOOP);
+                        TextureRegion stars[] = new TextureRegion[6];
+                        stars[0] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_1.png")));
+                        stars[1] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_2.png")));
+                        stars[2] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_3.png")));
+                        stars[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_4.png")));
+                        stars[4] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_5.png")));
+                        stars[5] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_6.png")));
+                        AdvanceActor star = new AdvanceActor(0.2f, stars, Animation.LOOP, AdvanceActor.STATUS_PLAY);
                         star.setName(NAME_STAR);
                         actor = (Actor)star;
-                        actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
                         actor.setPosition(position.x, position.y);
                         break;
                     case TYPE_TARGET:
-                        Image target = new Image(new Texture(Gdx.files.internal("misc/img_target.png")));
-                        target.setName(NAME_TARGET);
-                        actor = (Actor)target;
+//                        Image target = new Image(new Texture(Gdx.files.internal("misc/img_target.png")));
+                        TextureRegion[] targets = new TextureRegion[4];
+                        targets[0] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_1.png")));
+                        targets[1] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_2.png")));
+                        targets[2] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_3.png")));
+                        targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_4.png")));
+                        targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_5.png")));
+                        targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_6.png")));
+                        targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_7.png")));
+                        targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_8.png")));
+                        targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_9.png")));
+                        targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_10.png")));
+                        targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_11.png")));
+                        targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_12.png")));
+                        mTarget = new AdvanceActor(0.2f, targets, Animation.LOOP, AdvanceActor.STATUS_PAUSE);
+                        mTarget.setName(NAME_TARGET);
+                        actor = (Actor)mTarget;
                         actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
                         actor.setPosition(position.x, position.y);
                         break;
@@ -213,7 +227,6 @@ public class GameManager {
                     case TYPE_PORTAL_B:
                         AdvanceActor transport = genaratePortalActor(type);
                         actor = (Actor) transport;
-                        actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
                         actor.setPosition(position.x, position.y);
                         break;
                     case TYPE_KEY:
@@ -240,26 +253,22 @@ public class GameManager {
     }
 
     private AdvanceActor genaratePortalActor(int type) {
-        Texture tmpTexture = null;
-        String name = null;
+        String name;
+        TextureRegion[] regions = new TextureRegion[4];
+        regions[0] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_portal_1.png")));
         if (TYPE_PORTAL_A == type) {
-            tmpTexture = new Texture(Gdx.files.internal("misc/img_portal_a.png"));
+            regions[1] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_portal_blue_2.png")));
+            regions[2] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_portal_blue_3.png")));
+            regions[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_portal_blue_4.png")));
             name = NAME_PORTAL_A;
         } else {
-            tmpTexture = new Texture(Gdx.files.internal("misc/img_portal_b.png"));
+            regions[1] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_portal_red_2.png")));
+            regions[2] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_portal_red_3.png")));
+            regions[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_portal_red_4.png")));
             name = NAME_PORTAL_B;
         }
 
-        TextureRegion[][] tmpRegions = TextureRegion.split(tmpTexture, tmpTexture.getWidth() / 3, tmpTexture.getHeight() / 2);
-        TextureRegion[] regions = new TextureRegion[6];
-        int index = 0;
-        for (int row = 0; row < 2; row++) {
-            for (int col = 0; col < 3; col++) {
-                regions[index] = tmpRegions[row][col];
-                index++;
-            }
-        }
-        AdvanceActor transport = new AdvanceActor(0.1f, regions, Animation.LOOP_PINGPONG);
+        AdvanceActor transport = new AdvanceActor(0.1f, regions, Animation.LOOP_PINGPONG, AdvanceActor.STATUS_PLAY);
         transport.setName(name);
         return transport;
     }
@@ -341,6 +350,9 @@ public class GameManager {
                 image.addAction(actions);
                 if (TYPE_STAR == type) {
                     mStarGot++;
+                    if (mStarGot >=3) {
+                        mTarget.setStatus(AdvanceActor.STATUS_PLAY);
+                    }
                 } else if (TYPE_KEY == type) {
                     mLocked = false;
                 }

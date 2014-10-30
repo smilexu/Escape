@@ -63,7 +63,7 @@ public class CoverScreen implements Screen, InputProcessor {
         }
 
         mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
-        AdvanceActor logoActor = new AdvanceActor(0.1f, logoRegions, Animation.LOOP_PINGPONG);
+        AdvanceActor logoActor = new AdvanceActor(0.1f, logoRegions, Animation.LOOP_PINGPONG, AdvanceActor.STATUS_PLAY);
         logoActor.setPosition(Constants.COVER_SCREEN_POSITION_X_LOGO, Constants.COVER_SCREEN_POSITION_Y_LOGO);
         logoActor.setSize(logoTexture.getWidth() / 2, logoTexture.getHeight() / 2);
         mStage.addActor(logoActor);

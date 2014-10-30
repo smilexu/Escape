@@ -25,16 +25,27 @@ public class AdvanceActor extends Actor {
 
     private TextureRegion mTextureRegion;
 
+    private int mStatus;
+    
+    public final static int STATUS_PLAY = 1;
+    
+    public final static int STATUS_PAUSE = 2;
+
     public AdvanceActor(float frameDuration, TextureRegion[] regions,
-            int playMode) {
+            int playMode, int status) {
         mAnimation = new Animation(frameDuration, regions);
         mAnimation.setPlayMode(playMode);
         mType = ANIMATION;
+        mStatus = status;
     }
 
     public AdvanceActor(TextureRegion textureRegion) {
         mTextureRegion = textureRegion;
         mType = IMAGE;
+    }
+
+    public void setStatus(int status) {
+        mStatus = status;
     }
 
     @Override
@@ -46,8 +57,13 @@ public class AdvanceActor extends Actor {
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
 
         if(mType == ANIMATION) {
-            TextureRegion region = mAnimation.getKeyFrame(mStateTime);
-            batch.draw(region, getX() + (Constants.CELL_SIZE_WIDTH - region.getRegionWidth()) / 2, getY());
+            if (STATUS_PAUSE == mStatus) {
+                TextureRegion firstFrame = mAnimation.getKeyFrame(0);
+                batch.draw(firstFrame, getX() + (Constants.CELL_SIZE_WIDTH - firstFrame.getRegionWidth()) / 2, getY());
+            } else {
+                TextureRegion region = mAnimation.getKeyFrame(mStateTime);
+                batch.draw(region, getX() + (Constants.CELL_SIZE_WIDTH - region.getRegionWidth()) / 2, getY());
+            }
         } else if(mType == IMAGE) {
             batch.draw(mTextureRegion, getX(), getY());
         }
