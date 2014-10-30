@@ -87,6 +87,8 @@ public class GameManager {
     private boolean             mLocked;
     private float mMovableObjectWidth;
     private Group mGroup;
+    private Group mBkGrdActors;
+    private Actor mMask;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -142,7 +144,8 @@ public class GameManager {
         }
 
         mGroup = stage.getRoot();
-        mGroup.addActorAt(0, mask);
+        mBkGrdActors = bkGrdActors;
+        mMask = mask;
 
         if (mActorMap != null) {
             mActorMap.clear();
@@ -169,7 +172,7 @@ public class GameManager {
                         actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - mMe.getWidth()) / 2, position.y);
                         break;
                     case TYPE_OBSTACLE:
-                        Image obstacle = new Image(new Texture(Gdx.files.internal("misc/img_tree1.png")));
+                        Image obstacle = new Image(new Texture(Gdx.files.internal("misc/img_tree_root.png")));
                         obstacle.setName(NAME_OBSTACLE);
                         obstacle.setSize(obstacle.getWidth(), obstacle.getHeight());
                         actor = (Actor)obstacle;
@@ -233,6 +236,7 @@ public class GameManager {
         }
 
         mGroup.addActorAt(0, bkGrdActors);
+        mGroup.addActor(mask);
     }
 
     private AdvanceActor genaratePortalActor(int type) {
@@ -283,6 +287,7 @@ public class GameManager {
         switch (type) {
             case INVALID:
                 if (actor == mMe) {
+                    adjustActorsOrder(flingDirection);
                     mInAnimation = false;
                 }
                 return false;
@@ -290,6 +295,7 @@ public class GameManager {
                 return false;
             case TYPE_OBSTACLE:
                 if (actor == mMe) {
+                    adjustActorsOrder(flingDirection);
                     mInAnimation = false;
                 }
                 return false;
@@ -367,11 +373,7 @@ public class GameManager {
                             mMapBlock[(int)cell.x][(int)cell.y] = getActorType(actor);
                             mActorMap.put(mCurrentCellY * COLUMN + mCurrentCellX, actor);
 
-                            //if direction is UP or DOWN, we should modify actor index
-                            if(FLING_UP == flingDirection || FLING_DOWN == flingDirection) {
-                                adjustActorIndex(mGroup, actor, flingDirection, mCurrentCellX, mCurrentCellY);
-                            }
-
+                            adjustActorsOrder(flingDirection);
                             mInAnimation = false;
 
                             moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, actor, isPushStatus, true);
@@ -393,17 +395,7 @@ public class GameManager {
                     mActorMap.put((int)cell.y * COLUMN + (int)cell.x, actor);
                     mInAnimation = false;
 
-                    RunnableAction runnable = Actions.run(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            //if direction is UP or DOWN, we should modify actor index
-                            if(FLING_UP == flingDirection || FLING_DOWN == flingDirection) {
-                                adjustActorIndex(mGroup, actor, flingDirection, mCurrentCellX, mCurrentCellY);
-                            }
-                        }});
-                    sequence = Actions.sequence(moveto, runnable);
-                    actor.addAction(sequence);
+                    actor.addAction(moveto);
                 }
                 return true;
             case TYPE_PORTAL_A:
@@ -416,53 +408,21 @@ public class GameManager {
         return false;
     }
 
-    private void adjustActorIndex(final Group group, final Actor targetActor, final int direction, final int cellX, final int cellY) {
-        if (FLING_UP == direction) {
-            int index = COLUMN * cellY - 1;
+    private void adjustActorsOrder(int flingDirection) {
+        if (FLING_UP == flingDirection || FLING_DOWN == flingDirection) {
+            mGroup.addActor(mBkGrdActors);
+
+            int index = 0;
             Actor actor = null;
-            while (index >= 0) {
+            while (index <= ROW * COLUMN - 1) {
                 actor = mActorMap.get(index);
                 if (actor != null) {
-                    break;
+                    mGroup.addActor(actor);
                 }
-                index = index - 1;
+                index ++;
             }
-            if (actor != null && actor != targetActor) {
-                group.addActorAfter(actor, targetActor);
-            } else {
-                index = 0;
-                while (index < COLUMN * ROW - 1) {
-                    actor = mActorMap.get(index);
-                    if (actor != null && actor != targetActor) {
-                        break;
-                    }
-                    index = index + 1;
-                }
-                group.addActorBefore(actor, targetActor);
-            }
-        } else if (FLING_DOWN == direction) {
-            int index = COLUMN * (cellY + 1);
-            Actor actor = null;
-            while (index <= COLUMN * ROW - 1) {
-                actor = mActorMap.get(index);
-                if (actor != null) {
-                    break;
-                }
-                index = index + 1;
-            }
-            if (actor != null && actor != targetActor) {
-                group.addActorBefore(actor, targetActor);
-            } else {
-                index = COLUMN * ROW - 1;
-                while (index >= 0) {
-                    actor = mActorMap.get(index);
-                    if (actor != null && actor != targetActor) {
-                        break;
-                    }
-                    index = index - 1;
-                }
-                group.addActorAfter(actor, targetActor);
-            }
+
+            mGroup.addActor(mMask);
         }
     }
 
