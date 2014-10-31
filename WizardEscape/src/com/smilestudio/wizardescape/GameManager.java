@@ -466,6 +466,7 @@ public class GameManager {
             case TYPE_ME:
             case TYPE_OBSTACLE:
             case TYPE_PORTAL_A:
+            case INVALID:
                 return false;
             case TYPE_EMPTY:
             case TYPE_MOVABLE:
