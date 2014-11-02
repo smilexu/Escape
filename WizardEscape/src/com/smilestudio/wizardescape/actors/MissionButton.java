@@ -46,7 +46,7 @@ public class MissionButton extends Actor {
                 batch.draw(mUnavailableStar, (mAvailableStar.getRegionWidth() + offset) * i + getX(), getY());
             }
         }
-        
+
         if (mAvailable) {
             batch.draw(mAvailableButton, getX(), getY() + MARGIN_INSIDE);
             setTouchable(Touchable.enabled);

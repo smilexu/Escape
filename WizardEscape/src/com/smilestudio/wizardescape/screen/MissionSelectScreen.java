@@ -89,7 +89,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         mMainStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
         mArrowStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
 
-        for (int i = 0; i < Constants.COVER_SCREEN_MAX_PANE; i++) {
+        for (int i = 0; i < Constants.MISSION_MAX; i++) {
             setupMissionThumbnail(i);
             setupMissionGroup(i);
         }
@@ -125,14 +125,17 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
         GameManager gm = GameManager.getInstance();
 
-        boolean first = true;
+        boolean first = (0 == indexOfPage);
         GameData currentData = null;
         GameData preData = null;
 
         for (int i = 0; i < Constants.SUB_MISSION_MAX; i++) {
+            //only enable 1-1 mission, others will depends on previous submission
             if (i >= 1) {
                 preData = gm.getGameData(indexOfPage + 1, i);
                 first = false;
+            } else {
+                preData = gm.getGameData(indexOfPage, Constants.SUB_MISSION_MAX);
             }
             currentData = gm.getGameData(indexOfPage + 1, i+1);
             boolean passed = first || ((null == currentData) ? false : currentData.getPassed());
