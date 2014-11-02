@@ -84,7 +84,7 @@ public class GameManager {
     private int                 mCurrentCellX;
     private int                 mCurrentCellY;
     private int                 mStarGot = 0;
-    private boolean             mLocked;
+    private boolean             mLocked = false;
     private float mMovableObjectWidth;
     private Group mGroup;
     private Group mBkGrdActors;
@@ -122,9 +122,6 @@ public class GameManager {
             for (int j = 0; j < COLUMN; j++) {
                 String tmp = String.valueOf(content.charAt(i * COLUMN + j));
                 mMapBlock[j][i] = Integer.valueOf(tmp);
-                if (TYPE_KEY == mMapBlock[j][i]) {
-                    mLocked = true;
-                }
             }
         }
     }
@@ -230,11 +227,12 @@ public class GameManager {
                         actor.setPosition(position.x, position.y);
                         break;
                     case TYPE_KEY:
-                        Image key = new Image(new Texture(Gdx.files.internal("misc/img_key.png")));
-                        key.setName(NAME_KEY);
-                        actor = (Actor)key;
+                        Image mKey = new Image(new Texture(Gdx.files.internal("misc/img_key.png")));
+                        mKey.setName(NAME_KEY);
+                        actor = (Actor)mKey;
                         actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
                         actor.setPosition(position.x, position.y);
+                        mLocked = true;
                         break;
                     default:
                         break;
@@ -350,10 +348,11 @@ public class GameManager {
                 image.addAction(actions);
                 if (TYPE_STAR == type) {
                     mStarGot++;
-                    if (mStarGot >=3) {
-                        mTarget.setStatus(AdvanceActor.STATUS_PLAY);
-                    }
                 } else if (TYPE_KEY == type) {
+                    mLocked = false;
+                }
+                if (mStarGot >= 3 && !mLocked) {
+                    mTarget.setStatus(AdvanceActor.STATUS_PLAY);
                     mLocked = false;
                 }
             case TYPE_EMPTY:
