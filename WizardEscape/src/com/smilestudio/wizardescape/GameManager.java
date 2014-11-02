@@ -463,9 +463,7 @@ public class GameManager {
     }
 
     protected void generateBoardStarsActions(final int current, final int max) {
-        System.out.println("========== current : " + current + ", max = " + max);
         if (current > (max - 1)) {
-            System.out.println("========== generateButtonPlayAnimation");
             generateButtonPlayAnimation();
             return;
         }
