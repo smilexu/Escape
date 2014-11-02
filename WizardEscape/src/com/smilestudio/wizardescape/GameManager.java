@@ -3,6 +3,7 @@ package com.smilestudio.wizardescape;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
@@ -18,11 +19,14 @@ import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
+import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
+import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.actors.AdvanceActor;
 import com.smilestudio.wizardescape.model.GameData;
+import com.smilestudio.wizardescape.screen.GameScreen;
 import com.smilestudio.wizardescape.utils.Constants;
 import com.smilestudio.wizardescape.utils.MapHelper;
 
@@ -73,6 +77,11 @@ public class GameManager {
     private final static String NAME_KEY = "key";
     private final static String NAME_PORTAL_B = "portal_b";
 
+    public final static String NAME_BOARD_BG_CIRCLE = "mission_board_bg_circle";
+    public final static String NAME_BOARD_CONGRAS_TEXT = "mission_board_congras_text";
+    public final static String[] NAME_BOARD_STARS = new String[] {"mission_board_star1", "mission_board_star2", "mission_board_star3"};
+    public final static String NAME_BOARD_NEXT = "mission_board_next";
+
     private final static String PREFERENCES_NAME = "save";
 
     private int[][]             mMapBlock = null;
@@ -90,10 +99,12 @@ public class GameManager {
     private Group mBkGrdActors;
     private Actor mMask;
     private AdvanceActor mTarget;
+    private Group mMissionFinishedBoard;
 
-    public void setMission(int mission, int submission) {
+    public void setMission(Game game, int mission, int submission) {
         mMission = mission;
         mSubmission = submission;
+        game.setScreen(new GameScreen(game));
     }
 
     public int getMission() {
@@ -330,9 +341,12 @@ public class GameManager {
                         @Override
                         public void run() {
                             saveGame();
+
+                            generateCongrasAction();
                         }
                         
                     });
+
                     SequenceAction sequence = Actions.sequence(moveto, alpha, runnable);
                     mMe.addAction(sequence);
                     return true;
@@ -419,6 +433,66 @@ public class GameManager {
         return false;
     }
 
+    /**
+     * 1. Mask alpha 50%
+     * 2. Background circle drop down to center
+     * 3. Congras text drop down to center
+     * 4. Stars fly to the center from left side
+     * 5. Buttons display from smaller
+     */
+    private void generateCongrasAction() {
+        AlphaAction maskAlphaAction = Actions.alpha(Constants.MISSION_FINISHED_MASK_ALPHA, Constants.MISSION_FINISHED_ALPHA_DURATION);
+        mMask.addAction(maskAlphaAction);
+
+        Image bgCircle = (Image) mMissionFinishedBoard.findActor(NAME_BOARD_BG_CIRCLE);
+        MoveToAction bgCircleMove = Actions.moveTo(bgCircle.getX(), Constants.MISSION_FINISHED_BG_CIRCLE_Y, Constants.MISSION_FIMISHED_BG_CIRCLE_MOVE_DURATION);
+
+        Image congrasText = (Image) mMissionFinishedBoard.findActor(NAME_BOARD_CONGRAS_TEXT);
+        MoveToAction textMove = Actions.moveTo(congrasText.getX(), Constants.MISSION_FINISHED_CONGRAS_TEXT_Y, Constants.MISSION_FIMISHED_BG_CIRCLE_MOVE_DURATION);
+        congrasText.addAction(textMove);
+
+        RunnableAction runnable = Actions.run(new Runnable() {
+
+            @Override
+            public void run() {
+                generateBoardStarsActions(0, 3);
+            }});
+        
+        SequenceAction sequence = Actions.sequence(bgCircleMove, runnable);
+        bgCircle.addAction(sequence);
+    }
+
+    protected void generateBoardStarsActions(final int current, final int max) {
+        System.out.println("========== current : " + current + ", max = " + max);
+        if (current > (max - 1)) {
+            System.out.println("========== generateButtonPlayAnimation");
+            generateButtonPlayAnimation();
+            return;
+        }
+
+        Actor star = mMissionFinishedBoard.findActor(NAME_BOARD_STARS[current]);
+        MoveToAction moveTo = Actions.moveTo(Constants.MISSION_FINISHED_STAR_X_DEFAULT + Constants.MISSION_FINISHED_STAR_X_DELTA * current, Constants.MISSION_FINISHED_STAR_Y_DEFAULT,
+                Constants.MISSION_FINISHED_STAR_FLY_DURATION);
+        RunnableAction runnable = Actions.run(new Runnable() {
+
+            @Override
+            public void run() {
+                generateBoardStarsActions(current + 1, max);
+            }});
+        SequenceAction sequence = Actions.sequence(moveTo, runnable);
+        star.addAction(sequence);
+    }
+
+    private void generateButtonPlayAnimation() {
+        Image buttonNext = (Image)mMissionFinishedBoard.findActor(NAME_BOARD_NEXT);
+        buttonNext.setVisible(true);
+        ScaleToAction scaleTo = Actions.scaleTo(1, 1, 0.5f);
+        
+        RotateByAction rotateBy = Actions.rotateBy(720, 0.5f);
+        ParallelAction paralle = Actions.parallel(scaleTo, rotateBy);
+        buttonNext.addAction(paralle);
+    }
+
     private void adjustActorsOrder(int flingDirection) {
         if (FLING_UP == flingDirection || FLING_DOWN == flingDirection) {
             mGroup.addActor(mBkGrdActors);
@@ -434,6 +508,7 @@ public class GameManager {
             }
 
             mGroup.addActor(mMask);
+            mGroup.addActor(mMissionFinishedBoard);
         }
     }
 
@@ -718,6 +793,8 @@ public class GameManager {
         mInAnimation = false;
         mStarGot = 0;
         mLocked = false;
+
+        initialMissionBoardStatus(mMissionFinishedBoard);
     }
 
     public void saveGame() {
@@ -761,5 +838,42 @@ public class GameManager {
     public void initGame() {
         initStatus();
         initMapBlock();
+    }
+
+    public void setMissionFinishedBoard(Group boardItems) {
+        mMissionFinishedBoard = boardItems;
+        initialMissionBoardStatus(boardItems);
+    }
+
+    private void initialMissionBoardStatus(Group boardItems) {
+        if (null == boardItems) {
+            return;
+        }
+
+        Actor bgCircle = boardItems.findActor(NAME_BOARD_BG_CIRCLE);
+        bgCircle.setPosition((mMask.getWidth() - bgCircle.getWidth()) / 2, Constants.STAGE_HEIGHT);
+
+        Actor congrasText = boardItems.findActor(NAME_BOARD_CONGRAS_TEXT);
+        congrasText.setPosition((mMask.getWidth() - congrasText.getWidth()) / 2, Constants.STAGE_HEIGHT);
+
+        for (int i = 0; i < NAME_BOARD_STARS.length; i++) {
+            Actor star = boardItems.findActor(NAME_BOARD_STARS[i]);
+            star.setPosition(0 - star.getWidth(), Constants.STAGE_HEIGHT);
+        }
+
+        Image buttonNext = (Image) boardItems.findActor(NAME_BOARD_NEXT);
+        buttonNext.setVisible(false);
+        buttonNext.setOrigin(buttonNext.getWidth() / 2, buttonNext.getHeight() / 2);
+        buttonNext.setScale(Constants.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
+    }
+
+    public void gotoNext(Game game) {
+        if (mMission <= Constants.MISSION_MAX && mSubmission < Constants.SUB_MISSION_MAX) {
+            setMission(game, mMission, mSubmission + 1);
+        } else if (mMission < Constants.MISSION_MAX && Constants.SUB_MISSION_MAX == mSubmission) {
+            setMission(game, mMission + 1, 1);
+        } else {
+            //Do nothing, already pass all missions
+        }
     }
 }

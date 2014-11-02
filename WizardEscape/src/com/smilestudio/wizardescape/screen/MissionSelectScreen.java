@@ -51,8 +51,8 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         if (mMission <= 1) {
             mMission = 1;
             mArrowLeft.setVisible(false);
-        } else if (mMission >= 3) {
-            mMission = 3;
+        } else if (mMission >= Constants.MISSION_MAX) {
+            mMission = Constants.MISSION_MAX;
             mArrowRight.setVisible(false);
         } else {
             mArrowLeft.setVisible(true);
@@ -129,7 +129,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         GameData currentData = null;
         GameData preData = null;
 
-        for (int i = 0; i < Constants.MISSION_SCREEN_MAX_BUTTONS; i++) {
+        for (int i = 0; i < Constants.SUB_MISSION_MAX; i++) {
             if (i >= 1) {
                 preData = gm.getGameData(indexOfPage + 1, i);
                 first = false;
@@ -205,7 +205,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
         if (actor instanceof MissionButton) {
             MissionButton mission = (MissionButton)actor;
-            GameManager.getInstance().setMission(mission.getMission(), mission.getSubMission());
+            GameManager.getInstance().setMission(mGame, mission.getMission(), mission.getSubMission());
             mGame.setScreen(new GameScreen(mGame));
             return true;
         } else if (null == actor) {
@@ -256,8 +256,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
         if (actor instanceof MissionButton) {
             MissionButton mission = (MissionButton)actor;
-            GameManager.getInstance().setMission(mission.getMission(), mission.getSubMission());
-            mGame.setScreen(new GameScreen(mGame));
+            GameManager.getInstance().setMission(mGame, mission.getMission(), mission.getSubMission());
             return true;
         } else if (null == actor) {
             actor = mArrowStage.hit(stagePoint.x, stagePoint.y, true);
@@ -289,7 +288,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
                 mMission = mMission - 1;
                 Group group = mMainStage.getRoot();
                 group.addAction(Actions.moveBy(Constants.STAGE_WIDTH, 0, 0.5f));
-            } else if (velocityX < 0 && mMission < 3){
+            } else if (velocityX < 0 && mMission < Constants.MISSION_MAX){
                 mMission = mMission + 1;
                 Group group = mMainStage.getRoot();
                 group.addAction(Actions.moveBy(-Constants.STAGE_WIDTH, 0, 0.5f));

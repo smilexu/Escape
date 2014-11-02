@@ -35,6 +35,7 @@ public class GameScreen implements Screen, GestureListener, EventListener {
     private Image mBgImage;
     private Image mBgMask;
     private Image mGridImage;
+    private Image mBtnNext;
 
     public GameScreen(Game game) {
         mGame = game;
@@ -105,6 +106,37 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         mBackgroudActors.addActor(missionLabel);
         mManager.initActors(mBackgroudActors, mBgMask, mStage);
 
+        // add mission finished board
+        Group missionFinishedBoard = new Group();
+
+        Image bgCircle = new Image(new Texture(Gdx.files.internal("misc/img_bg_circle_mission_1_relief.png")));
+        bgCircle.setSize(bgCircle.getWidth(), bgCircle.getHeight());
+        bgCircle.setName(GameManager.NAME_BOARD_BG_CIRCLE);
+        missionFinishedBoard.addActor(bgCircle);
+
+        Image congrasText = new Image(new Texture(Gdx.files.internal("misc/img_congras_relief.png")));
+        congrasText.setSize(congrasText.getWidth(), congrasText.getHeight());
+        congrasText.setName(GameManager.NAME_BOARD_CONGRAS_TEXT);
+        missionFinishedBoard.addActor(congrasText);
+
+        Texture starTexture = new Texture(Gdx.files.internal("misc/img_score_star_relief.png"));
+
+        for (int i = 0; i < GameManager.NAME_BOARD_STARS.length; i++) {
+            Image star = new Image(starTexture);
+            star.setSize(starTexture.getWidth(), starTexture.getHeight());
+            star.setName(GameManager.NAME_BOARD_STARS[i]);
+            missionFinishedBoard.addActor(star);
+        }
+
+        mBtnNext = new Image(new Texture(Gdx.files.internal("misc/img_button_next_relief.png")));
+        mBtnNext.setSize(mBtnNext.getWidth(), mBtnNext.getHeight());
+        mBtnNext.setPosition((mBgImage.getWidth() - mBtnNext.getWidth()) / 2, 150);
+        mBtnNext.setName(GameManager.NAME_BOARD_NEXT);
+        missionFinishedBoard.addActor(mBtnNext);
+
+        mManager.setMissionFinishedBoard(missionFinishedBoard);
+        mStage.addActor(missionFinishedBoard);
+
         GestureDetector gd = new GestureDetector(this);
         Gdx.input.setInputProcessor(gd);
     }
@@ -161,6 +193,8 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         } else if (actor == mSelectMissionButton) {
             mGame.setScreen(new MissionSelectScreen(mGame));
             return true;
+        } else if(actor == mBtnNext) {
+            mManager.gotoNext(mGame);
         }
         return false;
     }
