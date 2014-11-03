@@ -19,11 +19,11 @@ public class Constants {
     public final static float ANIMATION_STAR_DURATION = 0.8f;
     public final static float ANIMATION_HERO_PASS = 1.0f;
 
-    public final static int COVER_SCREEN_POSITION_X_LOGO = 100;
-    public final static int COVER_SCREEN_POSITION_Y_LOGO = 150;
-    public final static int COVER_SCREEN_POSITION_X_START = 500;
-    public final static int COVER_SCREEN_POSITION_Y_START = 180;
-    public final static int COVER_SCREEN_DELTA_X_MISSION_THUMBNAIL = 20;
+    public final static int COVER_SCREEN_POSITION_X_LOGO = 300;
+    public final static int COVER_SCREEN_POSITION_Y_LOGO = 270;
+    public final static int COVER_SCREEN_POSITION_X_START = 700;
+    public final static int COVER_SCREEN_POSITION_Y_START = 300;
+    public final static int COVER_SCREEN_DELTA_X_MISSION_THUMBNAIL = 150;
 
     public final static int GAME_SCREEN_POSITION_X_REFRESH = 1000;
     public final static int GAME_SCREEN_POSITION_Y_REFRESH = 400;
@@ -32,8 +32,10 @@ public class Constants {
     public final static int GAME_SCREEN_POSITION_X_LEVEL = 1000;
     public final static int GAME_SCREEN_POSITION_Y_LEVEL = 370;
 
-    public final static int MISSION_SCREEN_GROUP_LEFT_TOP_X = 330;
-    public final static int MISSION_SCREEN_GROUP_LEFT_TOP_Y = 330;
+    public static final int MISSION_SCREEN_ARROW_PADDING_X = 100;
+    public static final int MISSION_SCREEN_ARROW_Y = 20;
+    public final static int MISSION_SCREEN_GROUP_LEFT_TOP_X = 550;
+    public final static int MISSION_SCREEN_GROUP_LEFT_TOP_Y = 400;
     public final static int MISSION_SCREEN_GROUP_OFFSET_X = 20;
     public final static int MISSION_SCREEN_GROUP_OFFSET_Y = 20;
     public final static int SUB_MISSION_MAX = 15;

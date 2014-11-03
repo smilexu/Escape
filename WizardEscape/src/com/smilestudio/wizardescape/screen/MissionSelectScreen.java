@@ -1,6 +1,5 @@
 package com.smilestudio.wizardescape.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
@@ -24,19 +23,17 @@ import com.smilestudio.wizardescape.utils.Constants;
 
 public class MissionSelectScreen implements Screen, InputProcessor, GestureListener{
 
-    private Game    mGame;
     private Stage   mMainStage; //used for all actors except arrows
     private Stage   mArrowStage; //only used for arrows
     private int     mMission;
     private Image mArrowLeft;
     private Image mArrowRight;
 
-    public MissionSelectScreen(Game game) {
-        this(game, 1);
+    public MissionSelectScreen() {
+        this(1);
     }
 
-    public MissionSelectScreen(Game game, int mission) {
-        mGame = game;
+    public MissionSelectScreen(int mission) {
         mMission = mission;
     }
 
@@ -44,7 +41,6 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-        // TODO Auto-generated method stub
 
         mMainStage.act();
         mMainStage.draw();
@@ -74,7 +70,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         Texture arrowLeftTexture = new Texture(Gdx.files.internal("misc/img_arrow_left.png"));
         mArrowLeft = new Image(arrowLeftTexture);
         mArrowLeft.setSize(arrowLeftTexture.getWidth(), arrowLeftTexture.getHeight());
-        mArrowLeft.setPosition(50, 20);
+        mArrowLeft.setPosition(Constants.MISSION_SCREEN_ARROW_PADDING_X, Constants.MISSION_SCREEN_ARROW_Y);
 
         RepeatAction leftRepeat = Actions.forever(Actions.sequence(Actions.moveBy(20, 0, 0.3f), Actions.moveBy(-20, 0, 0.3f)));
         RepeatAction rightRepeat = Actions.forever(Actions.sequence(Actions.moveBy(-20, 0, 0.3f), Actions.moveBy(20, 0, 0.3f)));
@@ -83,7 +79,8 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         Texture arrowRightTexture = new Texture(Gdx.files.internal("misc/img_arrow_right.png"));
         mArrowRight = new Image(arrowRightTexture);
         mArrowRight.setSize(arrowRightTexture.getWidth(), arrowRightTexture.getHeight());
-        mArrowRight.setPosition(600, 20);
+        mArrowRight.setPosition(Constants.STAGE_WIDTH - Constants.MISSION_SCREEN_ARROW_PADDING_X - mArrowRight.getWidth(),
+                Constants.MISSION_SCREEN_ARROW_Y);
         mArrowRight.addAction(rightRepeat);
 
         mMainStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
@@ -96,6 +93,10 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
         mArrowStage.addActor(mArrowLeft);
         mArrowStage.addActor(mArrowRight);
+
+        //move to current page
+        Group group = mMainStage.getRoot();
+        group.addAction(Actions.moveBy(0 - Constants.STAGE_WIDTH * (mMission - 1), 0));
 
         GestureDetector gd = new GestureDetector(this);
         Gdx.input.setInputProcessor(gd);
@@ -208,8 +209,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
         if (actor instanceof MissionButton) {
             MissionButton mission = (MissionButton)actor;
-            GameManager.getInstance().setMission(mGame, mission.getMission(), mission.getSubMission());
-            mGame.setScreen(new GameScreen(mGame));
+            GameManager.getInstance().setMission(mission.getMission(), mission.getSubMission());
             return true;
         } else if (null == actor) {
             actor = mArrowStage.hit(stagePoint.x, stagePoint.y, true);
@@ -259,7 +259,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
         if (actor instanceof MissionButton) {
             MissionButton mission = (MissionButton)actor;
-            GameManager.getInstance().setMission(mGame, mission.getMission(), mission.getSubMission());
+            GameManager.getInstance().setMission(mission.getMission(), mission.getSubMission());
             return true;
         } else if (null == actor) {
             actor = mArrowStage.hit(stagePoint.x, stagePoint.y, true);

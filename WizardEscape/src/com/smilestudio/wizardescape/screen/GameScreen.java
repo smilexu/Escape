@@ -1,6 +1,5 @@
 package com.smilestudio.wizardescape.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -22,11 +21,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.MissionLabelActor;
 import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.MapHelper;
 
 public class GameScreen implements Screen, GestureListener, EventListener {
 
     private static final float MASK_FADE_DURATION = 1f;
-    private Game        mGame;
     private Stage       mStage;
     private GameManager mManager;
     private Image mRefreshButton;
@@ -37,8 +36,7 @@ public class GameScreen implements Screen, GestureListener, EventListener {
     private Image mGridImage;
     private Image mBtnNext;
 
-    public GameScreen(Game game) {
-        mGame = game;
+    public GameScreen() {
     }
 
     @Override
@@ -63,12 +61,12 @@ public class GameScreen implements Screen, GestureListener, EventListener {
 
         mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
 
-        mBgImage = new Image(new Texture(Gdx.files.internal("background/img_wildfield.png")));
+        mBgImage = MapHelper.getBgImage(mManager.getMission());
         mBgImage.setSize(mBgImage.getWidth(), mBgImage.getHeight());
         mBgImage.setPosition(0, 0);
         mStage.addActor(mBgImage);
 
-        mGridImage = new Image(new Texture(Gdx.files.internal("background/img_wild_background_grid.png")));
+        mGridImage = MapHelper.getGridImage(mManager.getMission());
         mGridImage.setSize(mGridImage.getWidth(), mGridImage.getHeight());
         mGridImage.setPosition(0, 0);
         mStage.addActor(mGridImage);
@@ -191,10 +189,10 @@ public class GameScreen implements Screen, GestureListener, EventListener {
             resetGame();
             return true;
         } else if (actor == mSelectMissionButton) {
-            mGame.setScreen(new MissionSelectScreen(mGame));
+            mManager.getGame().setScreen(new MissionSelectScreen(mManager.getMission()));
             return true;
         } else if(actor == mBtnNext) {
-            mManager.gotoNext(mGame);
+            mManager.gotoNext();
         }
         return false;
     }

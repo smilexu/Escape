@@ -100,11 +100,12 @@ public class GameManager {
     private Actor mMask;
     private AdvanceActor mTarget;
     private Group mMissionFinishedBoard;
+    private Game mGame;
 
-    public void setMission(Game game, int mission, int submission) {
+    public void setMission(int mission, int submission) {
         mMission = mission;
         mSubmission = submission;
-        game.setScreen(new GameScreen(game));
+        mGame.setScreen(new GameScreen());
     }
 
     public int getMission() {
@@ -181,14 +182,14 @@ public class GameManager {
                         actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - mMe.getWidth()) / 2, position.y);
                         break;
                     case TYPE_OBSTACLE:
-                        Image obstacle = new Image(new Texture(Gdx.files.internal("misc/img_tree_root1.png")));
+                        Image obstacle = MapHelper.getObstacleImage(mMission);
                         obstacle.setName(NAME_OBSTACLE);
                         obstacle.setSize(obstacle.getWidth(), obstacle.getHeight());
                         actor = (Actor)obstacle;
                         actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - obstacle.getWidth()) / 2, position.y);
                         break;
                     case TYPE_MOVABLE:
-                        Image movable = new Image(new Texture(Gdx.files.internal("misc/img_barrel.png")));
+                        Image movable = MapHelper.getMovableImage(mMission);
                         movable.setName(NAME_MOVABLE);
                         actor = (Actor)movable;
                         actor.setSize(movable.getWidth(), movable.getHeight());
@@ -865,13 +866,21 @@ public class GameManager {
         buttonNext.setScale(Constants.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
     }
 
-    public void gotoNext(Game game) {
+    public void gotoNext() {
         if (mMission <= Constants.MISSION_MAX && mSubmission < Constants.SUB_MISSION_MAX) {
-            setMission(game, mMission, mSubmission + 1);
+            setMission(mMission, mSubmission + 1);
         } else if (mMission < Constants.MISSION_MAX && Constants.SUB_MISSION_MAX == mSubmission) {
-            setMission(game, mMission + 1, 1);
+            setMission(mMission + 1, 1);
         } else {
             //Do nothing, already pass all missions
         }
+    }
+
+    public void setGame(Game game) {
+        mGame = game;
+    }
+
+    public Game getGame() {
+        return mGame;
     }
 }
