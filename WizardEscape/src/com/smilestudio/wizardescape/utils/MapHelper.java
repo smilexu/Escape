@@ -60,4 +60,15 @@ public class MapHelper {
         }
     }
 
+    public static Image getCircleImage(int mission) {
+        switch (mission) {
+            case 1:
+                return new Image(new Texture(Gdx.files.internal("misc/img_bg_circle_mission_1_relief.png")));
+            case 2:
+            case 3:
+            default:
+                return new Image(new Texture(Gdx.files.internal("misc/img_bg_circle_mission_2_relief.png")));
+        }
+    }
+
 }

@@ -107,7 +107,7 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         // add mission finished board
         Group missionFinishedBoard = new Group();
 
-        Image bgCircle = new Image(new Texture(Gdx.files.internal("misc/img_bg_circle_mission_1_relief.png")));
+        Image bgCircle = MapHelper.getCircleImage(mManager.getMission());
         bgCircle.setSize(bgCircle.getWidth(), bgCircle.getHeight());
         bgCircle.setName(GameManager.NAME_BOARD_BG_CIRCLE);
         missionFinishedBoard.addActor(bgCircle);
