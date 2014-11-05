@@ -19,6 +19,7 @@ public class Constants {
     public final static int ANIMATION_STAR_MOVEBY = 80;
     public final static float ANIMATION_STAR_DURATION = 0.8f;
     public final static float ANIMATION_HERO_PASS = 1.0f;
+    public final static float ANIMATION_HERO_PORTAL_FADE_DURATION = 0.4f;
 
     public final static int COVER_SCREEN_POSITION_X_LOGO = 300;
     public final static int COVER_SCREEN_POSITION_Y_LOGO = 270;

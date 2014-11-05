@@ -460,6 +460,7 @@ public class GameManager {
                             mActorMap.put(mCurrentCellY * COLUMN + mCurrentCellX, actor);
 
                             adjustActorsOrder(flingDirection);
+                            mMe.setStatus(HeroActor.STATUS_STAND);
                             mInAnimation = false;
 
                             moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, actor, isPushStatus, true);
@@ -609,6 +610,7 @@ public class GameManager {
 
         MoveToAction transport_moveto = Actions.moveTo(transport_position.x, transport_position.y);
         transport_moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
+        AlphaAction fadeout = Actions.alpha(0, Constants.ANIMATION_HERO_PORTAL_FADE_DURATION);
         RunnableAction runnable = Actions.run(new Runnable() {
 
             @Override
@@ -620,6 +622,7 @@ public class GameManager {
         });
         MoveToAction moveBetweenTransport = Actions.moveTo(otherTransportPosition.x, otherTransportPosition.y);
         moveBetweenTransport.setDuration(0);
+        AlphaAction fadein = Actions.alpha(1, Constants.ANIMATION_HERO_PORTAL_FADE_DURATION);
         Vector2 nextOfOther = getNextBlockPosition(flingDirection, (int)otherTransportCell.x, (int)otherTransportCell.y);
         MoveToAction moveToNextOfOther = Actions.moveTo(nextOfOther.x, nextOfOther.y);
         moveToNextOfOther.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
@@ -633,7 +636,7 @@ public class GameManager {
             }
 
         });
-        SequenceAction transport_sequence = Actions.sequence(transport_moveto, runnable, moveBetweenTransport, runnableOfNext);
+        SequenceAction transport_sequence = Actions.sequence(transport_moveto, runnable, fadeout, moveBetweenTransport, fadein, runnableOfNext);
         mMe.addAction(transport_sequence);
 
         return true;
