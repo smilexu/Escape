@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.smilestudio.wizardescape.utils.Constants;
 
@@ -20,8 +19,6 @@ public class AdvanceActor extends Actor {
     private final static int ANIMATION = 1;
 
     private int mType;
-
-    private Vector2 mMapPosition = new Vector2();;
 
     private TextureRegion mTextureRegion;
 
@@ -68,13 +65,5 @@ public class AdvanceActor extends Actor {
             batch.draw(mTextureRegion, getX(), getY());
         }
 
-    }
-
-    public void setMapPostion(int column, int row) {
-        mMapPosition.set(column, row);
-    }
-
-    public Vector2 getMapPostion() {
-        return mMapPosition;
     }
 }

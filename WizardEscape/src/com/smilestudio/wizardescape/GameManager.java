@@ -25,6 +25,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.actors.AdvanceActor;
+import com.smilestudio.wizardescape.actors.HeroActor;
 import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.screen.GameScreen;
 import com.smilestudio.wizardescape.utils.Constants;
@@ -89,7 +90,7 @@ public class GameManager {
     private int                 mSubmission;
     private Map<Integer, Actor> mActorMap = null;
 
-    private Image               mMe;
+    private HeroActor           mMe;
     private int                 mCurrentCellX;
     private int                 mCurrentCellY;
     private int                 mStarGot = 0;
@@ -172,14 +173,16 @@ public class GameManager {
                     case TYPE_EMPTY:
                         break;
                     case TYPE_ME:
-                        // TODO: support animation
-                        mMe = new Image(new Texture(Gdx.files.internal("character/img_fake_person.png")));
+                        float duration = 0.1f;
+                        mMe = new HeroActor(getHeroUpRegions(), duration, getHeroDownRegions(), duration,
+                                getHeroLeftRegions(), duration, getHeroRightRegions(), duration,
+                                getHeroStandRegions(), duration);
                         mMe.setName(NAME_ME);
                         mCurrentCellX = j;
                         mCurrentCellY = i;
                         actor = (Actor)mMe;
                         actor.setSize(mMe.getWidth(), mMe.getHeight());
-                        actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - mMe.getWidth()) / 2, position.y);
+                        actor.setPosition(position.x, position.y);
                         break;
                     case TYPE_OBSTACLE:
                         Image obstacle = MapHelper.getObstacleImage(mMission);
@@ -197,8 +200,6 @@ public class GameManager {
                         mMovableObjectWidth = movable.getWidth();
                         break;
                     case TYPE_STAR:
-//                        Texture texure = new Texture(Gdx.files.internal("misc/img_star.png"));
-//                        Image star = new Image(new TextureRegion(texure, 57, 49));
                         TextureRegion stars[] = new TextureRegion[6];
                         stars[0] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_1.png")));
                         stars[1] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_2.png")));
@@ -260,6 +261,65 @@ public class GameManager {
 
         mGroup.addActorAt(0, bkGrdActors);
         mGroup.addActor(mask);
+    }
+
+    private TextureRegion[] getHeroDownRegions() {
+        TextureRegion[] regions = new TextureRegion[6];
+        regions[0] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_front_0.png")));
+        regions[1] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_front_1.png")));
+        regions[2] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_front_2.png")));
+        regions[3] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_front_3.png")));
+        regions[4] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_front_4.png")));
+        regions[5] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_front_5.png")));
+        return regions;
+    }
+
+    private TextureRegion[] getHeroUpRegions() {
+        TextureRegion[] regions = new TextureRegion[6];
+        regions[0] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_back_0.png")));
+        regions[1] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_back_1.png")));
+        regions[2] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_back_2.png")));
+        regions[3] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_back_3.png")));
+        regions[4] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_back_4.png")));
+        regions[5] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_back_5.png")));
+        return regions;
+    }
+
+    private TextureRegion[] getHeroLeftRegions() {
+        TextureRegion[] regions = new TextureRegion[6];
+        regions[0] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_left_0.png")));
+        regions[1] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_left_1.png")));
+        regions[2] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_left_2.png")));
+        regions[3] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_left_3.png")));
+        regions[4] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_left_4.png")));
+        regions[5] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_left_5.png")));
+        return regions;
+    }
+
+    private TextureRegion[] getHeroRightRegions() {
+        TextureRegion[] regions = new TextureRegion[6];
+        regions[0] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_right_0.png")));
+        regions[1] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_right_1.png")));
+        regions[2] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_right_2.png")));
+        regions[3] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_right_3.png")));
+        regions[4] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_right_4.png")));
+        regions[5] = new TextureRegion(new Texture(Gdx.files.internal("character/img_run_right_5.png")));
+        return regions;
+    }
+
+    private TextureRegion[] getHeroStandRegions() {
+        TextureRegion[] regions = new TextureRegion[10];
+        regions[0] = new TextureRegion(new Texture(Gdx.files.internal("character/img_stand_0.png")));
+        regions[1] = new TextureRegion(new Texture(Gdx.files.internal("character/img_stand_1.png")));
+        regions[2] = new TextureRegion(new Texture(Gdx.files.internal("character/img_stand_2.png")));
+        regions[3] = new TextureRegion(new Texture(Gdx.files.internal("character/img_stand_3.png")));
+        regions[4] = new TextureRegion(new Texture(Gdx.files.internal("character/img_stand_4.png")));
+        regions[5] = new TextureRegion(new Texture(Gdx.files.internal("character/img_stand_5.png")));
+        regions[6] = new TextureRegion(new Texture(Gdx.files.internal("character/img_stand_6.png")));
+        regions[7] = new TextureRegion(new Texture(Gdx.files.internal("character/img_stand_7.png")));
+        regions[8] = new TextureRegion(new Texture(Gdx.files.internal("character/img_stand_8.png")));
+        regions[9] = new TextureRegion(new Texture(Gdx.files.internal("character/img_stand_9.png")));
+        return regions;
     }
 
     private AdvanceActor genaratePortalActor(int type) {
@@ -373,7 +433,6 @@ public class GameManager {
             case TYPE_EMPTY:
                 mInAnimation = true;
                 Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
-                //FIXME: modified position should be calculated by actor itself. We should fix that after moving hero into advance actor
                 position = modifyPosition(position, actor.getName());
 
                 MoveToAction moveto = Actions.moveTo(position.x, position.y);
@@ -385,6 +444,7 @@ public class GameManager {
 
                 SequenceAction sequence;
                 if(actor == mMe) {
+                    mMe.setStatus(flingDirection);
                     //TODO: refactor this part
                     RunnableAction runnable = Actions.run(new Runnable() {
                         public void run() {
@@ -518,9 +578,7 @@ public class GameManager {
      * @return
      */
     private Vector2 modifyPosition(Vector2 position, String name) {
-        if (name.equals(NAME_ME)) {
-            position.x = position.x + (Constants.CELL_SIZE_WIDTH - mMe.getWidth()) / 2;
-        } else if (name.equals(NAME_MOVABLE)) {
+        if (name.equals(NAME_MOVABLE)) {
             position.x = position.x + (Constants.CELL_SIZE_WIDTH - mMovableObjectWidth) / 2;
         }
         return position;

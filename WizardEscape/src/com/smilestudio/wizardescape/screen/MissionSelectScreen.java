@@ -144,7 +144,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
                 passed = passed || preData.getPassed();
             }
             MissionButton mb = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, indexOfPage + 1, i+1,
-                    (null == currentData) ? 0 : currentData.getStars(), passed);
+                    (null == currentData) ? 0 : currentData.getStars(), Constants.DEBUG ? true : passed);
             mb.setSize(availableButton.getWidth(), MissionButton.ITEM_HEIGHT);
             int indexInRow = i % Constants.MISSION_SCREEN_MAX_COLUMN;
             int indexInColumn = i / Constants.MISSION_SCREEN_MAX_COLUMN;

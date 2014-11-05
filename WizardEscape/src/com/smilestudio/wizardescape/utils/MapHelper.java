@@ -20,9 +20,10 @@ public class MapHelper {
             case 1:
                 return new Image(new Texture(Gdx.files.internal("background/img_wildfield.png")));
             case 2:
+                return new Image(new Texture(Gdx.files.internal("background/img_desert.png")));
             case 3:
             default:
-                return new Image(new Texture(Gdx.files.internal("background/img_desert.png")));
+                return new Image(new Texture(Gdx.files.internal("background/img_flowering_cherry.png")));
         }
     }
 
@@ -31,9 +32,10 @@ public class MapHelper {
             case 1:
                 return new Image(new Texture(Gdx.files.internal("background/img_wild_background_grid.png")));
             case 2:
+                return new Image(new Texture(Gdx.files.internal("background/img_desert_background_grid.png")));
             case 3:
             default:
-                return new Image(new Texture(Gdx.files.internal("background/img_desert_background_grid.png")));
+                return new Image(new Texture(Gdx.files.internal("background/img_cherry_background_grid.png")));
         }
     }
 
@@ -42,10 +44,10 @@ public class MapHelper {
             case 1:
                 return new Image(new Texture(Gdx.files.internal("misc/img_obstacle_tree_root.png")));
             case 2:
+                return new Image(new Texture(Gdx.files.internal("misc/img_obstacle_skeleton.png")));
             case 3:
             default:
-                return new Image(new Texture(Gdx.files.internal("misc/img_obstacle_skeleton.png")));
-
+                return new Image(new Texture(Gdx.files.internal("misc/img_obstacle_stone.png")));
         }
     }
 
@@ -54,9 +56,10 @@ public class MapHelper {
             case 1:
                 return new Image(new Texture(Gdx.files.internal("misc/img_movable_barrel.png")));
             case 2:
+                return new Image(new Texture(Gdx.files.internal("misc/img_movable_panda.png")));
             case 3:
             default:
-                return new Image(new Texture(Gdx.files.internal("misc/img_movable_panda.png")));
+                return new Image(new Texture(Gdx.files.internal("misc/img_movable_light.png")));
         }
     }
 
@@ -65,9 +68,10 @@ public class MapHelper {
             case 1:
                 return new Image(new Texture(Gdx.files.internal("misc/img_bg_circle_mission_1_relief.png")));
             case 2:
+                return new Image(new Texture(Gdx.files.internal("misc/img_bg_circle_mission_2_relief.png")));
             case 3:
             default:
-                return new Image(new Texture(Gdx.files.internal("misc/img_bg_circle_mission_2_relief.png")));
+                return new Image(new Texture(Gdx.files.internal("misc/img_bg_circle_mission_3_relief.png")));
         }
     }
 
