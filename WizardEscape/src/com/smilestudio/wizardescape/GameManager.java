@@ -26,6 +26,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.actors.AdvanceActor;
 import com.smilestudio.wizardescape.actors.HeroActor;
+import com.smilestudio.wizardescape.actors.KeyActor;
+import com.smilestudio.wizardescape.actors.LabelActor;
 import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.screen.GameScreen;
 import com.smilestudio.wizardescape.utils.Constants;
@@ -77,6 +79,7 @@ public class GameManager {
     private final static String NAME_PORTAL_A = "portal_a";
     private final static String NAME_KEY = "key";
     private final static String NAME_PORTAL_B = "portal_b";
+    public final static  String NAME_PROGRESS_TEXT = "progress_text";
 
     public final static String NAME_BOARD_BG_CIRCLE = "mission_board_bg_circle";
     public final static String NAME_BOARD_CONGRAS_TEXT = "mission_board_congras_text";
@@ -102,6 +105,9 @@ public class GameManager {
     private AdvanceActor mTarget;
     private Group mMissionFinishedBoard;
     private Game mGame;
+    private int mStarsTotal;
+    private KeyActor mKey;
+    private int mSteps;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -164,6 +170,7 @@ public class GameManager {
             mActorMap = new HashMap<Integer, Actor>();
         }
 
+        boolean hasKey = false;
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COLUMN; j++) {
                 Actor actor = null;
@@ -200,17 +207,11 @@ public class GameManager {
                         mMovableObjectWidth = movable.getWidth();
                         break;
                     case TYPE_STAR:
-                        TextureRegion stars[] = new TextureRegion[6];
-                        stars[0] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_1.png")));
-                        stars[1] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_2.png")));
-                        stars[2] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_3.png")));
-                        stars[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_4.png")));
-                        stars[4] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_5.png")));
-                        stars[5] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_6.png")));
-                        AdvanceActor star = new AdvanceActor(0.2f, stars, Animation.LOOP, AdvanceActor.STATUS_PLAY);
+                        AdvanceActor star = generateStarActor();
                         star.setName(NAME_STAR);
                         actor = (Actor)star;
                         actor.setPosition(position.x, position.y);
+                        mStarsTotal  = mStarsTotal + 1;
                         break;
                     case TYPE_TARGET:
 //                        Image target = new Image(new Texture(Gdx.files.internal("misc/img_target.png")));
@@ -227,7 +228,7 @@ public class GameManager {
                         targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_10.png")));
                         targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_11.png")));
                         targets[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_12.png")));
-                        mTarget = new AdvanceActor(0.2f, targets, Animation.LOOP, AdvanceActor.STATUS_PAUSE);
+                        mTarget = new AdvanceActor(0.2f, targets, Animation.LOOP, AdvanceActor.STATUS_PLAY);
                         mTarget.setName(NAME_TARGET);
                         actor = (Actor)mTarget;
                         actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
@@ -240,12 +241,13 @@ public class GameManager {
                         actor.setPosition(position.x, position.y);
                         break;
                     case TYPE_KEY:
-                        Image mKey = new Image(new Texture(Gdx.files.internal("misc/img_key.png")));
+                        mKey = new KeyActor(new Texture(Gdx.files.internal("misc/img_key.png")),
+                                new Texture(Gdx.files.internal("misc/img_key_halo.png")));
                         mKey.setName(NAME_KEY);
                         actor = (Actor)mKey;
-                        actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
                         actor.setPosition(position.x, position.y);
-                        mLocked = true;
+                        mTarget.setStatus(AdvanceActor.STATUS_PAUSE);
+                        hasKey = true;
                         break;
                     default:
                         break;
@@ -259,8 +261,38 @@ public class GameManager {
             }
         }
 
+        //set target animtion according to key status
+        if(hasKey) {
+            mLocked = true;
+            mTarget.setStatus(AdvanceActor.STATUS_PAUSE);
+        } else {
+            mLocked = false;
+            mTarget.setStatus(AdvanceActor.STATUS_PLAY);
+        }
+
         mGroup.addActorAt(0, bkGrdActors);
         mGroup.addActor(mask);
+
+        updateProgress(bkGrdActors);
+    }
+
+    private void updateProgress(Group group) {
+        LabelActor progress = (LabelActor) group.findActor(NAME_PROGRESS_TEXT);
+        if (progress != null) {
+            progress.setContentStr(mStarGot + " / " + mStarsTotal);
+        }
+    }
+
+    public static AdvanceActor generateStarActor() {
+        TextureRegion stars[] = new TextureRegion[6];
+        stars[0] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_1.png")));
+        stars[1] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_2.png")));
+        stars[2] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_3.png")));
+        stars[3] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_4.png")));
+        stars[4] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_5.png")));
+        stars[5] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_star_6.png")));
+        AdvanceActor star = new AdvanceActor(0.2f, stars, Animation.LOOP, AdvanceActor.STATUS_PLAY);
+        return star;
     }
 
     private TextureRegion[] getHeroDownRegions() {
@@ -417,19 +449,21 @@ public class GameManager {
             case TYPE_KEY:
                 Actor image = (Actor)getNextActor(flingDirection, cellX, cellY);
                 image.toFront();
-                MoveByAction moveBy = Actions.moveBy(0, Constants.ANIMATION_STAR_MOVEBY, Constants.ANIMATION_STAR_DURATION);
+                MoveByAction moveBy = Actions.moveBy(0, Constants.ANIMATION_STAR_MOVEBY_Y, Constants.ANIMATION_STAR_DURATION);
                 AlphaAction alPha = Actions.alpha(0, Constants.ANIMATION_STAR_DURATION);
                 ParallelAction actions = Actions.parallel(moveBy, alPha);
                 image.addAction(actions);
                 if (TYPE_STAR == type) {
                     mStarGot++;
+                    updateProgress(mBkGrdActors);
                 } else if (TYPE_KEY == type) {
                     mLocked = false;
-                }
-                if (mStarGot >= 3 && !mLocked) {
                     mTarget.setStatus(AdvanceActor.STATUS_PLAY);
-                    mLocked = false;
                 }
+//                if (mStarGot >= 3 && !mLocked) {
+//                    mTarget.setStatus(AdvanceActor.STATUS_PLAY);
+//                    mLocked = false;
+//                }
             case TYPE_EMPTY:
                 mInAnimation = true;
                 Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
@@ -853,6 +887,8 @@ public class GameManager {
         mInAnimation = false;
         mStarGot = 0;
         mLocked = false;
+        mStarsTotal = 0;
+        mSteps = 0;
 
         initialMissionBoardStatus(mMissionFinishedBoard);
     }
@@ -944,4 +980,10 @@ public class GameManager {
     public Game getGame() {
         return mGame;
     }
+
+    public int getSteps() {
+        return mSteps;
+    }
+
+    
 }

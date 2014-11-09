@@ -1,5 +1,7 @@
 package com.smilestudio.wizardescape.utils;
 
+import com.badlogic.gdx.graphics.Color;
+
 public class Constants {
 
     public static boolean DEBUG = true;
@@ -16,7 +18,7 @@ public class Constants {
 
     public final static float ANIMATION_DURATION_PER_BLOCK_NORMAL = 0.1f;
     public final static float ANIMATION_DURATION_PER_BLOCK_PUSH = 0.5f;
-    public final static int ANIMATION_STAR_MOVEBY = 80;
+    public final static int ANIMATION_STAR_MOVEBY_Y = 100;
     public final static float ANIMATION_STAR_DURATION = 0.8f;
     public final static float ANIMATION_HERO_PASS = 1.0f;
     public final static float ANIMATION_HERO_PORTAL_FADE_DURATION = 0.4f;
@@ -31,8 +33,15 @@ public class Constants {
     public final static int GAME_SCREEN_POSITION_Y_REFRESH = 400;
     public final static int GAME_SCREEN_POSITION_X_SELECT = 1000;
     public final static int GAME_SCREEN_POSITION_Y_SELECT = 500;
-    public final static int GAME_SCREEN_POSITION_X_LEVEL = 1000;
+    public final static int GAME_SCREEN_POSITION_X_LEVEL = 970;
     public final static int GAME_SCREEN_POSITION_Y_LEVEL = 370;
+    public final static int GAME_SCREEN_POSITION_X_PROGRESS = 970;
+    public final static int GAME_SCREEN_POSITION_Y_PROGRESS = 290;
+    public final static int GAME_SCREEN_POSITION_X_TIME = 970;
+    public final static int GAME_SCREEN_POSITION_Y_TIME = 200;
+    public final static int GAME_SCREEN_POSITION_X_STAR = 1040;
+    public final static int GAME_SCREEN_POSITION_Y_STAR = 240;
+    public final static Color GAME_SCREEN_TEXT_COLOR = new Color(0.86f, 0.43f, 0.20f, 1f);
 
     public static final int MISSION_SCREEN_ARROW_PADDING_X = 100;
     public static final int MISSION_SCREEN_ARROW_Y = 20;

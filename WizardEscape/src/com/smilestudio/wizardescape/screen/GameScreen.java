@@ -19,7 +19,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
-import com.smilestudio.wizardescape.actors.MissionLabelActor;
+import com.smilestudio.wizardescape.actors.AdvanceActor;
+import com.smilestudio.wizardescape.actors.LabelActor;
 import com.smilestudio.wizardescape.utils.Constants;
 import com.smilestudio.wizardescape.utils.MapHelper;
 
@@ -35,6 +36,8 @@ public class GameScreen implements Screen, GestureListener, EventListener {
     private Image mBgMask;
     private Image mGridImage;
     private Image mBtnNext;
+    private LabelActor mTimeBar;
+    private float mTimeline;
 
     public GameScreen() {
     }
@@ -46,6 +49,14 @@ public class GameScreen implements Screen, GestureListener, EventListener {
 
         mStage.act();
         mStage.draw();
+
+        mTimeline = mTimeline + delta;
+        updateTimeBar(mTimeline);
+    }
+
+    private void updateTimeBar(float time) {
+        long seconds = (long) time;
+        mTimeBar.setContentStr(seconds + " s");
     }
 
     @Override
@@ -92,9 +103,23 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         mSelectMissionButton.addListener(this);
         mStage.addActor(mSelectMissionButton);
 
-        MissionLabelActor missionLabel = new MissionLabelActor(mManager.getMission(), mManager.getSubMission());
+        LabelActor missionLabel = new LabelActor(mManager.getMission() + " - " + mManager.getSubMission(),
+                Constants.GAME_SCREEN_TEXT_COLOR);
         missionLabel.setPosition(Constants.GAME_SCREEN_POSITION_X_LEVEL, Constants.GAME_SCREEN_POSITION_Y_LEVEL);
         mStage.addActor(missionLabel);
+
+        LabelActor progressLabel = new LabelActor(null, Constants.GAME_SCREEN_TEXT_COLOR);
+        progressLabel.setPosition(Constants.GAME_SCREEN_POSITION_X_PROGRESS, Constants.GAME_SCREEN_POSITION_Y_PROGRESS);
+        progressLabel.setName(GameManager.NAME_PROGRESS_TEXT);
+        mStage.addActor(progressLabel);
+
+        AdvanceActor starActor = GameManager.generateStarActor();
+        starActor.setPosition(Constants.GAME_SCREEN_POSITION_X_STAR, Constants.GAME_SCREEN_POSITION_Y_STAR);
+        mStage.addActor(starActor);
+
+        mTimeBar = new LabelActor(null, Constants.GAME_SCREEN_TEXT_COLOR);
+        mTimeBar.setPosition(Constants.GAME_SCREEN_POSITION_X_TIME, Constants.GAME_SCREEN_POSITION_Y_TIME);
+        mStage.addActor(mTimeBar);
 
         mBackgroudActors = new Group();
         mBackgroudActors.addActor(mBgImage);
@@ -102,6 +127,9 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         mBackgroudActors.addActor(mRefreshButton);
         mBackgroudActors.addActor(mSelectMissionButton);
         mBackgroudActors.addActor(missionLabel);
+        mBackgroudActors.addActor(progressLabel);
+        mBackgroudActors.addActor(starActor);
+        mBackgroudActors.addActor(mTimeBar);
         mManager.initActors(mBackgroudActors, mBgMask, mStage);
 
         // add mission finished board
@@ -177,8 +205,7 @@ public class GameScreen implements Screen, GestureListener, EventListener {
 
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
-
+        mStage.dispose();
     }
 
     @Override
