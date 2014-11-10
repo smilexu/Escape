@@ -29,16 +29,26 @@ public class HeroActor extends Actor {
                     TextureRegion[] leftRegions, float leftDuration,
                     TextureRegion[] rightRegions, float rightDuration,
                     TextureRegion[] standRegions, float standDuration) {
-        mUpAnimation = new Animation(upDuration, upRegions);
-        mUpAnimation.setPlayMode(Animation.LOOP);
-        mDownAnimation = new Animation(downDuration, downRegions);
-        mDownAnimation.setPlayMode(Animation.LOOP);
-        mLeftAnimation = new Animation(leftDuration, leftRegions);
-        mLeftAnimation.setPlayMode(Animation.LOOP);
-        mRightAnimation = new Animation(rightDuration, rightRegions);
-        mRightAnimation.setPlayMode(Animation.LOOP);
-        mStandAnimation = new Animation(standDuration, standRegions);
-        mStandAnimation.setPlayMode(Animation.LOOP);
+        if (upRegions != null) {
+            mUpAnimation = new Animation(upDuration, upRegions);
+            mUpAnimation.setPlayMode(Animation.LOOP);
+        }
+        if (downRegions != null) {
+            mDownAnimation = new Animation(downDuration, downRegions);
+            mDownAnimation.setPlayMode(Animation.LOOP);
+        }
+        if (leftRegions != null) {
+            mLeftAnimation = new Animation(leftDuration, leftRegions);
+            mLeftAnimation.setPlayMode(Animation.LOOP);
+        }
+        if (rightRegions != null) {
+            mRightAnimation = new Animation(rightDuration, rightRegions);
+            mRightAnimation.setPlayMode(Animation.LOOP);
+        }
+        if (standRegions != null) {
+            mStandAnimation = new Animation(standDuration, standRegions);
+            mStandAnimation.setPlayMode(Animation.LOOP);
+        }
 
         mStatus = STATUS_STAND;
     }
@@ -80,4 +90,5 @@ public class HeroActor extends Actor {
         batch.draw(region, getX() + (Constants.CELL_SIZE_WIDTH - region.getRegionWidth() * scaleX) / 2, getY(),
                 region.getRegionWidth() * scaleX, region.getRegionHeight() * scaleY);
     }
+
 }

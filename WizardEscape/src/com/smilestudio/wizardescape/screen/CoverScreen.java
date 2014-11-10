@@ -12,11 +12,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
+import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SizeToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
+import com.smilestudio.wizardescape.actors.HeroActor;
 import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.ResourceHelper;
 
 public class CoverScreen implements Screen, InputProcessor {
 
@@ -65,14 +68,38 @@ public class CoverScreen implements Screen, InputProcessor {
 
         mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
 
-//        AdvanceActor logoActor = new AdvanceActor(0.1f, logoRegions, Animation.LOOP_PINGPONG, AdvanceActor.STATUS_PLAY);
-//        logoActor.setPosition(Constants.COVER_SCREEN_POSITION_X_LOGO, Constants.COVER_SCREEN_POSITION_Y_LOGO);
-//        logoActor.setSize(logoTexture.getWidth() / 2, logoTexture.getHeight() / 2);
-//        mStage.addActor(logoActor);
-
         Image bkImg = new Image(new Texture(Gdx.files.internal("background/img_cover_background.png")));
         bkImg.setPosition(0, 0);
         mStage.addActor(bkImg);
+
+        float duration = Constants.ANIMATION_HERO_ACTION_DURATION;
+        HeroActor hero = new HeroActor(ResourceHelper.getHeroUpRegions(), duration, ResourceHelper.getHeroDownRegions(), duration,
+                ResourceHelper.getHeroLeftRegions(), duration, ResourceHelper.getHeroRightRegions(), duration,
+                ResourceHelper.getHeroStandRegions(), duration);
+        hero.setPosition(540, 280);
+        hero.setScale(1.5f);
+        mStage.addActor(hero);
+
+        final HeroActor dog = new HeroActor(null, duration, null, duration, ResourceHelper.getDogLeftRegions(), duration,
+                ResourceHelper.getDogRightRegions(), duration, null, duration);
+        dog.setPosition(200, 185);
+        RunnableAction turnRight = Actions.run(new Runnable() {
+
+            @Override
+            public void run() {
+                dog.setStatus(HeroActor.STATUS_RIGHT);
+            }});
+        RunnableAction turnLeft = Actions.run(new Runnable() {
+
+            @Override
+            public void run() {
+                dog.setStatus(HeroActor.STATUS_LEFT);
+            }});
+        SequenceAction dogWalk = Actions.sequence(Actions.moveBy(400, 0, 5f), turnLeft, Actions.moveBy(-400, 0, 5f), turnRight);
+        RepeatAction repeat = Actions.forever(dogWalk);
+        dog.addAction(repeat);
+        dog.setStatus(HeroActor.STATUS_RIGHT);
+        mStage.addActor(dog);
 
         Texture startTexture = new Texture(Gdx.files.internal("buttons/img_start.png"));
         mStartButton = new Image(startTexture);
@@ -107,7 +134,6 @@ public class CoverScreen implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
         mStage.dispose();
     }
 
