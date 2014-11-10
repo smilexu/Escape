@@ -30,18 +30,22 @@ public class Constants {
     public final static int COVER_SCREEN_POSITION_Y_START = 30;
     public final static int COVER_SCREEN_DELTA_X_MISSION_THUMBNAIL = 150;
 
-    public final static int GAME_SCREEN_POSITION_X_REFRESH = 1000;
+    public final static int GAME_SCREEN_POSITION_X_REFRESH = 980;
     public final static int GAME_SCREEN_POSITION_Y_REFRESH = 400;
-    public final static int GAME_SCREEN_POSITION_X_SELECT = 1000;
+    public final static int GAME_SCREEN_POSITION_X_SELECT = 980;
     public final static int GAME_SCREEN_POSITION_Y_SELECT = 500;
     public final static int GAME_SCREEN_POSITION_X_LEVEL = 970;
-    public final static int GAME_SCREEN_POSITION_Y_LEVEL = 370;
+    public final static int GAME_SCREEN_POSITION_Y_LEVEL = 620;
     public final static int GAME_SCREEN_POSITION_X_PROGRESS = 970;
-    public final static int GAME_SCREEN_POSITION_Y_PROGRESS = 290;
-    public final static int GAME_SCREEN_POSITION_X_TIME = 970;
-    public final static int GAME_SCREEN_POSITION_Y_TIME = 200;
+    public final static int GAME_SCREEN_POSITION_Y_PROGRESS = 370;
+    public final static int GAME_SCREEN_POSITION_X_STEPS = 970;
+    public final static int GAME_SCREEN_POSITION_Y_STEPS = 300;
     public final static int GAME_SCREEN_POSITION_X_STAR = 1040;
-    public final static int GAME_SCREEN_POSITION_Y_STAR = 240;
+    public final static int GAME_SCREEN_POSITION_Y_STAR = 320;
+    public final static int GAME_SCREEN_POSITION_X_EFFECT = 980;
+    public final static int GAME_SCREEN_POSITION_Y_EFFECT = 160;
+    public final static int GAME_SCREEN_POSITION_X_MUSIC = 980;
+    public final static int GAME_SCREEN_POSITION_Y_MUSIC = 60;
     public final static Color GAME_SCREEN_TEXT_COLOR = new Color(0.86f, 0.43f, 0.20f, 1f);
 
     public static final int MISSION_SCREEN_ARROW_PADDING_X = 100;

@@ -24,7 +24,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameListener;
 import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.AdvanceActor;
+import com.smilestudio.wizardescape.actors.ButtonActor;
 import com.smilestudio.wizardescape.actors.LabelActor;
+import com.smilestudio.wizardescape.model.SettingData;
 import com.smilestudio.wizardescape.utils.Constants;
 import com.smilestudio.wizardescape.utils.ResourceHelper;
 
@@ -40,14 +42,18 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
     private Image mBgMask;
     private Image mGridImage;
     private Image mBtnNext;
-    private LabelActor mTimeBar;
-    private float mTimeline;
+    private LabelActor mStepLabel;
     private Music mBkMusic;
     private Sound mEffectTeleport;
     private Sound mEffectMagicItem;
     private Sound mEffectKey;
     private Sound mEffectPortal;
     private Sound mEffectCheers;
+    private int mSteps;
+    private ButtonActor mBtnSoundEffect;
+    private ButtonActor mBtnMusic;
+    private boolean mHasSoundEffect;
+    private boolean mHasMusic;
 
     public GameScreen() {
     }
@@ -59,14 +65,11 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
 
         mStage.act();
         mStage.draw();
-
-        mTimeline = mTimeline + delta;
-        updateTimeBar(mTimeline);
     }
 
-    private void updateTimeBar(float time) {
-        long seconds = (long) time;
-        mTimeBar.setContentStr(seconds + " s");
+    private void countSteps() {
+        mSteps = mSteps + 1;
+        mStepLabel.setContentStr(mSteps + " steps");
     }
 
     @Override
@@ -128,9 +131,31 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         starActor.setPosition(Constants.GAME_SCREEN_POSITION_X_STAR, Constants.GAME_SCREEN_POSITION_Y_STAR);
         mStage.addActor(starActor);
 
-        mTimeBar = new LabelActor(null, Constants.GAME_SCREEN_TEXT_COLOR);
-        mTimeBar.setPosition(Constants.GAME_SCREEN_POSITION_X_TIME, Constants.GAME_SCREEN_POSITION_Y_TIME);
-        mStage.addActor(mTimeBar);
+        mStepLabel = new LabelActor(null, Constants.GAME_SCREEN_TEXT_COLOR);
+        mStepLabel.setPosition(Constants.GAME_SCREEN_POSITION_X_STEPS, Constants.GAME_SCREEN_POSITION_Y_STEPS);
+        mStepLabel.setContentStr("0 steps");
+        mStage.addActor(mStepLabel);
+
+        //initial default status according to configuration
+        SettingData data = GameManager.getSettingData();
+        mHasSoundEffect = data.hasSoundEffect();
+        mHasMusic = data.hasMusic();
+
+        Texture textureOn = new Texture(Gdx.files.internal("buttons/img_effect_on.png"));
+        mBtnSoundEffect = new ButtonActor(textureOn, new Texture(Gdx.files.internal("buttons/img_effect_off.png")),
+                data.hasSoundEffect() ? ButtonActor.STATUS_ON : ButtonActor.STATUS_OFF);
+        mBtnSoundEffect.setPosition(Constants.GAME_SCREEN_POSITION_X_EFFECT, Constants.GAME_SCREEN_POSITION_Y_EFFECT);
+        mBtnSoundEffect.setSize(textureOn.getWidth(), textureOn.getHeight());
+        mBtnSoundEffect.addListener(this);
+        mStage.addActor(mBtnSoundEffect);
+   
+        textureOn = new Texture(Gdx.files.internal("buttons/img_music_on.png"));
+        mBtnMusic = new ButtonActor(textureOn, new Texture(Gdx.files.internal("buttons/img_music_off.png")),
+                data.hasMusic() ? ButtonActor.STATUS_ON : ButtonActor.STATUS_OFF);
+        mBtnMusic.setPosition(Constants.GAME_SCREEN_POSITION_X_MUSIC, Constants.GAME_SCREEN_POSITION_Y_MUSIC);
+        mBtnMusic.setSize(textureOn.getWidth(), textureOn.getHeight());
+        mBtnMusic.addListener(this);
+        mStage.addActor(mBtnMusic);
 
         mBackgroudActors = new Group();
         mBackgroudActors.addActor(mBgImage);
@@ -140,7 +165,9 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         mBackgroudActors.addActor(missionLabel);
         mBackgroudActors.addActor(progressLabel);
         mBackgroudActors.addActor(starActor);
-        mBackgroudActors.addActor(mTimeBar);
+        mBackgroudActors.addActor(mStepLabel);
+        mBackgroudActors.addActor(mBtnSoundEffect);
+        mBackgroudActors.addActor(mBtnMusic);
         mManager.initActors(mBackgroudActors, mBgMask, mStage);
 
         // add mission finished board
@@ -195,7 +222,9 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         mBkMusic = ResourceHelper.getBkMusic(mManager.getMission());
         mBkMusic.setLooping(true);
         mBkMusic.setVolume(0.5f);
-        mBkMusic.play();
+        if (mHasMusic) {
+            mBkMusic.play();
+        }
 
         mEffectTeleport = Gdx.audio.newSound(Gdx.files.internal("sound/effect_teleport.wav"));
         mEffectMagicItem = Gdx.audio.newSound(Gdx.files.internal("sound/effect_magic_item.mp3"));
@@ -215,6 +244,8 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
             public boolean act(float delta) {
                 mManager.initGame();
                 mManager.initActors(mBackgroudActors, mBgMask, mStage);
+                mSteps = 0;
+                mStepLabel.setContentStr("0 steps");
 
                 loadSounds();
                 return true;
@@ -289,9 +320,23 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
             mManager.getGame().setScreen(new MissionSelectScreen(mManager.getMission()));
             releaseAudio();
             return true;
-        } else if(actor == mBtnNext) {
+        } else if (actor == mBtnNext) {
             releaseAudio();
             mManager.gotoNext();
+            return true;
+        } else if (actor == mBtnSoundEffect) {
+            mHasSoundEffect = (ButtonActor.STATUS_ON == mBtnSoundEffect.toggle());
+            GameManager.saveSetting(new SettingData(mHasSoundEffect, mHasMusic));
+            return true;
+        } else if (actor == mBtnMusic) {
+            mHasMusic = ButtonActor.STATUS_ON == mBtnMusic.toggle();
+            GameManager.saveSetting(new SettingData(mHasSoundEffect, mHasMusic));
+            if (!mHasMusic) {
+                mBkMusic.stop();
+            } else {
+                mBkMusic.play();
+            }
+            return true;
         }
         return false;
     }
@@ -321,8 +366,10 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
             }
             value = velocityY;
         }
-        
-        mManager.onFling(flingDirection, value);
+
+        if (mManager.onFling(flingDirection, value)) {
+            countSteps();
+        }
         return true;
     }
 
@@ -371,6 +418,10 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
 
     @Override
     public void onSoundPlay(int type) {
+        if (!mHasSoundEffect) {
+            return;
+        }
+
         switch (type) {
             case GameListener.TYPE_KEY:
                 mEffectKey.play();

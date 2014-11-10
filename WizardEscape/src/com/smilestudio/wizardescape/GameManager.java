@@ -29,6 +29,7 @@ import com.smilestudio.wizardescape.actors.HeroActor;
 import com.smilestudio.wizardescape.actors.KeyActor;
 import com.smilestudio.wizardescape.actors.LabelActor;
 import com.smilestudio.wizardescape.model.GameData;
+import com.smilestudio.wizardescape.model.SettingData;
 import com.smilestudio.wizardescape.screen.GameScreen;
 import com.smilestudio.wizardescape.utils.Constants;
 import com.smilestudio.wizardescape.utils.ResourceHelper;
@@ -86,7 +87,10 @@ public class GameManager {
     public final static String[] NAME_BOARD_STARS = new String[] {"mission_board_star1", "mission_board_star2", "mission_board_star3"};
     public final static String NAME_BOARD_NEXT = "mission_board_next";
 
-    private final static String PREFERENCES_NAME = "save";
+    private final static String PREFERENCES_SAVE = "save";
+    public final static String PREFERENCES_SETTING = "setting";
+    private static final String HAS_SOUND_EFFECT = "has_sound_effect";
+    private static final String HAS_MUSIC = "has_music";
 
     private int[][]             mMapBlock = null;
     private int                 mMission;
@@ -317,12 +321,12 @@ public class GameManager {
         return transport;
     }
 
-    public void onFling(int flingDirection, float value) {
+    public boolean onFling(int flingDirection, float value) {
         if (mInAnimation) {
-            return;
+            return false;
         }
 
-       moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, mMe, false, true);
+       return moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, mMe, false, true);
     }
 
     /*
@@ -855,27 +859,39 @@ public class GameManager {
     }
 
     public void saveGame() {
-        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
+        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_SAVE);
         prefs.putInteger(generateStarKey(), mStarGot);
         prefs.putBoolean(generatePassKey(), true);
         prefs.flush();
     }
 
     public void saveGame(GameData data) {
-        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
+        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_SAVE);
         prefs.putInteger(generateStarKey(), data.getStars());
         prefs.putBoolean(generatePassKey(), data.getPassed());
         prefs.flush();
     }
 
     public GameData getGameData(int mission, int submission) {
-        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
+        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_SAVE);
         int star = prefs.getInteger(generateStarKey(mission, submission), -1);
         if(-1 == star) {
             return null;
         }
         boolean pass = prefs.getBoolean(generatePassKey(mission, submission), false);
         return new GameData(star, pass);
+    }
+
+    public static void saveSetting(SettingData data) {
+        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_SETTING);
+        prefs.putBoolean(HAS_SOUND_EFFECT, data.hasSoundEffect());
+        prefs.putBoolean(HAS_MUSIC, data.hasMusic());
+        prefs.flush();
+    }
+
+    public static SettingData getSettingData() {
+        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_SETTING);
+        return new SettingData(prefs.getBoolean(HAS_SOUND_EFFECT, true), prefs.getBoolean(HAS_MUSIC, true));
     }
 
     private String generateStarKey() {
