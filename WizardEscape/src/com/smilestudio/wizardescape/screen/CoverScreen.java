@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -26,6 +27,7 @@ public class CoverScreen implements Screen, InputProcessor {
     private Stage mStage;
     private Image mStartButton;
     private Game mGame;
+    private Sound mEffectDog;
 
     public CoverScreen(Game game) {
         mGame = game;
@@ -49,11 +51,19 @@ public class CoverScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
+        loadSounds();
         initResource();
 
         Gdx.input.setInputProcessor(this);
     }
 
+    private void loadSounds() {
+        mEffectDog = Gdx.audio.newSound(Gdx.files.internal("sound/effect_dog.wav"));
+    }
+
+    private void releaseAudio() {
+        mEffectDog.dispose();
+    }
     private void initResource() {
         Texture logoTexture = new Texture(Gdx.files.internal("character/img_fmls.png"));
         TextureRegion[][] tmpRegions = TextureRegion.split(logoTexture, logoTexture.getWidth() / 2, logoTexture.getHeight() / 2);
@@ -88,6 +98,7 @@ public class CoverScreen implements Screen, InputProcessor {
             @Override
             public void run() {
                 dog.setStatus(HeroActor.STATUS_RIGHT);
+                mEffectDog.play();
             }});
         RunnableAction turnLeft = Actions.run(new Runnable() {
 
@@ -99,6 +110,7 @@ public class CoverScreen implements Screen, InputProcessor {
         RepeatAction repeat = Actions.forever(dogWalk);
         dog.addAction(repeat);
         dog.setStatus(HeroActor.STATUS_RIGHT);
+        mEffectDog.play();
         mStage.addActor(dog);
 
         Texture startTexture = new Texture(Gdx.files.internal("buttons/img_start.png"));
@@ -116,20 +128,17 @@ public class CoverScreen implements Screen, InputProcessor {
 
     @Override
     public void hide() {
-        // TODO Auto-generated method stub
-
+        releaseAudio();
     }
 
     @Override
     public void pause() {
-        // TODO Auto-generated method stub
-
+        releaseAudio();
     }
 
     @Override
     public void resume() {
-        // TODO Auto-generated method stub
-
+        loadSounds();
     }
 
     @Override
@@ -140,6 +149,7 @@ public class CoverScreen implements Screen, InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (Keys.BACK == keycode) {
+            releaseAudio();
             Gdx.app.exit();
             return true;
         }
@@ -168,6 +178,7 @@ public class CoverScreen implements Screen, InputProcessor {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Vector2 stagePoint = mStage.screenToStageCoordinates(new Vector2(screenX, screenY));
         if (mStage.hit(stagePoint.x, stagePoint.y, false) == mStartButton) {
+            releaseAudio();
             mGame.setScreen(new MissionSelectScreen());
         }
         return true;
