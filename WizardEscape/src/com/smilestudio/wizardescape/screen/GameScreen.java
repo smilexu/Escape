@@ -226,20 +226,17 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
 
     @Override
     public void hide() {
-        // TODO Auto-generated method stub
-
+        releaseAudio();
     }
 
     @Override
     public void pause() {
-        // TODO Auto-generated method stub
-
+        releaseAudio();
     }
 
     @Override
     public void resume() {
-        // TODO Auto-generated method stub
-
+        loadSounds();
     }
 
     @Override
