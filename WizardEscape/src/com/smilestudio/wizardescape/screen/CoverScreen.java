@@ -4,9 +4,9 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SizeToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
-import com.smilestudio.wizardescape.actors.AdvanceActor;
 import com.smilestudio.wizardescape.utils.Constants;
 
 public class CoverScreen implements Screen, InputProcessor {
@@ -65,10 +64,15 @@ public class CoverScreen implements Screen, InputProcessor {
         }
 
         mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
-        AdvanceActor logoActor = new AdvanceActor(0.1f, logoRegions, Animation.LOOP_PINGPONG, AdvanceActor.STATUS_PLAY);
-        logoActor.setPosition(Constants.COVER_SCREEN_POSITION_X_LOGO, Constants.COVER_SCREEN_POSITION_Y_LOGO);
-        logoActor.setSize(logoTexture.getWidth() / 2, logoTexture.getHeight() / 2);
-        mStage.addActor(logoActor);
+
+//        AdvanceActor logoActor = new AdvanceActor(0.1f, logoRegions, Animation.LOOP_PINGPONG, AdvanceActor.STATUS_PLAY);
+//        logoActor.setPosition(Constants.COVER_SCREEN_POSITION_X_LOGO, Constants.COVER_SCREEN_POSITION_Y_LOGO);
+//        logoActor.setSize(logoTexture.getWidth() / 2, logoTexture.getHeight() / 2);
+//        mStage.addActor(logoActor);
+
+        Image bkImg = new Image(new Texture(Gdx.files.internal("background/img_cover_background.png")));
+        bkImg.setPosition(0, 0);
+        mStage.addActor(bkImg);
 
         Texture startTexture = new Texture(Gdx.files.internal("buttons/img_start.png"));
         mStartButton = new Image(startTexture);
@@ -109,7 +113,10 @@ public class CoverScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        // TODO Auto-generated method stub
+        if (Keys.BACK == keycode) {
+            Gdx.app.exit();
+            return true;
+        }
         return false;
     }
 

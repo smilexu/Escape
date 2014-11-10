@@ -1,19 +1,11 @@
 package com.smilestudio.wizardescape.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.smilestudio.wizardescape.GameManager;
 
-public class MapHelper {
-
-    public static Vector2 getPostionByCell(int x, int y) {
-        Vector2 position = new Vector2();
-        int positionY = Constants.OFFSET_Y + Constants.CELL_SIZE_HEIGHT * (GameManager.ROW - 1);
-        position.set(Constants.OFFSET_X + x * Constants.CELL_SIZE_WIDTH, positionY - y * Constants.CELL_SIZE_HEIGHT);
-        return position;
-    }
+public class ResourceHelper {
 
     public static Image getBgImage(int mission) {
         switch (mission) {
@@ -72,6 +64,18 @@ public class MapHelper {
             case 3:
             default:
                 return new Image(new Texture(Gdx.files.internal("misc/img_bg_circle_mission_3_relief.png")));
+        }
+    }
+
+    public static Music getBkMusic(int mission) {
+        switch (mission) {
+            case 1:
+                return Gdx.audio.newMusic(Gdx.files.internal("sound/music_bk_mission_1.mp3"));
+            case 2:
+                return Gdx.audio.newMusic(Gdx.files.internal("sound/music_bk_mission_2.mp3"));
+            case 3:;
+            default:
+                return Gdx.audio.newMusic(Gdx.files.internal("sound/music_bk_mission_3.mp3"));
         }
     }
 

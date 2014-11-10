@@ -2,6 +2,9 @@ package com.smilestudio.wizardescape.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,13 +21,14 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.smilestudio.wizardescape.GameListener;
 import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.AdvanceActor;
 import com.smilestudio.wizardescape.actors.LabelActor;
 import com.smilestudio.wizardescape.utils.Constants;
-import com.smilestudio.wizardescape.utils.MapHelper;
+import com.smilestudio.wizardescape.utils.ResourceHelper;
 
-public class GameScreen implements Screen, GestureListener, EventListener {
+public class GameScreen implements Screen, GestureListener, EventListener, GameListener {
 
     private static final float MASK_FADE_DURATION = 1f;
     private Stage       mStage;
@@ -38,6 +42,12 @@ public class GameScreen implements Screen, GestureListener, EventListener {
     private Image mBtnNext;
     private LabelActor mTimeBar;
     private float mTimeline;
+    private Music mBkMusic;
+    private Sound mEffectTeleport;
+    private Sound mEffectMagicItem;
+    private Sound mEffectKey;
+    private Sound mEffectPortal;
+    private Sound mEffectCheers;
 
     public GameScreen() {
     }
@@ -69,15 +79,16 @@ public class GameScreen implements Screen, GestureListener, EventListener {
     public void show() {
         mManager = GameManager.getInstance();
         mManager.initGame();
+        mManager.setGameListener(this);
 
         mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
 
-        mBgImage = MapHelper.getBgImage(mManager.getMission());
+        mBgImage = ResourceHelper.getBgImage(mManager.getMission());
         mBgImage.setSize(mBgImage.getWidth(), mBgImage.getHeight());
         mBgImage.setPosition(0, 0);
         mStage.addActor(mBgImage);
 
-        mGridImage = MapHelper.getGridImage(mManager.getMission());
+        mGridImage = ResourceHelper.getGridImage(mManager.getMission());
         mGridImage.setSize(mGridImage.getWidth(), mGridImage.getHeight());
         mGridImage.setPosition(0, 0);
         mStage.addActor(mGridImage);
@@ -135,7 +146,7 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         // add mission finished board
         Group missionFinishedBoard = new Group();
 
-        Image bgCircle = MapHelper.getCircleImage(mManager.getMission());
+        Image bgCircle = ResourceHelper.getCircleImage(mManager.getMission());
         bgCircle.setSize(bgCircle.getWidth(), bgCircle.getHeight());
         bgCircle.setName(GameManager.NAME_BOARD_BG_CIRCLE);
         missionFinishedBoard.addActor(bgCircle);
@@ -163,8 +174,34 @@ public class GameScreen implements Screen, GestureListener, EventListener {
         mManager.setMissionFinishedBoard(missionFinishedBoard);
         mStage.addActor(missionFinishedBoard);
 
-        GestureDetector gd = new GestureDetector(this);
+        loadSounds();
+
+        GestureDetector gd = new GestureDetector(this) {
+            @Override
+            public boolean keyDown(int keycode) {
+                if (Keys.BACK == keycode) {
+                    releaseAudio();
+                    mManager.getGame().setScreen(new MissionSelectScreen(mManager.getMission()));
+                    return true;
+                }
+                return false;
+            }
+        };
         Gdx.input.setInputProcessor(gd);
+        Gdx.input.setCatchBackKey(true);
+    }
+
+    private void loadSounds() {
+        mBkMusic = ResourceHelper.getBkMusic(mManager.getMission());
+        mBkMusic.setLooping(true);
+        mBkMusic.setVolume(0.5f);
+        mBkMusic.play();
+
+        mEffectTeleport = Gdx.audio.newSound(Gdx.files.internal("sound/effect_teleport.wav"));
+        mEffectMagicItem = Gdx.audio.newSound(Gdx.files.internal("sound/effect_magic_item.mp3"));
+        mEffectKey = Gdx.audio.newSound(Gdx.files.internal("sound/effect_key.mp3"));
+        mEffectPortal = Gdx.audio.newSound(Gdx.files.internal("sound/effect_portal.mp3"));
+        mEffectCheers = Gdx.audio.newSound(Gdx.files.internal("sound/effect_cheers.mp3"));
     }
 
     private void resetGame() {
@@ -178,6 +215,8 @@ public class GameScreen implements Screen, GestureListener, EventListener {
             public boolean act(float delta) {
                 mManager.initGame();
                 mManager.initActors(mBackgroudActors, mBgMask, mStage);
+
+                loadSounds();
                 return true;
             }};
 
@@ -206,6 +245,40 @@ public class GameScreen implements Screen, GestureListener, EventListener {
     @Override
     public void dispose() {
         mStage.dispose();
+        releaseAudio();
+    }
+
+    private void releaseAudio() {
+        if (mBkMusic != null) {
+            mBkMusic.stop();
+            mBkMusic.dispose();
+            mBkMusic = null;
+        }
+
+        if (mEffectTeleport != null) {
+            mEffectTeleport.dispose();
+            mEffectTeleport = null;
+        }
+
+        if (mEffectMagicItem != null) {
+            mEffectMagicItem.dispose();
+            mEffectMagicItem = null;
+        }
+
+        if (mEffectKey != null) {
+            mEffectKey.dispose();
+            mEffectKey = null;
+        }
+
+        if (mEffectPortal != null) {
+            mEffectPortal.dispose();
+            mEffectPortal = null;
+        }
+
+        if (mEffectCheers != null) {
+            mEffectCheers.dispose();
+            mEffectCheers = null;
+        }
     }
 
     @Override
@@ -217,8 +290,10 @@ public class GameScreen implements Screen, GestureListener, EventListener {
             return true;
         } else if (actor == mSelectMissionButton) {
             mManager.getGame().setScreen(new MissionSelectScreen(mManager.getMission()));
+            releaseAudio();
             return true;
         } else if(actor == mBtnNext) {
+            releaseAudio();
             mManager.gotoNext();
         }
         return false;
@@ -280,16 +355,44 @@ public class GameScreen implements Screen, GestureListener, EventListener {
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean handle(Event event) {
+
         if (mRefreshButton == event.getTarget()) {
             resetGame();
         }
         return true;
+    }
+
+    @Override
+    public void onGameSuccess() {
+        releaseAudio();
+    }
+
+    @Override
+    public void onSoundPlay(int type) {
+        switch (type) {
+            case GameListener.TYPE_KEY:
+                mEffectKey.play();
+                break;
+            case GameListener.TYPE_MAGIC_ITEM:
+                mEffectMagicItem.play();
+                break;
+            case GameListener.TYPE_TELEPORT:
+                mEffectTeleport.play();
+                break;
+            case GameListener.TYPE_PORTAL:
+                mEffectPortal.play();
+                break;
+            case GameListener.TYPE_CHEERS:
+                mEffectCheers.play();
+                break;
+            default:
+                break;
+        }
     }
 
 }

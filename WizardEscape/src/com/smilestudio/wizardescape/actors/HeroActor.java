@@ -55,6 +55,9 @@ public class HeroActor extends Actor {
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
 
+        float scaleX = getScaleX();
+        float scaleY = getScaleY();
+
         TextureRegion region = null;
         switch (mStatus) {
             case STATUS_UP:
@@ -74,7 +77,7 @@ public class HeroActor extends Actor {
                 region = mStandAnimation.getKeyFrame(mStateTime);
                 break;
         }
-        batch.draw(region, getX() + (Constants.CELL_SIZE_WIDTH - region.getRegionWidth()) / 2, getY());
-
+        batch.draw(region, getX() + (Constants.CELL_SIZE_WIDTH - region.getRegionWidth() * scaleX) / 2, getY(),
+                region.getRegionWidth() * scaleX, region.getRegionHeight() * scaleY);
     }
 }

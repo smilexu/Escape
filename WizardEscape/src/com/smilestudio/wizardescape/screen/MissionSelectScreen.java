@@ -3,6 +3,7 @@ package com.smilestudio.wizardescape.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -98,8 +99,19 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         Group group = mMainStage.getRoot();
         group.addAction(Actions.moveBy(0 - Constants.STAGE_WIDTH * (mMission - 1), 0));
 
-        GestureDetector gd = new GestureDetector(this);
+        GestureDetector gd = new GestureDetector(this) {
+            @Override
+            public boolean keyDown(int keycode) {
+                if (Keys.BACK == keycode) {
+                    GameManager gm = GameManager.getInstance();
+                    gm.getGame().setScreen(new CoverScreen(gm.getGame()));
+                    return true;
+                }
+                return false;
+            }
+        };
         Gdx.input.setInputProcessor(gd);
+        Gdx.input.setCatchBackKey(true);
     }
 
     private void setupMissionThumbnail(int indexOfPage) {
@@ -180,7 +192,11 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
     @Override
     public boolean keyDown(int keycode) {
-        // TODO Auto-generated method stub
+        if (Keys.BACK == keycode) {
+            GameManager gm = GameManager.getInstance();
+            gm.getGame().setScreen(new CoverScreen(gm.getGame()));
+            return true;
+        }
         return false;
     }
 

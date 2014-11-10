@@ -25,8 +25,8 @@ public class Constants {
 
     public final static int COVER_SCREEN_POSITION_X_LOGO = 300;
     public final static int COVER_SCREEN_POSITION_Y_LOGO = 270;
-    public final static int COVER_SCREEN_POSITION_X_START = 700;
-    public final static int COVER_SCREEN_POSITION_Y_START = 300;
+    public final static int COVER_SCREEN_POSITION_X_START = 900;
+    public final static int COVER_SCREEN_POSITION_Y_START = 30;
     public final static int COVER_SCREEN_DELTA_X_MISSION_THUMBNAIL = 150;
 
     public final static int GAME_SCREEN_POSITION_X_REFRESH = 1000;

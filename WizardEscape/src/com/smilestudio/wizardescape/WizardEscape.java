@@ -10,5 +10,5 @@ public class WizardEscape extends Game{
     public void create() {
         setScreen(new CoverScreen(this));
     }
-    
+
 }

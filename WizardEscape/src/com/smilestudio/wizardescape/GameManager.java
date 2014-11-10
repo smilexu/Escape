@@ -31,7 +31,7 @@ import com.smilestudio.wizardescape.actors.LabelActor;
 import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.screen.GameScreen;
 import com.smilestudio.wizardescape.utils.Constants;
-import com.smilestudio.wizardescape.utils.MapHelper;
+import com.smilestudio.wizardescape.utils.ResourceHelper;
 
 public class GameManager {
 
@@ -108,6 +108,7 @@ public class GameManager {
     private int mStarsTotal;
     private KeyActor mKey;
     private int mSteps;
+    private GameListener mGameListener;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -175,7 +176,7 @@ public class GameManager {
             for (int j = 0; j < COLUMN; j++) {
                 Actor actor = null;
                 final int type = mMapBlock[j][i];
-                Vector2 position = MapHelper.getPostionByCell(j, i);
+                Vector2 position = getPostionByCell(j, i);
                 switch (type) {
                     case TYPE_EMPTY:
                         break;
@@ -192,14 +193,14 @@ public class GameManager {
                         actor.setPosition(position.x, position.y);
                         break;
                     case TYPE_OBSTACLE:
-                        Image obstacle = MapHelper.getObstacleImage(mMission);
+                        Image obstacle = ResourceHelper.getObstacleImage(mMission);
                         obstacle.setName(NAME_OBSTACLE);
                         obstacle.setSize(obstacle.getWidth(), obstacle.getHeight());
                         actor = (Actor)obstacle;
                         actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - obstacle.getWidth()) / 2, position.y);
                         break;
                     case TYPE_MOVABLE:
-                        Image movable = MapHelper.getMovableImage(mMission);
+                        Image movable = ResourceHelper.getMovableImage(mMission);
                         movable.setName(NAME_MOVABLE);
                         actor = (Actor)movable;
                         actor.setSize(movable.getWidth(), movable.getHeight());
@@ -246,7 +247,6 @@ public class GameManager {
                         mKey.setName(NAME_KEY);
                         actor = (Actor)mKey;
                         actor.setPosition(position.x, position.y);
-                        mTarget.setStatus(AdvanceActor.STATUS_PAUSE);
                         hasKey = true;
                         break;
                     default:
@@ -427,21 +427,28 @@ public class GameManager {
                     mMe.toFront();
                     Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
                     MoveToAction moveto = Actions.moveTo(position.x, position.y);
-                    moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
+                    ScaleToAction scaleBiggerA = Actions.scaleTo(2f, 2f, 0.3f);
+                    ScaleToAction scaleSmallerA = Actions.scaleTo(1f, 1f, 0.3f);
+                    ScaleToAction scaleBiggerB = Actions.scaleTo(2f, 2f, 0.3f);
+                    ScaleToAction scaleSmallerB = Actions.scaleTo(1f, 1f, 0.3f);
                     AlphaAction alpha = Actions.alpha(0, Constants.ANIMATION_HERO_PASS);
+                    ParallelAction parallel = Actions.parallel(scaleSmallerB, alpha);
+                    moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
                     RunnableAction runnable = Actions.run(new Runnable() {
 
                         @Override
                         public void run() {
                             saveGame();
-
                             generateCongrasAction();
                         }
                         
                     });
 
-                    SequenceAction sequence = Actions.sequence(moveto, alpha, runnable);
+                    SequenceAction sequence = Actions.sequence(moveto, scaleBiggerA, scaleSmallerA, scaleBiggerB, parallel, runnable);
                     mMe.addAction(sequence);
+                    if (mGameListener != null) {
+                        mGameListener.onSoundPlay(GameListener.TYPE_PORTAL);
+                    }
                     return true;
                 }
                 return false;
@@ -455,15 +462,17 @@ public class GameManager {
                 image.addAction(actions);
                 if (TYPE_STAR == type) {
                     mStarGot++;
+                    if (mGameListener != null) {
+                        mGameListener.onSoundPlay(GameListener.TYPE_MAGIC_ITEM);
+                    }
                     updateProgress(mBkGrdActors);
                 } else if (TYPE_KEY == type) {
                     mLocked = false;
                     mTarget.setStatus(AdvanceActor.STATUS_PLAY);
+                    if (mGameListener != null) {
+                        mGameListener.onSoundPlay(GameListener.TYPE_KEY);
+                    }
                 }
-//                if (mStarGot >= 3 && !mLocked) {
-//                    mTarget.setStatus(AdvanceActor.STATUS_PLAY);
-//                    mLocked = false;
-//                }
             case TYPE_EMPTY:
                 mInAnimation = true;
                 Vector2 position = getNextBlockPosition(flingDirection, cellX, cellY);
@@ -524,6 +533,9 @@ public class GameManager {
                 if (actor != mMe) {
                     return false;
                 }
+                if(mGameListener != null) {
+                    mGameListener.onSoundPlay(GameListener.TYPE_TELEPORT);
+                }
                 return actionTransportMove(flingDirection, cellX, cellY, type);
         }
         return false;
@@ -556,6 +568,9 @@ public class GameManager {
         
         SequenceAction sequence = Actions.sequence(bgCircleMove, runnable);
         bgCircle.addAction(sequence);
+        if (mGameListener != null) {
+            mGameListener.onSoundPlay(GameListener.TYPE_CHEERS);
+        }
     }
 
     protected void generateBoardStarsActions(final int current, final int max) {
@@ -581,10 +596,14 @@ public class GameManager {
         Image buttonNext = (Image)mMissionFinishedBoard.findActor(NAME_BOARD_NEXT);
         buttonNext.setVisible(true);
         ScaleToAction scaleTo = Actions.scaleTo(1, 1, 0.5f);
-        
+
         RotateByAction rotateBy = Actions.rotateBy(720, 0.5f);
         ParallelAction paralle = Actions.parallel(scaleTo, rotateBy);
         buttonNext.addAction(paralle);
+
+        if (mGameListener != null) {
+            mGameListener.onGameSuccess();
+        }
     }
 
     private void adjustActorsOrder(int flingDirection) {
@@ -700,7 +719,7 @@ public class GameManager {
                     if (j == cellX && i == cellY) {
                         continue;
                     } else {
-                        position = MapHelper.getPostionByCell(j, i);
+                        position = getPostionByCell(j, i);
                     }
                 }
             }
@@ -789,28 +808,28 @@ public class GameManager {
                 if ((cellY + 1) > ROW) {
                     return null;
                 } else {
-                    position = MapHelper.getPostionByCell(cellX, cellY + 1);
+                    position = getPostionByCell(cellX, cellY + 1);
                 }
                 break;
             case FLING_UP:
                 if ((cellY - 1) < 0) {
                     return null;
                 } else {
-                    position = MapHelper.getPostionByCell(cellX, cellY - 1);
+                    position = getPostionByCell(cellX, cellY - 1);
                 }
                 break;
             case FLING_LEFT:
                 if ((cellX - 1) < 0) {
                     return null;
                 } else {
-                    position = MapHelper.getPostionByCell(cellX - 1, cellY);
+                    position = getPostionByCell(cellX - 1, cellY);
                 }
                 break;
             case FLING_RIGHT:
                 if ((cellX + 1) > COLUMN) {
                     return null;
                 } else {
-                    position = MapHelper.getPostionByCell(cellX + 1, cellY);
+                    position = getPostionByCell(cellX + 1, cellY);
                 }
                 break;
             case FLING_IDLE:
@@ -985,5 +1004,14 @@ public class GameManager {
         return mSteps;
     }
 
-    
+    public void setGameListener(GameListener listener) {
+        mGameListener = listener;
+    }
+
+    private static Vector2 getPostionByCell(int x, int y) {
+        Vector2 position = new Vector2();
+        int positionY = Constants.OFFSET_Y + Constants.CELL_SIZE_HEIGHT * (GameManager.ROW - 1);
+        position.set(Constants.OFFSET_X + x * Constants.CELL_SIZE_WIDTH, positionY - y * Constants.CELL_SIZE_HEIGHT);
+        return position;
+    }
 }
