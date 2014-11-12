@@ -51,7 +51,7 @@ public class NumberUnitActor extends Image {
         mNumbers[2] = new Texture(Gdx.files.internal("misc/img_number_2.png"));
         mNumbers[3] = new Texture(Gdx.files.internal("misc/img_number_3.png"));
         mNumbers[4] = new Texture(Gdx.files.internal("misc/img_number_4.png"));
-        mNumbers[4] = new Texture(Gdx.files.internal("misc/img_number_5.png"));
+        mNumbers[5] = new Texture(Gdx.files.internal("misc/img_number_5.png"));
         mNumbers[6] = new Texture(Gdx.files.internal("misc/img_number_6.png"));
         mNumbers[7] = new Texture(Gdx.files.internal("misc/img_number_7.png"));
         mNumbers[8] = new Texture(Gdx.files.internal("misc/img_number_8.png"));
