@@ -27,7 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.actors.AdvanceActor;
 import com.smilestudio.wizardescape.actors.HeroActor;
 import com.smilestudio.wizardescape.actors.KeyActor;
-import com.smilestudio.wizardescape.actors.LabelActor;
+import com.smilestudio.wizardescape.actors.NumberUnitActor;
 import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.model.SettingData;
 import com.smilestudio.wizardescape.screen.GameScreen;
@@ -281,9 +281,9 @@ public class GameManager {
     }
 
     private void updateProgress(Group group) {
-        LabelActor progress = (LabelActor) group.findActor(NAME_PROGRESS_TEXT);
+        NumberUnitActor progress = (NumberUnitActor) group.findActor(NAME_PROGRESS_TEXT);
         if (progress != null) {
-            progress.setContentStr(mStarGot + " / " + mStarsTotal);
+            progress.setContent(mStarGot + " / " + mStarsTotal, null);
         }
     }
 

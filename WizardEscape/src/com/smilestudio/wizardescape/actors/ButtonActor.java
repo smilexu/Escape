@@ -38,7 +38,10 @@ public class ButtonActor extends Image {
     public void draw(SpriteBatch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
 
-        batch.draw(mCurrentTexture, getX(), getY());
+        float scaleX = getScaleX();
+        float scaleY = getScaleY();
+
+        batch.draw(mCurrentTexture, getX(), getY(), getWidth() * scaleX, getHeight() * scaleY);
     }
 
     /**

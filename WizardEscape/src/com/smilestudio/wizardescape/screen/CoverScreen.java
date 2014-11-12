@@ -114,12 +114,14 @@ public class CoverScreen implements Screen, InputProcessor {
         mStage.addActor(dog);
 
         Texture startTexture = new Texture(Gdx.files.internal("buttons/img_start.png"));
+        int width = startTexture.getWidth();
+        int height = startTexture.getHeight();
         mStartButton = new Image(startTexture);
-        mStartButton.setSize(startTexture.getWidth(), startTexture.getHeight());
+        mStartButton.setSize(width, height);
         mStartButton.setPosition(Constants.COVER_SCREEN_POSITION_X_START, Constants.COVER_SCREEN_POSITION_Y_START);
 
-        SizeToAction sizeUpAction = Actions.sizeTo(startTexture.getWidth() * 1.1f, startTexture.getHeight() * 1.1f, 0.8f);
-        SizeToAction sizeDownAction = Actions.sizeTo(startTexture.getWidth(), startTexture.getHeight(), 0.8f);
+        SizeToAction sizeUpAction = Actions.sizeTo(width * 1.1f, height * 1.1f, 0.8f);
+        SizeToAction sizeDownAction = Actions.sizeTo(width, height, 0.8f);
         SequenceAction sequence = Actions.sequence(sizeUpAction, sizeDownAction);
         RepeatAction foreverAction = Actions.forever(sequence);
         mStartButton.addAction(foreverAction);

@@ -16,9 +16,11 @@ public class Constants {
     public final static int OFFSET_X = 10;
     public final static int OFFSET_Y = 3;
 
+    public static final int NUMBER_UNIT_ACTOR_UNIT_PADDING = 5;
+
     public final static float ANIMATION_DURATION_PER_BLOCK_NORMAL = 0.1f;
     public final static float ANIMATION_DURATION_PER_BLOCK_PUSH = 0.5f;
-    public final static int ANIMATION_STAR_MOVEBY_Y = 100;
+    public final static int ANIMATION_STAR_MOVEBY_Y = 140;
     public final static float ANIMATION_STAR_DURATION = 0.8f;
     public final static float ANIMATION_HERO_PASS = 1.0f;
     public final static float ANIMATION_HERO_PORTAL_FADE_DURATION = 0.4f;
@@ -35,18 +37,18 @@ public class Constants {
     public final static int GAME_SCREEN_POSITION_X_SELECT = 980;
     public final static int GAME_SCREEN_POSITION_Y_SELECT = 500;
     public final static int GAME_SCREEN_POSITION_X_LEVEL = 970;
-    public final static int GAME_SCREEN_POSITION_Y_LEVEL = 620;
+    public final static int GAME_SCREEN_POSITION_Y_LEVEL = 600;
     public final static int GAME_SCREEN_POSITION_X_PROGRESS = 970;
-    public final static int GAME_SCREEN_POSITION_Y_PROGRESS = 370;
+    public final static int GAME_SCREEN_POSITION_Y_PROGRESS = 340;
     public final static int GAME_SCREEN_POSITION_X_STEPS = 970;
-    public final static int GAME_SCREEN_POSITION_Y_STEPS = 300;
+    public final static int GAME_SCREEN_POSITION_Y_STEPS = 275;
     public final static int GAME_SCREEN_POSITION_X_STAR = 1040;
     public final static int GAME_SCREEN_POSITION_Y_STAR = 320;
     public final static int GAME_SCREEN_POSITION_X_EFFECT = 980;
     public final static int GAME_SCREEN_POSITION_Y_EFFECT = 160;
     public final static int GAME_SCREEN_POSITION_X_MUSIC = 980;
     public final static int GAME_SCREEN_POSITION_Y_MUSIC = 60;
-    public final static Color GAME_SCREEN_TEXT_COLOR = new Color(0.86f, 0.43f, 0.20f, 1f);
+    public final static float GAME_SCREEN_BTN_SCALE = 1.2f;
 
     public static final int MISSION_SCREEN_ARROW_PADDING_X = 100;
     public static final int MISSION_SCREEN_ARROW_Y = 20;
