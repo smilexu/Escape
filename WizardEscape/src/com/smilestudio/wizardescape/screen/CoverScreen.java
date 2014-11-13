@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SizeToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.smilestudio.wizardescape.GameListener;
 import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.HeroActor;
 import com.smilestudio.wizardescape.utils.Constants;

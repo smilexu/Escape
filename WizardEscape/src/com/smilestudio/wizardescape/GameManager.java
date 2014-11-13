@@ -113,6 +113,8 @@ public class GameManager {
     private KeyActor mKey;
     private int mSteps;
     private GameListener mGameListener;
+    private AnalyticsListener mAnalyticsListener;
+    private boolean mInGame;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -384,8 +386,11 @@ public class GameManager {
 
                         @Override
                         public void run() {
-                            saveGame();
-                            generateCongrasAction();
+                            finishMission();
+                            useSteps();
+                            int currentScore = calculateScore();
+                            saveGameIfNeed(currentScore);
+                            generateCongrasAction(currentScore);
                         }
                         
                     });
@@ -479,12 +484,25 @@ public class GameManager {
                 if (actor != mMe) {
                     return false;
                 }
-                if(mGameListener != null) {
+                boolean success =  actionTransportMove(flingDirection, cellX, cellY, type);
+                if( success && mGameListener != null) {
                     mGameListener.onSoundPlay(GameListener.TYPE_TELEPORT);
                 }
-                return actionTransportMove(flingDirection, cellX, cellY, type);
+                return success;
         }
         return false;
+    }
+
+    protected int calculateScore() {
+        int score;
+        if (mStarGot >= mStarsTotal) {
+            score = 3;
+        } else if (mStarGot <= 0.5 * mStarsTotal) {
+            score = 1;
+        } else {
+            score = 2;
+        }
+        return score;
     }
 
     /**
@@ -494,7 +512,7 @@ public class GameManager {
      * 4. Stars fly to the center from left side
      * 5. Buttons display from smaller
      */
-    private void generateCongrasAction() {
+    private void generateCongrasAction(final int score) {
         AlphaAction maskAlphaAction = Actions.alpha(Constants.MISSION_FINISHED_MASK_ALPHA, Constants.MISSION_FINISHED_ALPHA_DURATION);
         mMask.addAction(maskAlphaAction);
 
@@ -509,7 +527,7 @@ public class GameManager {
 
             @Override
             public void run() {
-                generateBoardStarsActions(0, 3);
+                generateBoardStarsActions(0, score);
             }});
         
         SequenceAction sequence = Actions.sequence(bgCircleMove, runnable);
@@ -541,7 +559,7 @@ public class GameManager {
     private void generateButtonPlayAnimation() {
         Image buttonNext = (Image)mMissionFinishedBoard.findActor(NAME_BOARD_NEXT);
         buttonNext.setVisible(true);
-        ScaleToAction scaleTo = Actions.scaleTo(1, 1, 0.5f);
+        ScaleToAction scaleTo = Actions.scaleTo(1.2f, 1.2f, 0.5f);
 
         RotateByAction rotateBy = Actions.rotateBy(720, 0.5f);
         ParallelAction paralle = Actions.parallel(scaleTo, rotateBy);
@@ -858,17 +876,24 @@ public class GameManager {
         initialMissionBoardStatus(mMissionFinishedBoard);
     }
 
-    public void saveGame() {
-        Preferences prefs = Gdx.app.getPreferences(PREFERENCES_SAVE);
-        prefs.putInteger(generateStarKey(), mStarGot);
-        prefs.putBoolean(generatePassKey(), true);
-        prefs.flush();
+    public void saveGameIfNeed(int score) {
+
+        GameData data = getGameData(mMission, mSubmission);
+        if (null == data) {
+            saveGame(new GameData(score, true, mSteps));
+            return;
+        }
+
+        if (score > data.getStars()) {
+            saveGame(new GameData(score, true, mSteps));
+        }
     }
 
-    public void saveGame(GameData data) {
+    private void saveGame(GameData data) {
         Preferences prefs = Gdx.app.getPreferences(PREFERENCES_SAVE);
         prefs.putInteger(generateStarKey(), data.getStars());
         prefs.putBoolean(generatePassKey(), data.getPassed());
+        prefs.putInteger(generateStepKey(), data.getSteps());
         prefs.flush();
     }
 
@@ -879,7 +904,8 @@ public class GameManager {
             return null;
         }
         boolean pass = prefs.getBoolean(generatePassKey(mission, submission), false);
-        return new GameData(star, pass);
+        int steps = prefs.getInteger(generateStepKey(), 0);
+        return new GameData(star, pass, steps);
     }
 
     public static void saveSetting(SettingData data) {
@@ -897,6 +923,7 @@ public class GameManager {
     private String generateStarKey() {
         return generateStarKey(mMission, mSubmission);
     }
+
     private String generateStarKey(int mission, int submission) {
         return mission + "-" + submission;
     }
@@ -908,9 +935,19 @@ public class GameManager {
         return mission + "-" + submission + "-pass";
     }
 
+
+    private String generateStepKey() {
+        return generateStepKey(mMission, mSubmission);
+    }
+
+    private String generateStepKey(int mission, int submission) {
+        return mission + "-" + submission + "-steps";
+    }
+
     public void initGame() {
         initStatus();
         initMapBlock();
+        startMission();
     }
 
     public void setMissionFinishedBoard(Group boardItems) {
@@ -962,6 +999,10 @@ public class GameManager {
         return mSteps;
     }
 
+    public void increaseSteps() {
+        mSteps++;
+    }
+
     public void setGameListener(GameListener listener) {
         mGameListener = listener;
     }
@@ -971,5 +1012,43 @@ public class GameManager {
         int positionY = Constants.OFFSET_Y + Constants.CELL_SIZE_HEIGHT * (GameManager.ROW - 1);
         position.set(Constants.OFFSET_X + x * Constants.CELL_SIZE_WIDTH, positionY - y * Constants.CELL_SIZE_HEIGHT);
         return position;
+    }
+
+    public void setAnalyticsListener(AnalyticsListener listener) {
+        mAnalyticsListener = listener;
+    }
+
+    public void startMission() {
+        if (mAnalyticsListener != null) {
+            mAnalyticsListener.startMission(mMission + "-" + mSubmission);
+        }
+        mInGame = true;
+    }
+
+    public void breakMission() {
+        if (!mInGame) {
+            return;
+        }
+
+        if (mAnalyticsListener != null) {
+            mAnalyticsListener.failMission(mMission + "-" + mSubmission);
+        }
+    }
+
+    public void finishMission() {
+        if (mAnalyticsListener != null) {
+            mAnalyticsListener.finishMission(mMission + "-" + mSubmission);
+        }
+        mInGame = false;
+    }
+
+    public void useSteps() {
+        if (mAnalyticsListener != null) {
+            mAnalyticsListener.use(mMission + "-" + mSubmission, mSteps);
+        }
+    }
+
+    public boolean isInGame() {
+        return mInGame;
     }
 }

@@ -11,4 +11,8 @@ public class WizardEscape extends Game{
         setScreen(new CoverScreen(this));
     }
 
+    public void setAnalyticsListener(AnalyticsListener listener) {
+        GameManager.getInstance().setAnalyticsListener(listener);
+    }
+
 }

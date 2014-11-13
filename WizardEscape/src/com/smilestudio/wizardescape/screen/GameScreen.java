@@ -49,7 +49,6 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
     private Sound mEffectKey;
     private Sound mEffectPortal;
     private Sound mEffectCheers;
-    private int mSteps;
     private ButtonActor mBtnSoundEffect;
     private ButtonActor mBtnMusic;
     private boolean mHasSoundEffect;
@@ -68,8 +67,8 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
     }
 
     private void countSteps() {
-        mSteps = mSteps + 1;
-        mStepLabel.setContent(String.valueOf(mSteps), null);
+        mManager.increaseSteps();
+        mStepLabel.setContent(String.valueOf(mManager.getSteps()), null);
     }
 
     @Override
@@ -248,7 +247,6 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
             public boolean act(float delta) {
                 mManager.initGame();
                 mManager.initActors(mBackgroudActors, mBgMask, mStage);
-                mSteps = 0;
                 mStepLabel.setContent("0", null);
 
                 loadSounds();
@@ -319,10 +317,12 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         Actor actor = mStage.hit(stagePoint.x, stagePoint.y, true);
         if (actor == mRefreshButton) {
             resetGame();
+            mManager.breakMission();
             return true;
         } else if (actor == mSelectMissionButton) {
             mManager.getGame().setScreen(new MissionSelectScreen(mManager.getMission()));
             releaseAudio();
+            mManager.breakMission();
             return true;
         } else if (actor == mBtnNext) {
             releaseAudio();
