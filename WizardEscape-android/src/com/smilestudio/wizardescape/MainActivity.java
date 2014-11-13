@@ -36,25 +36,21 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
 
     @Override
     public void startMission(String mission) {
-        System.out.println("============ startMission : " + mission);
         UMGameAgent.startLevel(mission);
     }
 
     @Override
     public void failMission(String mission) {
-        System.out.println("============ failMission : " + mission);
         UMGameAgent.failLevel(mission);
     }
 
     @Override
     public void finishMission(String mission) {
-        System.out.println("============ finishMission : " + mission);
         UMGameAgent.finishLevel(mission);
     }
 
     @Override
     public void use(String mission, int steps) {
-        System.out.println("============ use : " + mission + "," + steps);
         UMGameAgent.use(mission, steps, 0);
     }
 

@@ -42,7 +42,7 @@ public class Constants {
     public final static int GAME_SCREEN_POSITION_Y_PROGRESS = 340;
     public final static int GAME_SCREEN_POSITION_X_STEPS = 970;
     public final static int GAME_SCREEN_POSITION_Y_STEPS = 275;
-    public final static int GAME_SCREEN_POSITION_X_STAR = 1040;
+    public final static int GAME_SCREEN_POSITION_X_STAR = 1020;
     public final static int GAME_SCREEN_POSITION_Y_STAR = 320;
     public final static int GAME_SCREEN_POSITION_X_EFFECT = 980;
     public final static int GAME_SCREEN_POSITION_Y_EFFECT = 160;
