@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.AlphaAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.MoveToAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ParallelAction;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateByAction;
 import com.badlogic.gdx.scenes.scene2d.actions.RunnableAction;
 import com.badlogic.gdx.scenes.scene2d.actions.ScaleToAction;
@@ -115,6 +116,7 @@ public class GameManager {
     private GameListener mGameListener;
     private AnalyticsListener mAnalyticsListener;
     private boolean mInGame;
+    private AdListener mAdListener;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -221,7 +223,6 @@ public class GameManager {
                         mStarsTotal  = mStarsTotal + 1;
                         break;
                     case TYPE_TARGET:
-//                        Image target = new Image(new Texture(Gdx.files.internal("misc/img_target.png")));
                         TextureRegion[] targets = new TextureRegion[4];
                         targets[0] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_1.png")));
                         targets[1] = new TextureRegion(new Texture(Gdx.files.internal("misc/img_target_2.png")));
@@ -267,6 +268,11 @@ public class GameManager {
             }
         }
 
+        //load guide resource only in 1-1
+        if (isGuildMission()) {
+            loadGuildActors(stage);
+        }
+        
         //set target animtion according to key status
         if(hasKey) {
             mLocked = true;
@@ -280,6 +286,34 @@ public class GameManager {
         mGroup.addActor(mask);
 
         updateProgress(bkGrdActors);
+    }
+
+    private void loadGuildActors(final Stage stage) {
+        Texture textureArrow = new Texture(Gdx.files.internal("misc/img_guild_arrow.png"));
+        Image guildArrow = new Image(textureArrow);
+        int x = (int) (mTarget.getX() + Constants.CELL_SIZE_WIDTH / 2 - textureArrow.getWidth() / 2);
+        guildArrow.setPosition(x, mTarget.getY() + Constants.CELL_SIZE_HEIGHT + 30);
+        stage.addActor(guildArrow);
+
+        SequenceAction arrowSequence = Actions.sequence(Actions.moveBy(0, 40, 0.5f), Actions.moveBy(0,  -40, 0.5f));
+        RepeatAction arrowRepeatAction = Actions.forever(arrowSequence);
+        guildArrow.addAction(arrowRepeatAction);
+
+        Image guildText = new Image(new Texture(Gdx.files.internal("misc/img_guild_text.png")));
+        guildText.setPosition((970 - guildText.getWidth()) / 2, 500);
+        stage.addActor(guildText);
+
+        Image guildHand = new Image(new Texture(Gdx.files.internal("misc/img_guild_hand.png")));
+        guildHand.setPosition(200, 30);
+        SequenceAction handSeq = Actions.sequence(Actions.moveBy(400, 0, 2f), Actions.alpha(0, 1f),
+                Actions.moveBy(-400,  0, 1f), Actions.alpha(1f));
+        RepeatAction handRepeat = Actions.forever(handSeq);
+        guildHand.addAction(handRepeat);
+        stage.addActor(guildHand);
+    }
+
+    private boolean isGuildMission() {
+        return 1 == mMission && 1 == mSubmission;
     }
 
     private void updateProgress(Group group) {
@@ -1050,5 +1084,15 @@ public class GameManager {
 
     public boolean isInGame() {
         return mInGame;
+    }
+
+    public void setAdListener(AdListener listener) {
+        mAdListener = listener;
+    }
+
+    public void showAdWall() {
+        if (mAdListener != null) {
+            mAdListener.showAdWall();
+        }
     }
 }
