@@ -529,10 +529,12 @@ public class GameManager {
                     HeroActor dog = (HeroActor) mGroup.findActor(NAME_DOG);
                     dog.toFront();
                     dog.setPosition(image.getX(), image.getY());
+                    double moveDuration = Math.sqrt(Math.pow(Math.abs(image.getX() - mTarget.getX()), 2)
+                            + Math.pow(Math.abs(image.getY() - mTarget.getY()), 2)) / Constants.CELL_SIZE_WIDTH * 0.15f;
                     dog.setStatus(left ? HeroActor.STATUS_LEFT : HeroActor.STATUS_RIGHT);
                     SequenceAction dogSeq = Actions.sequence(Actions.alpha(1f, 0.5f),
-                            Actions.moveTo(mTarget.getX(), mTarget.getY(), 3f),
-                            Actions.alpha(0, 0.5f),
+                            Actions.moveTo(mTarget.getX(), mTarget.getY(), (float) moveDuration),
+                            Actions.alpha(0, 0.1f),
                             Actions.run(new Runnable(){
 
                                 @Override
@@ -545,6 +547,7 @@ public class GameManager {
 
                     if (mGameListener != null) {
                         mGameListener.onSoundPlay(GameListener.TYPE_KEY);
+                        mGameListener.onSoundPlay(GameListener.TYPE_DOG);
                     }
                 }
             case TYPE_EMPTY:

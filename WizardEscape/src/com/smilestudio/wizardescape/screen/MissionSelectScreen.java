@@ -31,12 +31,22 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
     private Image mArrowRight;
 
     public MissionSelectScreen() {
-        this(1);
+        this(1, true);
     }
 
     public MissionSelectScreen(int mission) {
-        GameManager.getInstance().showAdWall();
+        this(mission, true);
+    }
+
+    public MissionSelectScreen(int mission, boolean showAd) {
         mMission = mission;
+        if (showAd) {
+            GameManager.getInstance().showAdWall();
+        }
+    }
+
+    public MissionSelectScreen(boolean showAd) {
+        this(1, showAd);
     }
 
     @Override

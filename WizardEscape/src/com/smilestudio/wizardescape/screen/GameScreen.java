@@ -49,6 +49,7 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
     private Sound mEffectKey;
     private Sound mEffectPortal;
     private Sound mEffectCheers;
+    private Sound mEffectDog;
     private ButtonActor mBtnSoundEffect;
     private ButtonActor mBtnMusic;
     private boolean mHasSoundEffect;
@@ -240,6 +241,7 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         mEffectKey = Gdx.audio.newSound(Gdx.files.internal("sound/effect_key.mp3"));
         mEffectPortal = Gdx.audio.newSound(Gdx.files.internal("sound/effect_portal.mp3"));
         mEffectCheers = Gdx.audio.newSound(Gdx.files.internal("sound/effect_cheers.mp3"));
+        mEffectDog = Gdx.audio.newSound(Gdx.files.internal("sound/effect_dog.wav"));
     }
 
     private void resetGame() {
@@ -450,6 +452,9 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
                 break;
             case GameListener.TYPE_CHEERS:
                 mEffectCheers.play();
+                break;
+            case GameListener.TYPE_DOG:
+                mEffectDog.play();
                 break;
             default:
                 break;

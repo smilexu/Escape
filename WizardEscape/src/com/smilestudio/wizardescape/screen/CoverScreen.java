@@ -181,7 +181,7 @@ public class CoverScreen implements Screen, InputProcessor {
         Vector2 stagePoint = mStage.screenToStageCoordinates(new Vector2(screenX, screenY));
         if (mStage.hit(stagePoint.x, stagePoint.y, false) == mStartButton) {
             releaseAudio();
-            mGame.setScreen(new MissionSelectScreen());
+            mGame.setScreen(new MissionSelectScreen(false));
         }
         return true;
     }
