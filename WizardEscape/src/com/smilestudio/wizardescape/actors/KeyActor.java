@@ -34,7 +34,7 @@ public class KeyActor extends Actor {
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
 
         batch.draw(mKeyTexture, getX() + (Constants.CELL_SIZE_WIDTH - mKeyTexture.getWidth()) / 2, getY());
-        mHaloImg.draw(batch, parentAlpha);
+        mHaloImg.draw(batch, color.a * parentAlpha);
     }
 
     @Override

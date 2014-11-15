@@ -21,7 +21,7 @@ public class Constants {
     public final static float ANIMATION_DURATION_PER_BLOCK_NORMAL = 0.1f;
     public final static float ANIMATION_DURATION_PER_BLOCK_PUSH = 0.5f;
     public final static int ANIMATION_STAR_MOVEBY_Y = 140;
-    public final static float ANIMATION_STAR_DURATION = 0.8f;
+    public final static float ANIMATION_STAR_DURATION = 1.0f;
     public final static float ANIMATION_HERO_PASS = 1.0f;
     public final static float ANIMATION_HERO_PORTAL_FADE_DURATION = 0.4f;
     public final static float ANIMATION_HERO_ACTION_DURATION = 0.1f;

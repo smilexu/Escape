@@ -1,6 +1,8 @@
 package com.smilestudio.wizardescape;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.badlogic.gdx.Game;
@@ -82,6 +84,7 @@ public class GameManager {
     private final static String NAME_KEY = "key";
     private final static String NAME_PORTAL_B = "portal_b";
     public final static  String NAME_PROGRESS_TEXT = "progress_text";
+    private static final String NAME_DOG = "dog";
 
     public final static String NAME_BOARD_BG_CIRCLE = "mission_board_bg_circle";
     public final static String NAME_BOARD_CONGRAS_TEXT = "mission_board_congras_text";
@@ -117,6 +120,7 @@ public class GameManager {
     private AnalyticsListener mAnalyticsListener;
     private boolean mInGame;
     private AdListener mAdListener;
+    private List<Actor> mForceFrontActors = new ArrayList<Actor>();
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -255,6 +259,16 @@ public class GameManager {
                         actor = (Actor)mKey;
                         actor.setPosition(position.x, position.y);
                         hasKey = true;
+
+                        //add dog as well
+                        HeroActor dog = new HeroActor(null, Constants.ANIMATION_HERO_ACTION_DURATION,
+                                null, Constants.ANIMATION_HERO_ACTION_DURATION,
+                                ResourceHelper.getDogLeftRegions(), Constants.ANIMATION_HERO_ACTION_DURATION,
+                                ResourceHelper.getDogRightRegions(), Constants.ANIMATION_HERO_ACTION_DURATION,
+                                null, Constants.ANIMATION_HERO_ACTION_DURATION);
+                        dog.setName(NAME_DOG);
+                        dog.addAction(Actions.alpha(0));
+                        stage.addActor(dog);
                         break;
                     default:
                         break;
@@ -440,6 +454,7 @@ public class GameManager {
             case TYPE_STAR:
             case TYPE_KEY:
                 Actor image = (Actor)getNextActor(flingDirection, cellX, cellY);
+                mForceFrontActors.add(image);
                 image.toFront();
                 MoveByAction moveBy = Actions.moveBy(0, Constants.ANIMATION_STAR_MOVEBY_Y, Constants.ANIMATION_STAR_DURATION);
                 AlphaAction alPha = Actions.alpha(0, Constants.ANIMATION_STAR_DURATION);
@@ -452,8 +467,27 @@ public class GameManager {
                     }
                     updateProgress(mBkGrdActors);
                 } else if (TYPE_KEY == type) {
-                    mLocked = false;
-                    mTarget.setStatus(AdvanceActor.STATUS_PLAY);
+                    boolean left = false;
+                    if (mTarget.getX() < image.getX()) {
+                        left = true;
+                    }
+                    HeroActor dog = (HeroActor) mGroup.findActor(NAME_DOG);
+                    dog.toFront();
+                    dog.setPosition(image.getX(), image.getY());
+                    dog.setStatus(left ? HeroActor.STATUS_LEFT : HeroActor.STATUS_RIGHT);
+                    SequenceAction dogSeq = Actions.sequence(Actions.alpha(1f, 0.5f),
+                            Actions.moveTo(mTarget.getX(), mTarget.getY(), 3f),
+                            Actions.alpha(0, 0.5f),
+                            Actions.run(new Runnable(){
+
+                                @Override
+                                public void run() {
+                                    mLocked = false;
+                                    mTarget.setStatus(AdvanceActor.STATUS_PLAY);
+                                }}));
+                    dog.addAction(dogSeq);
+                    mForceFrontActors.add(dog);
+
                     if (mGameListener != null) {
                         mGameListener.onSoundPlay(GameListener.TYPE_KEY);
                     }
@@ -604,7 +638,7 @@ public class GameManager {
         }
     }
 
-    private void adjustActorsOrder(int flingDirection) {
+    private synchronized void adjustActorsOrder(int flingDirection) {
         if (FLING_UP == flingDirection || FLING_DOWN == flingDirection) {
             mGroup.addActor(mBkGrdActors);
 
@@ -620,6 +654,16 @@ public class GameManager {
 
             mGroup.addActor(mMask);
             mGroup.addActor(mMissionFinishedBoard);
+
+            int length =  mForceFrontActors.size();
+            for (int i = length - 1; i >=0; i--) {
+                Actor frontActor = mForceFrontActors.get(i);
+                if (frontActor.getActions().size > 0) {
+                    mGroup.addActor(frontActor);
+                } else {
+                    mForceFrontActors.remove(frontActor);
+                }
+            }
         }
     }
 

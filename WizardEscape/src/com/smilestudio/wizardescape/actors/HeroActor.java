@@ -50,7 +50,11 @@ public class HeroActor extends Actor {
             mStandAnimation.setPlayMode(Animation.LOOP);
         }
 
-        mStatus = STATUS_STAND;
+        if (mStandAnimation != null) {
+            mStatus = STATUS_STAND;
+        } else {
+            mStatus = STATUS_LEFT;
+        }
     }
 
     public void setStatus(int status) {
