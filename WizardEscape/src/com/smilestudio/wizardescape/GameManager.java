@@ -85,6 +85,8 @@ public class GameManager {
     private final static String NAME_PORTAL_B = "portal_b";
     public final static  String NAME_PROGRESS_TEXT = "progress_text";
     private static final String NAME_DOG = "dog";
+    private static final String NAME_GUIDE_ARROW = "guide_arrow";
+    private static final String NAME_GUIDE_HAND = "guide_hand";
 
     public final static String NAME_BOARD_BG_CIRCLE = "mission_board_bg_circle";
     public final static String NAME_BOARD_CONGRAS_TEXT = "mission_board_congras_text";
@@ -121,6 +123,7 @@ public class GameManager {
     private boolean mInGame;
     private AdListener mAdListener;
     private List<Actor> mForceFrontActors = new ArrayList<Actor>();
+    private boolean mGuideMode = false;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -284,9 +287,10 @@ public class GameManager {
 
         //load guide resource only in 1-1
         if (isGuildMission()) {
+            mGuideMode  = true;
             loadGuildActors(stage);
         }
-        
+
         //set target animtion according to key status
         if(hasKey) {
             mLocked = true;
@@ -307,7 +311,9 @@ public class GameManager {
         Image guildArrow = new Image(textureArrow);
         int x = (int) (mTarget.getX() + Constants.CELL_SIZE_WIDTH / 2 - textureArrow.getWidth() / 2);
         guildArrow.setPosition(x, mTarget.getY() + Constants.CELL_SIZE_HEIGHT + 30);
+        guildArrow.setName(NAME_GUIDE_ARROW);
         stage.addActor(guildArrow);
+        mForceFrontActors.add(guildArrow);
 
         SequenceAction arrowSequence = Actions.sequence(Actions.moveBy(0, 40, 0.5f), Actions.moveBy(0,  -40, 0.5f));
         RepeatAction arrowRepeatAction = Actions.forever(arrowSequence);
@@ -318,9 +324,10 @@ public class GameManager {
         stage.addActor(guildText);
 
         Image guildHand = new Image(new Texture(Gdx.files.internal("misc/img_guild_hand.png")));
-        guildHand.setPosition(200, 30);
-        SequenceAction handSeq = Actions.sequence(Actions.moveBy(400, 0, 2f), Actions.alpha(0, 1f),
-                Actions.moveBy(-400,  0, 1f), Actions.alpha(1f));
+        guildHand.setPosition(300, 230);
+        guildHand.setName(NAME_GUIDE_HAND);
+        SequenceAction handSeq = Actions.sequence(Actions.moveBy(300, 0, 1.5f), Actions.alpha(0, 1f),
+                Actions.moveBy(-300,  0, 0.6f), Actions.alpha(1f));
         RepeatAction handRepeat = Actions.forever(handSeq);
         guildHand.addAction(handRepeat);
         stage.addActor(guildHand);
@@ -376,7 +383,55 @@ public class GameManager {
             return false;
         }
 
-       return moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, mMe, false, true);
+        boolean needAction = false;
+        if (mGuideMode) {
+            needAction = showGuideByStep(flingDirection, mSteps);
+        }
+        return needAction ? moveToNextBlock(flingDirection, mCurrentCellX, mCurrentCellY, mMe, false, true) : false;
+    }
+
+    private boolean showGuideByStep(int direction, int step) {
+        switch (step) {
+            case 0:
+                //only right allowed
+                if (direction != FLING_RIGHT) {
+                    return false;
+                }
+                Image hand = (Image) mGroup.findActor(NAME_GUIDE_HAND);
+                hand.setPosition(700, 220);
+                hand.clearActions();
+                SequenceAction handSeq1 = Actions.sequence(Actions.alpha(1f), Actions.moveBy(0, -200, 1f),
+                        Actions.alpha(0), Actions.moveBy(0, 200, 0.5f));
+                RepeatAction repeat = Actions.forever(handSeq1);
+                hand.addAction(Actions.sequence(Actions.delay(1f), repeat));
+                return true;
+            case 1:
+                if (direction != FLING_DOWN) {
+                    return false;
+                }
+                hand = (Image) mGroup.findActor(NAME_GUIDE_HAND);
+                hand.setPosition(600, 10);
+                hand.clearActions();
+                SequenceAction handSeq2 = Actions.sequence(Actions.alpha(1f), Actions.moveBy(-300, 0, 1.5f),
+                        Actions.alpha(0), Actions.moveBy(300, 0, 1.5f));
+                RepeatAction repeat2 = Actions.forever(handSeq2);
+                hand.addAction(Actions.sequence(Actions.delay(1f), repeat2));
+                mForceFrontActors.clear();
+                mForceFrontActors.add(hand);
+                return true;
+            case 2:
+                if (direction != FLING_LEFT) {
+                    return false;
+                }
+                mForceFrontActors.clear();
+                hand = (Image) mGroup.findActor(NAME_GUIDE_HAND);
+                hand.clearActions();
+                mGroup.removeActor(hand);
+                return true;
+            default:
+
+        }
+        return false;
     }
 
     /*

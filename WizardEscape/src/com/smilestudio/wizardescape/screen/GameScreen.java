@@ -269,7 +269,9 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
 
     @Override
     public void resume() {
-        loadSounds();
+        if (mManager != null && mManager.isInGame()) {
+            loadSounds();
+        }
     }
 
     @Override
