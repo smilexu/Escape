@@ -383,7 +383,7 @@ public class GameManager {
             return false;
         }
 
-        boolean needAction = false;
+        boolean needAction = true;
         if (mGuideMode) {
             needAction = showGuideByStep(flingDirection, mSteps);
         }
@@ -1005,6 +1005,7 @@ public class GameManager {
         mLocked = false;
         mStarsTotal = 0;
         mSteps = 0;
+        mGuideMode = false;
 
         initialMissionBoardStatus(mMissionFinishedBoard);
     }

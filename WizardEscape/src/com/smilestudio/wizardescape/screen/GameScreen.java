@@ -222,6 +222,12 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
     }
 
     private void loadSounds() {
+        if (mBkMusic != null && mBkMusic.isPlaying()) {
+            mBkMusic.stop();
+            mBkMusic.dispose();
+            mBkMusic = null;
+        }
+
         mBkMusic = ResourceHelper.getBkMusic(mManager.getMission());
         mBkMusic.setLooping(true);
         mBkMusic.setVolume(0.5f);
