@@ -331,11 +331,11 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
             mManager.getGame().setScreen(new MissionSelectScreen(mManager.getMission()));
             releaseAudio();
             mManager.breakMission();
-            mManager.showAdWall();
             return true;
         } else if (actor == mBtnNext) {
             releaseAudio();
             mManager.gotoNext();
+            mManager.showAdWall();
             return true;
         } else if (actor == mBtnSoundEffect) {
             mHasSoundEffect = (ButtonActor.STATUS_ON == mBtnSoundEffect.toggle());

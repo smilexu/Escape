@@ -35,6 +35,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
     }
 
     public MissionSelectScreen(int mission) {
+        GameManager.getInstance().showAdWall();
         mMission = mission;
     }
 
