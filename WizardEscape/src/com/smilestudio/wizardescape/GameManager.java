@@ -33,6 +33,7 @@ import com.smilestudio.wizardescape.actors.KeyActor;
 import com.smilestudio.wizardescape.actors.NumberUnitActor;
 import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.model.SettingData;
+import com.smilestudio.wizardescape.screen.EndingScreen;
 import com.smilestudio.wizardescape.screen.GameScreen;
 import com.smilestudio.wizardescape.utils.Constants;
 import com.smilestudio.wizardescape.utils.ResourceHelper;
@@ -1117,10 +1118,12 @@ public class GameManager {
     public void gotoNext() {
         if (mMission <= Constants.MISSION_MAX && mSubmission < Constants.SUB_MISSION_MAX) {
             setMission(mMission, mSubmission + 1);
+            showAdWall();
         } else if (mMission < Constants.MISSION_MAX && Constants.SUB_MISSION_MAX == mSubmission) {
             setMission(mMission + 1, 1);
+            showAdWall();
         } else {
-            //Do nothing, already pass all missions
+            mGame.setScreen(new EndingScreen());
         }
     }
 

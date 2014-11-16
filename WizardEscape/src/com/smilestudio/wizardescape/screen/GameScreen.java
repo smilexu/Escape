@@ -337,7 +337,6 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         } else if (actor == mBtnNext) {
             releaseAudio();
             mManager.gotoNext();
-            mManager.showAdWall();
             return true;
         } else if (actor == mBtnSoundEffect) {
             mHasSoundEffect = (ButtonActor.STATUS_ON == mBtnSoundEffect.toggle());
