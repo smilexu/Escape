@@ -88,6 +88,7 @@ public class GameManager {
     private static final String NAME_DOG = "dog";
     private static final String NAME_GUIDE_ARROW = "guide_arrow";
     private static final String NAME_GUIDE_HAND = "guide_hand";
+    private static final String NAME_GUIDE_TEXT = "guide_text";
 
     public final static String NAME_BOARD_BG_CIRCLE = "mission_board_bg_circle";
     public final static String NAME_BOARD_CONGRAS_TEXT = "mission_board_congras_text";
@@ -322,6 +323,8 @@ public class GameManager {
 
         Image guildText = new Image(new Texture(Gdx.files.internal("misc/img_guild_text.png")));
         guildText.setPosition((970 - guildText.getWidth()) / 2, 500);
+        guildText.setName(NAME_GUIDE_TEXT);
+        guildText.addAction(Actions.forever(Actions.alpha(1)));
         stage.addActor(guildText);
 
         Image guildHand = new Image(new Texture(Gdx.files.internal("misc/img_guild_hand.png")));
@@ -419,6 +422,8 @@ public class GameManager {
                 hand.addAction(Actions.sequence(Actions.delay(1f), repeat2));
                 mForceFrontActors.clear();
                 mForceFrontActors.add(hand);
+                mForceFrontActors.add(mGroup.findActor(NAME_GUIDE_ARROW));
+                mForceFrontActors.add(mGroup.findActor(NAME_GUIDE_TEXT));
                 return true;
             case 2:
                 if (direction != FLING_LEFT) {
@@ -494,6 +499,11 @@ public class GameManager {
                             useSteps();
                             int currentScore = calculateScore();
                             saveGameIfNeed(currentScore);
+
+                            if (isGuildMission()) {
+                                removeGuildActors();
+                            }
+
                             generateCongrasAction(currentScore);
                         }
                         
@@ -618,6 +628,12 @@ public class GameManager {
                 return success;
         }
         return false;
+    }
+
+    protected void removeGuildActors() {
+        mGroup.removeActor(mGroup.findActor(NAME_GUIDE_ARROW));
+        mGroup.removeActor(mGroup.findActor(NAME_GUIDE_HAND));
+        mGroup.removeActor(mGroup.findActor(NAME_GUIDE_TEXT));
     }
 
     protected int calculateScore() {
@@ -1116,15 +1132,15 @@ public class GameManager {
     }
 
     public void gotoNext() {
-        if (mMission <= Constants.MISSION_MAX && mSubmission < Constants.SUB_MISSION_MAX) {
-            setMission(mMission, mSubmission + 1);
-            showAdWall();
-        } else if (mMission < Constants.MISSION_MAX && Constants.SUB_MISSION_MAX == mSubmission) {
-            setMission(mMission + 1, 1);
-            showAdWall();
-        } else {
+//        if (mMission <= Constants.MISSION_MAX && mSubmission < Constants.SUB_MISSION_MAX) {
+//            setMission(mMission, mSubmission + 1);
+//            showAdWall();
+//        } else if (mMission < Constants.MISSION_MAX && Constants.SUB_MISSION_MAX == mSubmission) {
+//            setMission(mMission + 1, 1);
+//            showAdWall();
+//        } else {
             mGame.setScreen(new EndingScreen());
-        }
+//        }
     }
 
     public void setGame(Game game) {

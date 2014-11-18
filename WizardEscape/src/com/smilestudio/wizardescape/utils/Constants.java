@@ -1,7 +1,5 @@
 package com.smilestudio.wizardescape.utils;
 
-import com.badlogic.gdx.graphics.Color;
-
 public class Constants {
 
     public static boolean DEBUG = true;
@@ -69,5 +67,11 @@ public class Constants {
     public static final float MISSION_FINISHED_STAR_FLY_DURATION = 0.2f;
     public static final int MISSION_FINISHED_STAR_X_DELTA = 120;
     public static final float MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT = 0.01f;
+
+    public static final float STARTTING_SCREEN_TEXT_Y = 50;
+    public static final float STARTTING_SCREEN_POTION_ROTATE = 15f;
+    public static final int   STARTTING_SCREEN_POTION_ROTATE_COUNT = 8;
+    public static final float STARTTING_SCREEN_POTION_ROTATE_DURATION = 0.15f;
+    public static final float STARTTING_SCREEN_FLY_AWAY_DURATION = 4f;
 
 }

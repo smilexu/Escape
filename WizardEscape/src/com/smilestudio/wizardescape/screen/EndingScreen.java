@@ -65,7 +65,7 @@ public class EndingScreen implements Screen, InputProcessor {
         mHome = new Image(new Texture(Gdx.files.internal("background/img_home.png")));
         mHome.setPosition(internalX, 0);
 
-        mEndingText = new Image(new Texture(Gdx.files.internal("misc/img_ending_text.png")));
+        mEndingText = new Image(new Texture(Gdx.files.internal("text/img_ending_text.png")));
         mEndingText.setPosition((Constants.STAGE_WIDTH - mEndingText.getWidth()) / 2, 0 - mEndingText.getHeight());
 
         mBgMask = new Image(new Texture(Gdx.files.internal("background/img_background_mask.png")));
