@@ -2,7 +2,7 @@ package com.smilestudio.wizardescape.utils;
 
 public class Constants {
 
-    public static boolean DEBUG = false;
+    public static boolean DEBUG = true;
     public final static int STAGE_WIDTH = 1150;
     public final static int STAGE_HEIGHT = 668;
 

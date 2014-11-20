@@ -625,8 +625,10 @@ public class GameManager {
                     return false;
                 }
                 boolean success =  actionTransportMove(flingDirection, cellX, cellY, type);
-                if( success && mGameListener != null) {
+                if (success && mGameListener != null) {
                     mGameListener.onSoundPlay(GameListener.TYPE_TELEPORT);
+                } else if (!success && mGameListener != null) {
+                    mGameListener.onSoundPlay(GameListener.TYPE_TELEPORT_UNVAILABLE);
                 }
                 return success;
         }

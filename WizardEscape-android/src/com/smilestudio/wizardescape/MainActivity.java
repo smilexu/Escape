@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.bodong.dianjinweb.DianJinPlatform;
+import com.smilestudio.wizardescape.utils.Constants;
 import com.smilestudio.wizardescape.utils.ScreenshotFactory;
 import com.umeng.analytics.game.UMGameAgent;
 
@@ -27,7 +28,9 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
         mHandler = new Handler();
 
         //init Umeng
-        UMGameAgent.setDebugMode(true);
+        if (Constants.DEBUG) {
+            UMGameAgent.setDebugMode(true);
+        }
         UMGameAgent.init( this );
 
         //init ad

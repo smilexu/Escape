@@ -57,6 +57,7 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
     private boolean mHasMusic;
     private Image mBtnWeibo;
     private Image mBtnWeixin;
+    private Sound mEffectTeleportUnvailable;
 
     public GameScreen() {
     }
@@ -253,6 +254,7 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         }
 
         mEffectTeleport = Gdx.audio.newSound(Gdx.files.internal("sound/effect_teleport.wav"));
+        mEffectTeleportUnvailable = Gdx.audio.newSound(Gdx.files.internal("sound/effect_warning.mp3"));
         mEffectMagicItem = Gdx.audio.newSound(Gdx.files.internal("sound/effect_magic_item.mp3"));
         mEffectKey = Gdx.audio.newSound(Gdx.files.internal("sound/effect_key.mp3"));
         mEffectPortal = Gdx.audio.newSound(Gdx.files.internal("sound/effect_portal.mp3"));
@@ -314,6 +316,11 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         if (mEffectTeleport != null) {
             mEffectTeleport.dispose();
             mEffectTeleport = null;
+        }
+
+        if (mEffectTeleportUnvailable != null) {
+            mEffectTeleportUnvailable.dispose();
+            mEffectTeleportUnvailable = null;
         }
 
         if (mEffectMagicItem != null) {
@@ -477,6 +484,8 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
             case GameListener.TYPE_DOG:
                 mEffectDog.play();
                 break;
+            case GameListener.TYPE_TELEPORT_UNVAILABLE:
+                mEffectTeleportUnvailable.play();
             default:
                 break;
         }
