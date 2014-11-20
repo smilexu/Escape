@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
-import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.GameConfig;
 
 public class StarttingScreen implements Screen, InputProcessor {
 
@@ -48,18 +48,18 @@ public class StarttingScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
-        mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
+        mStage = new Stage(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, false);
 
         mMusicGlass = Gdx.audio.newMusic(Gdx.files.internal("sound/effect_glass.mp3"));
         mMusicGlass.play();
 
         mPotionGreen = new Image(new Texture(Gdx.files.internal("misc/img_potion_green.png")));
-        mPotionGreen.setPosition(Constants.STAGE_WIDTH / 2 - 200, (Constants.STAGE_HEIGHT - mPotionGreen.getHeight()) / 2);
+        mPotionGreen.setPosition(GameConfig.STAGE_WIDTH / 2 - 200, (GameConfig.STAGE_HEIGHT - mPotionGreen.getHeight()) / 2);
         mPotionGreen.setOrigin(mPotionGreen.getWidth() / 2, mPotionGreen.getHeight() / 2);
-        mPotionGreen.setRotation(-Constants.STARTTING_SCREEN_POTION_ROTATE);
-        RepeatAction repeat = Actions.repeat(Constants.STARTTING_SCREEN_POTION_ROTATE_COUNT,
-                Actions.sequence(Actions.rotateBy(2 * Constants.STARTTING_SCREEN_POTION_ROTATE, Constants.STARTTING_SCREEN_POTION_ROTATE_DURATION),
-                        Actions.rotateBy(-2 * Constants.STARTTING_SCREEN_POTION_ROTATE, Constants.STARTTING_SCREEN_POTION_ROTATE_DURATION)));
+        mPotionGreen.setRotation(-GameConfig.STARTTING_SCREEN_POTION_ROTATE);
+        RepeatAction repeat = Actions.repeat(GameConfig.STARTTING_SCREEN_POTION_ROTATE_COUNT,
+                Actions.sequence(Actions.rotateBy(2 * GameConfig.STARTTING_SCREEN_POTION_ROTATE, GameConfig.STARTTING_SCREEN_POTION_ROTATE_DURATION),
+                        Actions.rotateBy(-2 * GameConfig.STARTTING_SCREEN_POTION_ROTATE, GameConfig.STARTTING_SCREEN_POTION_ROTATE_DURATION)));
         SequenceAction potionSeq = Actions.sequence(repeat, Actions.run(new Runnable() {
 
             @Override
@@ -70,40 +70,40 @@ public class StarttingScreen implements Screen, InputProcessor {
         mStage.addActor(mPotionGreen);
 
         mPotionPurple = new Image(new Texture(Gdx.files.internal("misc/img_potion_purple.png")));
-        mPotionPurple.setPosition(Constants.STAGE_WIDTH / 2 + 200, (Constants.STAGE_HEIGHT - mPotionPurple.getHeight()) / 2);
-        mPotionPurple.setRotation(Constants.STARTTING_SCREEN_POTION_ROTATE);
+        mPotionPurple.setPosition(GameConfig.STAGE_WIDTH / 2 + 200, (GameConfig.STAGE_HEIGHT - mPotionPurple.getHeight()) / 2);
+        mPotionPurple.setRotation(GameConfig.STARTTING_SCREEN_POTION_ROTATE);
         mPotionPurple.setOrigin(mPotionPurple.getWidth() / 2, mPotionPurple.getHeight() / 2);
-        repeat = Actions.repeat(Constants.STARTTING_SCREEN_POTION_ROTATE_COUNT,
-                Actions.sequence(Actions.rotateBy(-2 * Constants.STARTTING_SCREEN_POTION_ROTATE, Constants.STARTTING_SCREEN_POTION_ROTATE_DURATION),
-                        Actions.rotateBy(2 * Constants.STARTTING_SCREEN_POTION_ROTATE, Constants.STARTTING_SCREEN_POTION_ROTATE_DURATION)));
+        repeat = Actions.repeat(GameConfig.STARTTING_SCREEN_POTION_ROTATE_COUNT,
+                Actions.sequence(Actions.rotateBy(-2 * GameConfig.STARTTING_SCREEN_POTION_ROTATE, GameConfig.STARTTING_SCREEN_POTION_ROTATE_DURATION),
+                        Actions.rotateBy(2 * GameConfig.STARTTING_SCREEN_POTION_ROTATE, GameConfig.STARTTING_SCREEN_POTION_ROTATE_DURATION)));
         mPotionPurple.addAction(repeat);
         mStage.addActor(mPotionPurple);
 
         mSkip = new Image(new Texture(Gdx.files.internal("text/img_text_skip.png")));
-        mSkip.setPosition(Constants.STAGE_WIDTH - mSkip.getWidth(), 5);
+        mSkip.setPosition(GameConfig.STAGE_WIDTH - mSkip.getWidth(), 5);
         RepeatAction skipRepeat = Actions.forever(Actions.sequence(Actions.alpha(0, 0.5f), Actions.alpha(1, 0.5f)));
         mSkip.addAction(skipRepeat);
         mStage.addActor(mSkip);
 
         mText_1 = new Image(new Texture(Gdx.files.internal("text/img_text_1.png")));
-        mText_1.setPosition((Constants.STAGE_WIDTH - mText_1.getWidth()) / 2, Constants.STARTTING_SCREEN_TEXT_Y);
+        mText_1.setPosition((GameConfig.STAGE_WIDTH - mText_1.getWidth()) / 2, GameConfig.STARTTING_SCREEN_TEXT_Y);
         mStage.addActor(mText_1);
 
         mText_2 = new Image(new Texture(Gdx.files.internal("text/img_text_2.png")));
-        mText_2.setPosition((Constants.STAGE_WIDTH - mText_2.getWidth()) / 2, Constants.STARTTING_SCREEN_TEXT_Y);
+        mText_2.setPosition((GameConfig.STAGE_WIDTH - mText_2.getWidth()) / 2, GameConfig.STARTTING_SCREEN_TEXT_Y);
         mText_3 = new Image(new Texture(Gdx.files.internal("text/img_text_3.png")));
-        mText_3.setPosition((Constants.STAGE_WIDTH - mText_3.getWidth()) / 2, Constants.STARTTING_SCREEN_TEXT_Y);
+        mText_3.setPosition((GameConfig.STAGE_WIDTH - mText_3.getWidth()) / 2, GameConfig.STARTTING_SCREEN_TEXT_Y);
         mText_4 = new Image(new Texture(Gdx.files.internal("text/img_text_4.png")));
-        mText_4.setPosition((Constants.STAGE_WIDTH - mText_4.getWidth()) / 2,
-                (Constants.STAGE_HEIGHT - mText_4.getHeight()) / 2);
+        mText_4.setPosition((GameConfig.STAGE_WIDTH - mText_4.getWidth()) / 2,
+                (GameConfig.STAGE_HEIGHT - mText_4.getHeight()) / 2);
 
         mBomb = new Image(new Texture(Gdx.files.internal("misc/img_bomb.png")));
-        mBomb.setPosition((Constants.STAGE_WIDTH - mBomb.getWidth()) / 2, 0);
+        mBomb.setPosition((GameConfig.STAGE_WIDTH - mBomb.getWidth()) / 2, 0);
 
         mEffectBomb = Gdx.audio.newSound(Gdx.files.internal("sound/effect_bomb.mp3"));
 
         mSketch = new Image(new Texture(Gdx.files.internal("misc/img_hero_sketch.png")));
-        mSketch.setPosition((Constants.STAGE_WIDTH - mSketch.getWidth()) / 2, (Constants.STAGE_HEIGHT - mSketch.getHeight()) / 2);
+        mSketch.setPosition((GameConfig.STAGE_WIDTH - mSketch.getWidth()) / 2, (GameConfig.STAGE_HEIGHT - mSketch.getHeight()) / 2);
         mSketch.setOrigin(mSketch.getWidth() / 2, mSketch.getHeight() / 2);
 
         Gdx.input.setInputProcessor(this);
@@ -132,11 +132,11 @@ public class StarttingScreen implements Screen, InputProcessor {
         mStage.addActor(mText_3);
 
         mSketch.addAction(Actions.alpha(0));
-        SequenceAction seq = Actions.sequence(Actions.alpha(1, Constants.STARTTING_SCREEN_FLY_AWAY_DURATION / 2),
-                Actions.alpha(0, Constants.STARTTING_SCREEN_FLY_AWAY_DURATION / 2));
-        ParallelAction parallel = Actions.parallel(seq, Actions.rotateBy(1200, Constants.STARTTING_SCREEN_FLY_AWAY_DURATION),
-                Actions.scaleBy(4f, 4f, Constants.STARTTING_SCREEN_FLY_AWAY_DURATION),
-                Actions.delay(Constants.STARTTING_SCREEN_FLY_AWAY_DURATION, Actions.run(new Runnable() {
+        SequenceAction seq = Actions.sequence(Actions.alpha(1, GameConfig.STARTTING_SCREEN_FLY_AWAY_DURATION / 2),
+                Actions.alpha(0, GameConfig.STARTTING_SCREEN_FLY_AWAY_DURATION / 2));
+        ParallelAction parallel = Actions.parallel(seq, Actions.rotateBy(1200, GameConfig.STARTTING_SCREEN_FLY_AWAY_DURATION),
+                Actions.scaleBy(4f, 4f, GameConfig.STARTTING_SCREEN_FLY_AWAY_DURATION),
+                Actions.delay(GameConfig.STARTTING_SCREEN_FLY_AWAY_DURATION, Actions.run(new Runnable() {
 
                     @Override
                     public void run() {

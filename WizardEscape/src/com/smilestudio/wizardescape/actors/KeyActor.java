@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RotateToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.GameConfig;
 
 public class KeyActor extends Actor {
 
@@ -33,7 +33,7 @@ public class KeyActor extends Actor {
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
 
-        batch.draw(mKeyTexture, getX() + (Constants.CELL_SIZE_WIDTH - mKeyTexture.getWidth()) / 2, getY());
+        batch.draw(mKeyTexture, getX() + (GameConfig.CELL_SIZE_WIDTH - mKeyTexture.getWidth()) / 2, getY());
         mHaloImg.draw(batch, color.a * parentAlpha);
     }
 

@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SizeToAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.HeroActor;
-import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.GameConfig;
 import com.smilestudio.wizardescape.utils.ResourceHelper;
 
 public class CoverScreen implements Screen, InputProcessor {
@@ -76,13 +76,13 @@ public class CoverScreen implements Screen, InputProcessor {
             }
         }
 
-        mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
+        mStage = new Stage(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, false);
 
         Image bkImg = new Image(new Texture(Gdx.files.internal("background/img_cover_background.png")));
         bkImg.setPosition(0, 0);
         mStage.addActor(bkImg);
 
-        float duration = Constants.ANIMATION_HERO_ACTION_DURATION;
+        float duration = GameConfig.ANIMATION_HERO_ACTION_DURATION;
         HeroActor hero = new HeroActor(ResourceHelper.getHeroUpRegions(), duration, ResourceHelper.getHeroDownRegions(), duration,
                 ResourceHelper.getHeroLeftRegions(), duration, ResourceHelper.getHeroRightRegions(), duration,
                 ResourceHelper.getHeroStandRegions(), duration);
@@ -118,7 +118,7 @@ public class CoverScreen implements Screen, InputProcessor {
         int height = startTexture.getHeight();
         mStartButton = new Image(startTexture);
         mStartButton.setSize(width, height);
-        mStartButton.setPosition(Constants.COVER_SCREEN_POSITION_X_START, Constants.COVER_SCREEN_POSITION_Y_START);
+        mStartButton.setPosition(GameConfig.COVER_SCREEN_POSITION_X_START, GameConfig.COVER_SCREEN_POSITION_Y_START);
 
         SizeToAction sizeUpAction = Actions.sizeTo(width * 1.1f, height * 1.1f, 0.8f);
         SizeToAction sizeDownAction = Actions.sizeTo(width, height, 0.8f);

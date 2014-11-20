@@ -1,8 +1,9 @@
 package com.smilestudio.wizardescape.utils;
 
-public class Constants {
+public class GameConfig {
 
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
+
     public final static int STAGE_WIDTH = 1150;
     public final static int STAGE_HEIGHT = 668;
 

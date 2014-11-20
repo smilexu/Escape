@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.GameConfig;
 
 public class NumberUnitActor extends Image {
 
@@ -125,7 +125,7 @@ public class NumberUnitActor extends Image {
         }
 
         if (mUnit != null) {
-            batch.draw(mUnit, x + Constants.NUMBER_UNIT_ACTOR_UNIT_PADDING, getY());
+            batch.draw(mUnit, x + GameConfig.NUMBER_UNIT_ACTOR_UNIT_PADDING, getY());
         }
     }
 }

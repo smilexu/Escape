@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.MissionButton;
 import com.smilestudio.wizardescape.model.GameData;
-import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.GameConfig;
 
 public class MissionSelectScreen implements Screen, InputProcessor, GestureListener{
 
@@ -59,8 +59,8 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         if (mMission <= 1) {
             mMission = 1;
             mArrowLeft.setVisible(false);
-        } else if (mMission >= Constants.MISSION_MAX) {
-            mMission = Constants.MISSION_MAX;
+        } else if (mMission >= GameConfig.MISSION_MAX) {
+            mMission = GameConfig.MISSION_MAX;
             mArrowRight.setVisible(false);
         } else {
             mArrowLeft.setVisible(true);
@@ -82,7 +82,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         Texture arrowLeftTexture = new Texture(Gdx.files.internal("misc/img_arrow_left.png"));
         mArrowLeft = new Image(arrowLeftTexture);
         mArrowLeft.setSize(arrowLeftTexture.getWidth(), arrowLeftTexture.getHeight());
-        mArrowLeft.setPosition(Constants.MISSION_SCREEN_ARROW_PADDING_X, Constants.MISSION_SCREEN_ARROW_Y);
+        mArrowLeft.setPosition(GameConfig.MISSION_SCREEN_ARROW_PADDING_X, GameConfig.MISSION_SCREEN_ARROW_Y);
 
         RepeatAction leftRepeat = Actions.forever(Actions.sequence(Actions.moveBy(20, 0, 0.3f), Actions.moveBy(-20, 0, 0.3f)));
         RepeatAction rightRepeat = Actions.forever(Actions.sequence(Actions.moveBy(-20, 0, 0.3f), Actions.moveBy(20, 0, 0.3f)));
@@ -91,14 +91,14 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         Texture arrowRightTexture = new Texture(Gdx.files.internal("misc/img_arrow_right.png"));
         mArrowRight = new Image(arrowRightTexture);
         mArrowRight.setSize(arrowRightTexture.getWidth(), arrowRightTexture.getHeight());
-        mArrowRight.setPosition(Constants.STAGE_WIDTH - Constants.MISSION_SCREEN_ARROW_PADDING_X - mArrowRight.getWidth(),
-                Constants.MISSION_SCREEN_ARROW_Y);
+        mArrowRight.setPosition(GameConfig.STAGE_WIDTH - GameConfig.MISSION_SCREEN_ARROW_PADDING_X - mArrowRight.getWidth(),
+                GameConfig.MISSION_SCREEN_ARROW_Y);
         mArrowRight.addAction(rightRepeat);
 
-        mMainStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
-        mArrowStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
+        mMainStage = new Stage(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, false);
+        mArrowStage = new Stage(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, false);
 
-        for (int i = 0; i < Constants.MISSION_MAX; i++) {
+        for (int i = 0; i < GameConfig.MISSION_MAX; i++) {
             setupMissionThumbnail(i);
             setupMissionGroup(i);
         }
@@ -108,7 +108,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
         //move to current page
         Group group = mMainStage.getRoot();
-        group.addAction(Actions.moveBy(0 - Constants.STAGE_WIDTH * (mMission - 1), 0));
+        group.addAction(Actions.moveBy(0 - GameConfig.STAGE_WIDTH * (mMission - 1), 0));
 
         GestureDetector gd = new GestureDetector(this) {
             @Override
@@ -130,8 +130,8 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         Texture missionTexture = new Texture(Gdx.files.internal(path));
         Image missionImage = new Image(missionTexture);
         missionImage.setSize(missionTexture.getWidth(), missionTexture.getHeight());
-        int x = Constants.COVER_SCREEN_DELTA_X_MISSION_THUMBNAIL + indexOfPage * Constants.STAGE_WIDTH;
-        missionImage.setPosition(x, (Constants.STAGE_HEIGHT - missionTexture.getHeight()) / 2);
+        int x = GameConfig.COVER_SCREEN_DELTA_X_MISSION_THUMBNAIL + indexOfPage * GameConfig.STAGE_WIDTH;
+        missionImage.setPosition(x, (GameConfig.STAGE_HEIGHT - missionTexture.getHeight()) / 2);
         missionImage.setTouchable(Touchable.disabled);
         mMainStage.addActor(missionImage);
     }
@@ -153,13 +153,13 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         GameData currentData = null;
         GameData preData = null;
 
-        for (int i = 0; i < Constants.SUB_MISSION_MAX; i++) {
+        for (int i = 0; i < GameConfig.SUB_MISSION_MAX; i++) {
             //only enable 1-1 mission, others will depends on previous submission
             if (i >= 1) {
                 preData = gm.getGameData(indexOfPage + 1, i);
                 first = false;
             } else {
-                preData = gm.getGameData(indexOfPage, Constants.SUB_MISSION_MAX);
+                preData = gm.getGameData(indexOfPage, GameConfig.SUB_MISSION_MAX);
             }
             currentData = gm.getGameData(indexOfPage + 1, i+1);
             boolean passed = first || ((null == currentData) ? false : currentData.getPassed());
@@ -167,12 +167,12 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
                 passed = passed || preData.getPassed();
             }
             MissionButton mb = new MissionButton(availableButton, unavailableButton, availableStar, unavailableStar, indexOfPage + 1, i+1,
-                    (null == currentData) ? 0 : currentData.getStars(), Constants.DEBUG ? true : passed);
+                    (null == currentData) ? 0 : currentData.getStars(), GameConfig.DEBUG ? true : passed);
             mb.setSize(availableButton.getWidth(), MissionButton.ITEM_HEIGHT);
-            int indexInRow = i % Constants.MISSION_SCREEN_MAX_COLUMN;
-            int indexInColumn = i / Constants.MISSION_SCREEN_MAX_COLUMN;
-            mb.setPosition(Constants.MISSION_SCREEN_GROUP_LEFT_TOP_X + (availableButton.getWidth() + Constants.MISSION_SCREEN_GROUP_OFFSET_X) * indexInRow + indexOfPage * Constants.STAGE_WIDTH,
-                    Constants.MISSION_SCREEN_GROUP_LEFT_TOP_Y - (MissionButton.ITEM_HEIGHT + Constants.MISSION_SCREEN_GROUP_OFFSET_Y) * indexInColumn);
+            int indexInRow = i % GameConfig.MISSION_SCREEN_MAX_COLUMN;
+            int indexInColumn = i / GameConfig.MISSION_SCREEN_MAX_COLUMN;
+            mb.setPosition(GameConfig.MISSION_SCREEN_GROUP_LEFT_TOP_X + (availableButton.getWidth() + GameConfig.MISSION_SCREEN_GROUP_OFFSET_X) * indexInRow + indexOfPage * GameConfig.STAGE_WIDTH,
+                    GameConfig.MISSION_SCREEN_GROUP_LEFT_TOP_Y - (MissionButton.ITEM_HEIGHT + GameConfig.MISSION_SCREEN_GROUP_OFFSET_Y) * indexInColumn);
             mMainStage.addActor(mb);
         }
     }
@@ -243,12 +243,12 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
             if (actor == mArrowLeft) {
                 mMission = mMission - 1;
                 Group group = mMainStage.getRoot();
-                group.addAction(Actions.moveBy(Constants.STAGE_WIDTH, 0, 0.5f));
+                group.addAction(Actions.moveBy(GameConfig.STAGE_WIDTH, 0, 0.5f));
                 return true;
             } else if (actor == mArrowRight) {
                 mMission = mMission + 1;
                 Group group = mMainStage.getRoot();
-                group.addAction(Actions.moveBy(-Constants.STAGE_WIDTH, 0, 0.5f));
+                group.addAction(Actions.moveBy(-GameConfig.STAGE_WIDTH, 0, 0.5f));
                 return true;
             }
         }
@@ -293,12 +293,12 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
             if (actor == mArrowLeft) {
                 mMission = mMission - 1;
                 Group group = mMainStage.getRoot();
-                group.addAction(Actions.moveBy(Constants.STAGE_WIDTH, 0, 0.5f));
+                group.addAction(Actions.moveBy(GameConfig.STAGE_WIDTH, 0, 0.5f));
                 return true;
             } else if (actor == mArrowRight) {
                 mMission = mMission + 1;
                 Group group = mMainStage.getRoot();
-                group.addAction(Actions.moveBy(-Constants.STAGE_WIDTH, 0, 0.5f));
+                group.addAction(Actions.moveBy(-GameConfig.STAGE_WIDTH, 0, 0.5f));
                 return true;
             }
         }
@@ -317,11 +317,11 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
             if (velocityX > 0 && mMission > 1) {
                 mMission = mMission - 1;
                 Group group = mMainStage.getRoot();
-                group.addAction(Actions.moveBy(Constants.STAGE_WIDTH, 0, 0.5f));
-            } else if (velocityX < 0 && mMission < Constants.MISSION_MAX){
+                group.addAction(Actions.moveBy(GameConfig.STAGE_WIDTH, 0, 0.5f));
+            } else if (velocityX < 0 && mMission < GameConfig.MISSION_MAX){
                 mMission = mMission + 1;
                 Group group = mMainStage.getRoot();
-                group.addAction(Actions.moveBy(-Constants.STAGE_WIDTH, 0, 0.5f));
+                group.addAction(Actions.moveBy(-GameConfig.STAGE_WIDTH, 0, 0.5f));
             }
             return true;
         }

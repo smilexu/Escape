@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.GameConfig;
 
 public class HeroActor extends Actor {
 
@@ -91,7 +91,7 @@ public class HeroActor extends Actor {
                 region = mStandAnimation.getKeyFrame(mStateTime);
                 break;
         }
-        batch.draw(region, getX() + (Constants.CELL_SIZE_WIDTH - region.getRegionWidth() * scaleX) / 2, getY(),
+        batch.draw(region, getX() + (GameConfig.CELL_SIZE_WIDTH - region.getRegionWidth() * scaleX) / 2, getY(),
                 region.getRegionWidth() * scaleX, region.getRegionHeight() * scaleY);
     }
 

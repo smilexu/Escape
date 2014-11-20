@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.GameConfig;
 
 public class AdvanceActor extends Actor {
 
@@ -56,10 +56,10 @@ public class AdvanceActor extends Actor {
         if(mType == ANIMATION) {
             if (STATUS_PAUSE == mStatus) {
                 TextureRegion firstFrame = mAnimation.getKeyFrame(0);
-                batch.draw(firstFrame, getX() + (Constants.CELL_SIZE_WIDTH - firstFrame.getRegionWidth()) / 2, getY());
+                batch.draw(firstFrame, getX() + (GameConfig.CELL_SIZE_WIDTH - firstFrame.getRegionWidth()) / 2, getY());
             } else {
                 TextureRegion region = mAnimation.getKeyFrame(mStateTime);
-                batch.draw(region, getX() + (Constants.CELL_SIZE_WIDTH - region.getRegionWidth()) / 2, getY());
+                batch.draw(region, getX() + (GameConfig.CELL_SIZE_WIDTH - region.getRegionWidth()) / 2, getY());
             }
         } else if(mType == IMAGE) {
             batch.draw(mTextureRegion, getX(), getY());

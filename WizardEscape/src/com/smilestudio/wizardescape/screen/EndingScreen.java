@@ -17,7 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.smilestudio.wizardescape.GameManager;
 import com.smilestudio.wizardescape.actors.HeroActor;
-import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.GameConfig;
 import com.smilestudio.wizardescape.utils.ResourceHelper;
 
 public class EndingScreen implements Screen, InputProcessor {
@@ -51,10 +51,10 @@ public class EndingScreen implements Screen, InputProcessor {
     public void show() {
         loadSounds();
 
-        mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
+        mStage = new Stage(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, false);
 
         mMission1 = new Image(new Texture(Gdx.files.internal("background/img_wildfield.png")));
-        float internalX = (Constants.STAGE_WIDTH - mMission1.getWidth()) / 2;
+        float internalX = (GameConfig.STAGE_WIDTH - mMission1.getWidth()) / 2;
         mMission1.setPosition(internalX, 0);
         mStage.addActor(mMission1);
         mMission2 = new Image(new Texture(Gdx.files.internal("background/img_desert.png")));
@@ -66,7 +66,7 @@ public class EndingScreen implements Screen, InputProcessor {
         mHome.setPosition(internalX, 0);
 
         mEndingText = new Image(new Texture(Gdx.files.internal("text/img_ending_text.png")));
-        mEndingText.setPosition((Constants.STAGE_WIDTH - mEndingText.getWidth()) / 2, 0 - mEndingText.getHeight());
+        mEndingText.setPosition((GameConfig.STAGE_WIDTH - mEndingText.getWidth()) / 2, 0 - mEndingText.getHeight());
 
         mBgMask = new Image(new Texture(Gdx.files.internal("background/img_background_mask.png")));
         mBgMask.setPosition(0, 0);
@@ -74,7 +74,7 @@ public class EndingScreen implements Screen, InputProcessor {
         Color color = mBgMask.getColor();
         mBgMask.setColor(new Color(color.r, color.g, color.b, 0f));
 
-        float duration = Constants.ANIMATION_HERO_ACTION_DURATION;
+        float duration = GameConfig.ANIMATION_HERO_ACTION_DURATION;
         mHero = new HeroActor(ResourceHelper.getHeroUpRegions(), duration, ResourceHelper.getHeroDownRegions(), duration,
                 ResourceHelper.getHeroLeftRegions(), duration, ResourceHelper.getHeroRightRegions(), duration,
                 ResourceHelper.getHeroStandRegions(), duration);
@@ -82,11 +82,11 @@ public class EndingScreen implements Screen, InputProcessor {
         mHero.setStatus(HeroActor.STATUS_RIGHT);
         mStage.addActor(mHero);
 
-        final HeroActor dog = new HeroActor(null, Constants.ANIMATION_HERO_ACTION_DURATION,
-                null, Constants.ANIMATION_HERO_ACTION_DURATION,
-                ResourceHelper.getDogLeftRegions(), Constants.ANIMATION_HERO_ACTION_DURATION,
-                ResourceHelper.getDogRightRegions(), Constants.ANIMATION_HERO_ACTION_DURATION,
-                null, Constants.ANIMATION_HERO_ACTION_DURATION);
+        final HeroActor dog = new HeroActor(null, GameConfig.ANIMATION_HERO_ACTION_DURATION,
+                null, GameConfig.ANIMATION_HERO_ACTION_DURATION,
+                ResourceHelper.getDogLeftRegions(), GameConfig.ANIMATION_HERO_ACTION_DURATION,
+                ResourceHelper.getDogRightRegions(), GameConfig.ANIMATION_HERO_ACTION_DURATION,
+                null, GameConfig.ANIMATION_HERO_ACTION_DURATION);
         dog.setStatus(HeroActor.STATUS_RIGHT);
         dog.setPosition(internalX - 80, 200);
         mStage.addActor(dog);
@@ -143,7 +143,7 @@ public class EndingScreen implements Screen, InputProcessor {
             public void run() {
                 mStage.clear();
                 mStage.addActor(mHome);
-                float internalX = (Constants.STAGE_WIDTH - mMission1.getWidth()) / 2;
+                float internalX = (GameConfig.STAGE_WIDTH - mMission1.getWidth()) / 2;
                 mHero.setPosition(internalX, 200);
                 mStage.addActor(mHero);
                 mStage.addActor(mBgMask);
@@ -183,7 +183,7 @@ public class EndingScreen implements Screen, InputProcessor {
             public void run() {
                 upRun();
             }});
-        SequenceAction scroll = Actions.sequence(Actions.moveBy(0, Constants.STAGE_HEIGHT + mEndingText.getHeight(), 10f), upRun);
+        SequenceAction scroll = Actions.sequence(Actions.moveBy(0, GameConfig.STAGE_HEIGHT + mEndingText.getHeight(), 10f), upRun);
         mEndingText.addAction(scroll);
     }
 

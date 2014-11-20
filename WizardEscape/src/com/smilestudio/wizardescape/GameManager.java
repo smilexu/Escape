@@ -35,7 +35,7 @@ import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.model.SettingData;
 import com.smilestudio.wizardescape.screen.EndingScreen;
 import com.smilestudio.wizardescape.screen.GameScreen;
-import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.GameConfig;
 import com.smilestudio.wizardescape.utils.ResourceHelper;
 
 public class GameManager {
@@ -201,7 +201,7 @@ public class GameManager {
                     case TYPE_EMPTY:
                         break;
                     case TYPE_ME:
-                        float duration = Constants.ANIMATION_HERO_ACTION_DURATION;
+                        float duration = GameConfig.ANIMATION_HERO_ACTION_DURATION;
                         mMe = new HeroActor(ResourceHelper.getHeroUpRegions(), duration, ResourceHelper.getHeroDownRegions(), duration,
                                 ResourceHelper.getHeroLeftRegions(), duration, ResourceHelper.getHeroRightRegions(), duration,
                                 ResourceHelper.getHeroStandRegions(), duration);
@@ -217,14 +217,14 @@ public class GameManager {
                         obstacle.setName(NAME_OBSTACLE);
                         obstacle.setSize(obstacle.getWidth(), obstacle.getHeight());
                         actor = (Actor)obstacle;
-                        actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - obstacle.getWidth()) / 2, position.y);
+                        actor.setPosition(position.x + (GameConfig.CELL_SIZE_WIDTH - obstacle.getWidth()) / 2, position.y);
                         break;
                     case TYPE_MOVABLE:
                         Image movable = ResourceHelper.getMovableImage(mMission);
                         movable.setName(NAME_MOVABLE);
                         actor = (Actor)movable;
                         actor.setSize(movable.getWidth(), movable.getHeight());
-                        actor.setPosition(position.x + (Constants.CELL_SIZE_WIDTH - movable.getWidth()) / 2, position.y);
+                        actor.setPosition(position.x + (GameConfig.CELL_SIZE_WIDTH - movable.getWidth()) / 2, position.y);
                         mMovableObjectWidth = movable.getWidth();
                         break;
                     case TYPE_STAR:
@@ -251,7 +251,7 @@ public class GameManager {
                         mTarget = new AdvanceActor(0.2f, targets, Animation.LOOP, AdvanceActor.STATUS_PLAY);
                         mTarget.setName(NAME_TARGET);
                         actor = (Actor)mTarget;
-                        actor.setSize(Constants.CELL_SIZE_WIDTH, Constants.CELL_SIZE_HEIGHT);
+                        actor.setSize(GameConfig.CELL_SIZE_WIDTH, GameConfig.CELL_SIZE_HEIGHT);
                         actor.setPosition(position.x, position.y);
                         break;
                     case TYPE_PORTAL_A:
@@ -269,11 +269,11 @@ public class GameManager {
                         hasKey = true;
 
                         //add dog as well
-                        HeroActor dog = new HeroActor(null, Constants.ANIMATION_HERO_ACTION_DURATION,
-                                null, Constants.ANIMATION_HERO_ACTION_DURATION,
-                                ResourceHelper.getDogLeftRegions(), Constants.ANIMATION_HERO_ACTION_DURATION,
-                                ResourceHelper.getDogRightRegions(), Constants.ANIMATION_HERO_ACTION_DURATION,
-                                null, Constants.ANIMATION_HERO_ACTION_DURATION);
+                        HeroActor dog = new HeroActor(null, GameConfig.ANIMATION_HERO_ACTION_DURATION,
+                                null, GameConfig.ANIMATION_HERO_ACTION_DURATION,
+                                ResourceHelper.getDogLeftRegions(), GameConfig.ANIMATION_HERO_ACTION_DURATION,
+                                ResourceHelper.getDogRightRegions(), GameConfig.ANIMATION_HERO_ACTION_DURATION,
+                                null, GameConfig.ANIMATION_HERO_ACTION_DURATION);
                         dog.setName(NAME_DOG);
                         dog.addAction(Actions.alpha(0));
                         stage.addActor(dog);
@@ -314,8 +314,8 @@ public class GameManager {
     private void loadGuildActors(final Stage stage) {
         Texture textureArrow = new Texture(Gdx.files.internal("misc/img_guild_arrow.png"));
         Image guildArrow = new Image(textureArrow);
-        int x = (int) (mTarget.getX() + Constants.CELL_SIZE_WIDTH / 2 - textureArrow.getWidth() / 2);
-        guildArrow.setPosition(x, mTarget.getY() + Constants.CELL_SIZE_HEIGHT + 30);
+        int x = (int) (mTarget.getX() + GameConfig.CELL_SIZE_WIDTH / 2 - textureArrow.getWidth() / 2);
+        guildArrow.setPosition(x, mTarget.getY() + GameConfig.CELL_SIZE_HEIGHT + 30);
         guildArrow.setName(NAME_GUIDE_ARROW);
         stage.addActor(guildArrow);
         mForceFrontActors.add(guildArrow);
@@ -491,9 +491,9 @@ public class GameManager {
                     ScaleToAction scaleSmallerA = Actions.scaleTo(1f, 1f, 0.3f);
                     ScaleToAction scaleBiggerB = Actions.scaleTo(2f, 2f, 0.3f);
                     ScaleToAction scaleSmallerB = Actions.scaleTo(1f, 1f, 0.3f);
-                    AlphaAction alpha = Actions.alpha(0, Constants.ANIMATION_HERO_PASS);
+                    AlphaAction alpha = Actions.alpha(0, GameConfig.ANIMATION_HERO_PASS);
                     ParallelAction parallel = Actions.parallel(scaleSmallerB, alpha);
-                    moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
+                    moveto.setDuration(GameConfig.ANIMATION_DURATION_PER_BLOCK_NORMAL);
                     RunnableAction runnable = Actions.run(new Runnable() {
 
                         @Override
@@ -525,8 +525,8 @@ public class GameManager {
                 Actor image = (Actor)getNextActor(flingDirection, cellX, cellY);
                 mForceFrontActors.add(image);
                 image.toFront();
-                MoveByAction moveBy = Actions.moveBy(0, Constants.ANIMATION_STAR_MOVEBY_Y, Constants.ANIMATION_STAR_DURATION);
-                AlphaAction alPha = Actions.alpha(0, Constants.ANIMATION_STAR_DURATION);
+                MoveByAction moveBy = Actions.moveBy(0, GameConfig.ANIMATION_STAR_MOVEBY_Y, GameConfig.ANIMATION_STAR_DURATION);
+                AlphaAction alPha = Actions.alpha(0, GameConfig.ANIMATION_STAR_DURATION);
                 ParallelAction actions = Actions.parallel(moveBy, alPha);
                 image.addAction(actions);
                 if (TYPE_STAR == type) {
@@ -544,7 +544,7 @@ public class GameManager {
                     dog.toFront();
                     dog.setPosition(image.getX(), image.getY());
                     double moveDuration = Math.sqrt(Math.pow(Math.abs(image.getX() - mTarget.getX()), 2)
-                            + Math.pow(Math.abs(image.getY() - mTarget.getY()), 2)) / Constants.CELL_SIZE_WIDTH * 0.15f;
+                            + Math.pow(Math.abs(image.getY() - mTarget.getY()), 2)) / GameConfig.CELL_SIZE_WIDTH * 0.15f;
                     dog.setStatus(left ? HeroActor.STATUS_LEFT : HeroActor.STATUS_RIGHT);
                     SequenceAction dogSeq = Actions.sequence(Actions.alpha(1f, 0.5f),
                             Actions.moveTo(mTarget.getX(), mTarget.getY(), (float) moveDuration),
@@ -571,9 +571,9 @@ public class GameManager {
 
                 MoveToAction moveto = Actions.moveTo(position.x, position.y);
                 if (isPushStatus) {
-                    moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_PUSH);
+                    moveto.setDuration(GameConfig.ANIMATION_DURATION_PER_BLOCK_PUSH);
                 } else {
-                    moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
+                    moveto.setDuration(GameConfig.ANIMATION_DURATION_PER_BLOCK_NORMAL);
                 }
 
                 SequenceAction sequence;
@@ -604,7 +604,7 @@ public class GameManager {
                     sequence = Actions.sequence(moveto, runnable);
                     actor.addAction(sequence);
                 } else {
-                    moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_PUSH);
+                    moveto.setDuration(GameConfig.ANIMATION_DURATION_PER_BLOCK_PUSH);
 
                     //if the moved block is not hero, we just leave a empty at previous position,
                     //to let the hero goes into
@@ -661,14 +661,14 @@ public class GameManager {
      * 5. Buttons display from smaller
      */
     private void generateCongrasAction(final int score) {
-        AlphaAction maskAlphaAction = Actions.alpha(Constants.MISSION_FINISHED_MASK_ALPHA, Constants.MISSION_FINISHED_ALPHA_DURATION);
+        AlphaAction maskAlphaAction = Actions.alpha(GameConfig.MISSION_FINISHED_MASK_ALPHA, GameConfig.MISSION_FINISHED_ALPHA_DURATION);
         mMask.addAction(maskAlphaAction);
 
         Image bgCircle = (Image) mMissionFinishedBoard.findActor(NAME_BOARD_BG_CIRCLE);
-        MoveToAction bgCircleMove = Actions.moveTo(bgCircle.getX(), Constants.MISSION_FINISHED_BG_CIRCLE_Y, Constants.MISSION_FIMISHED_BG_CIRCLE_MOVE_DURATION);
+        MoveToAction bgCircleMove = Actions.moveTo(bgCircle.getX(), GameConfig.MISSION_FINISHED_BG_CIRCLE_Y, GameConfig.MISSION_FIMISHED_BG_CIRCLE_MOVE_DURATION);
 
         Image congrasText = (Image) mMissionFinishedBoard.findActor(NAME_BOARD_CONGRAS_TEXT);
-        MoveToAction textMove = Actions.moveTo(congrasText.getX(), Constants.MISSION_FINISHED_CONGRAS_TEXT_Y, Constants.MISSION_FIMISHED_BG_CIRCLE_MOVE_DURATION);
+        MoveToAction textMove = Actions.moveTo(congrasText.getX(), GameConfig.MISSION_FINISHED_CONGRAS_TEXT_Y, GameConfig.MISSION_FIMISHED_BG_CIRCLE_MOVE_DURATION);
         congrasText.addAction(textMove);
 
         RunnableAction runnable = Actions.run(new Runnable() {
@@ -692,8 +692,8 @@ public class GameManager {
         }
 
         Actor star = mMissionFinishedBoard.findActor(NAME_BOARD_STARS[current]);
-        MoveToAction moveTo = Actions.moveTo(Constants.MISSION_FINISHED_STAR_X_DEFAULT + Constants.MISSION_FINISHED_STAR_X_DELTA * current, Constants.MISSION_FINISHED_STAR_Y_DEFAULT,
-                Constants.MISSION_FINISHED_STAR_FLY_DURATION);
+        MoveToAction moveTo = Actions.moveTo(GameConfig.MISSION_FINISHED_STAR_X_DEFAULT + GameConfig.MISSION_FINISHED_STAR_X_DELTA * current, GameConfig.MISSION_FINISHED_STAR_Y_DEFAULT,
+                GameConfig.MISSION_FINISHED_STAR_FLY_DURATION);
         RunnableAction runnable = Actions.run(new Runnable() {
 
             @Override
@@ -768,7 +768,7 @@ public class GameManager {
      */
     private Vector2 modifyPosition(Vector2 position, String name) {
         if (name.equals(NAME_MOVABLE)) {
-            position.x = position.x + (Constants.CELL_SIZE_WIDTH - mMovableObjectWidth) / 2;
+            position.x = position.x + (GameConfig.CELL_SIZE_WIDTH - mMovableObjectWidth) / 2;
         }
         return position;
     }
@@ -797,8 +797,8 @@ public class GameManager {
         mInAnimation = true;
 
         MoveToAction transport_moveto = Actions.moveTo(transport_position.x, transport_position.y);
-        transport_moveto.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
-        AlphaAction fadeout = Actions.alpha(0, Constants.ANIMATION_HERO_PORTAL_FADE_DURATION);
+        transport_moveto.setDuration(GameConfig.ANIMATION_DURATION_PER_BLOCK_NORMAL);
+        AlphaAction fadeout = Actions.alpha(0, GameConfig.ANIMATION_HERO_PORTAL_FADE_DURATION);
         RunnableAction runnable = Actions.run(new Runnable() {
 
             @Override
@@ -810,10 +810,10 @@ public class GameManager {
         });
         MoveToAction moveBetweenTransport = Actions.moveTo(otherTransportPosition.x, otherTransportPosition.y);
         moveBetweenTransport.setDuration(0);
-        AlphaAction fadein = Actions.alpha(1, Constants.ANIMATION_HERO_PORTAL_FADE_DURATION);
+        AlphaAction fadein = Actions.alpha(1, GameConfig.ANIMATION_HERO_PORTAL_FADE_DURATION);
         Vector2 nextOfOther = getNextBlockPosition(flingDirection, (int)otherTransportCell.x, (int)otherTransportCell.y);
         MoveToAction moveToNextOfOther = Actions.moveTo(nextOfOther.x, nextOfOther.y);
-        moveToNextOfOther.setDuration(Constants.ANIMATION_DURATION_PER_BLOCK_NORMAL);
+        moveToNextOfOther.setDuration(GameConfig.ANIMATION_DURATION_PER_BLOCK_NORMAL);
         RunnableAction runnableOfNext = Actions.run(new Runnable() {
 
             @Override
@@ -1133,42 +1133,42 @@ public class GameManager {
         }
 
         Actor bgCircle = boardItems.findActor(NAME_BOARD_BG_CIRCLE);
-        bgCircle.setPosition((mMask.getWidth() - bgCircle.getWidth()) / 2, Constants.STAGE_HEIGHT);
+        bgCircle.setPosition((mMask.getWidth() - bgCircle.getWidth()) / 2, GameConfig.STAGE_HEIGHT);
 
         Actor congrasText = boardItems.findActor(NAME_BOARD_CONGRAS_TEXT);
-        congrasText.setPosition((mMask.getWidth() - congrasText.getWidth()) / 2, Constants.STAGE_HEIGHT);
+        congrasText.setPosition((mMask.getWidth() - congrasText.getWidth()) / 2, GameConfig.STAGE_HEIGHT);
 
         for (int i = 0; i < NAME_BOARD_STARS.length; i++) {
             Actor star = boardItems.findActor(NAME_BOARD_STARS[i]);
-            star.setPosition(0 - star.getWidth(), Constants.STAGE_HEIGHT);
+            star.setPosition(0 - star.getWidth(), GameConfig.STAGE_HEIGHT);
         }
 
         Image weiboShare = (Image) boardItems.findActor(NAME_BOARD_WEIBO);
         weiboShare.setVisible(false);
         weiboShare.clearActions();
         weiboShare.setOrigin(weiboShare.getWidth() / 2, weiboShare.getHeight() / 2);
-        weiboShare.setScale(Constants.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
+        weiboShare.setScale(GameConfig.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
 
         Image buttonNext = (Image) boardItems.findActor(NAME_BOARD_NEXT);
         buttonNext.setVisible(false);
         buttonNext.clearActions();
         buttonNext.setOrigin(buttonNext.getWidth() / 2, buttonNext.getHeight() / 2);
-        buttonNext.setScale(Constants.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
+        buttonNext.setScale(GameConfig.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
 
         Image weixinShare = (Image) boardItems.findActor(NAME_BOARD_WEIXIN);
         weixinShare.setVisible(false);
         weixinShare.clearActions();
         weixinShare.setOrigin(weixinShare.getWidth() / 2, weixinShare.getHeight() / 2);
-        weixinShare.setScale(Constants.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
+        weixinShare.setScale(GameConfig.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
     }
 
     public void gotoNext() {
-        if (mMission <= Constants.MISSION_MAX && mSubmission < Constants.SUB_MISSION_MAX) {
+        if (mMission <= GameConfig.MISSION_MAX && mSubmission < GameConfig.SUB_MISSION_MAX) {
             setMission(mMission, mSubmission + 1);
             if (mMission >= 2) {
                 showAdWall();
             }
-        } else if (mMission < Constants.MISSION_MAX && Constants.SUB_MISSION_MAX == mSubmission) {
+        } else if (mMission < GameConfig.MISSION_MAX && GameConfig.SUB_MISSION_MAX == mSubmission) {
             setMission(mMission + 1, 1);
             showAdWall();
         } else {
@@ -1198,8 +1198,8 @@ public class GameManager {
 
     private static Vector2 getPostionByCell(int x, int y) {
         Vector2 position = new Vector2();
-        int positionY = Constants.OFFSET_Y + Constants.CELL_SIZE_HEIGHT * (GameManager.ROW - 1);
-        position.set(Constants.OFFSET_X + x * Constants.CELL_SIZE_WIDTH, positionY - y * Constants.CELL_SIZE_HEIGHT);
+        int positionY = GameConfig.OFFSET_Y + GameConfig.CELL_SIZE_HEIGHT * (GameManager.ROW - 1);
+        position.set(GameConfig.OFFSET_X + x * GameConfig.CELL_SIZE_WIDTH, positionY - y * GameConfig.CELL_SIZE_HEIGHT);
         return position;
     }
 

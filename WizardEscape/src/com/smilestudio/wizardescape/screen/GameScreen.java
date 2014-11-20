@@ -27,7 +27,7 @@ import com.smilestudio.wizardescape.actors.AdvanceActor;
 import com.smilestudio.wizardescape.actors.ButtonActor;
 import com.smilestudio.wizardescape.actors.NumberUnitActor;
 import com.smilestudio.wizardescape.model.SettingData;
-import com.smilestudio.wizardescape.utils.Constants;
+import com.smilestudio.wizardescape.utils.GameConfig;
 import com.smilestudio.wizardescape.utils.ResourceHelper;
 import com.smilestudio.wizardescape.utils.ScreenshotFactory;
 
@@ -88,7 +88,7 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         mManager.initGame();
         mManager.setGameListener(this);
 
-        mStage = new Stage(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT, false);
+        mStage = new Stage(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, false);
 
         mBgImage = ResourceHelper.getBgImage(mManager.getMission());
         mBgImage.setSize(mBgImage.getWidth(), mBgImage.getHeight());
@@ -110,35 +110,35 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         Texture refreshTexture = new Texture(Gdx.files.internal("buttons/img_restart.png"));
         mRefreshButton = new Image(refreshTexture);
         mRefreshButton.setSize(refreshTexture.getWidth(), refreshTexture.getHeight());
-        mRefreshButton.setScale(Constants.GAME_SCREEN_BTN_SCALE);
-        mRefreshButton.setPosition(Constants.GAME_SCREEN_POSITION_X_REFRESH, Constants.GAME_SCREEN_POSITION_Y_REFRESH);
+        mRefreshButton.setScale(GameConfig.GAME_SCREEN_BTN_SCALE);
+        mRefreshButton.setPosition(GameConfig.GAME_SCREEN_POSITION_X_REFRESH, GameConfig.GAME_SCREEN_POSITION_Y_REFRESH);
         mRefreshButton.addListener(this);
         mStage.addActor(mRefreshButton);
 
         Texture selectTexture = new Texture(Gdx.files.internal("buttons/img_select_mission.png"));
         mSelectMissionButton = new Image(selectTexture);
         mSelectMissionButton.setSize(selectTexture.getWidth(), selectTexture.getHeight());
-        mSelectMissionButton.setScale(Constants.GAME_SCREEN_BTN_SCALE);
-        mSelectMissionButton.setPosition(Constants.GAME_SCREEN_POSITION_X_SELECT, Constants.GAME_SCREEN_POSITION_Y_SELECT);
+        mSelectMissionButton.setScale(GameConfig.GAME_SCREEN_BTN_SCALE);
+        mSelectMissionButton.setPosition(GameConfig.GAME_SCREEN_POSITION_X_SELECT, GameConfig.GAME_SCREEN_POSITION_Y_SELECT);
         mSelectMissionButton.addListener(this);
         mStage.addActor(mSelectMissionButton);
 
         NumberUnitActor missionLabel = new NumberUnitActor(mManager.getMission() + "-" + mManager.getSubMission(),
                 new Texture(Gdx.files.internal("misc/img_unit_mission.png")));
-        missionLabel.setPosition(Constants.GAME_SCREEN_POSITION_X_LEVEL, Constants.GAME_SCREEN_POSITION_Y_LEVEL);
+        missionLabel.setPosition(GameConfig.GAME_SCREEN_POSITION_X_LEVEL, GameConfig.GAME_SCREEN_POSITION_Y_LEVEL);
         mStage.addActor(missionLabel);
 
         NumberUnitActor progressLabel = new NumberUnitActor();
-        progressLabel.setPosition(Constants.GAME_SCREEN_POSITION_X_PROGRESS, Constants.GAME_SCREEN_POSITION_Y_PROGRESS);
+        progressLabel.setPosition(GameConfig.GAME_SCREEN_POSITION_X_PROGRESS, GameConfig.GAME_SCREEN_POSITION_Y_PROGRESS);
         progressLabel.setName(GameManager.NAME_PROGRESS_TEXT);
         mStage.addActor(progressLabel);
 
         AdvanceActor starActor = GameManager.generateStarActor();
-        starActor.setPosition(Constants.GAME_SCREEN_POSITION_X_STAR, Constants.GAME_SCREEN_POSITION_Y_STAR);
+        starActor.setPosition(GameConfig.GAME_SCREEN_POSITION_X_STAR, GameConfig.GAME_SCREEN_POSITION_Y_STAR);
         mStage.addActor(starActor);
 
         mStepLabel = new NumberUnitActor(new Texture(Gdx.files.internal("misc/img_unit_step.png")));
-        mStepLabel.setPosition(Constants.GAME_SCREEN_POSITION_X_STEPS, Constants.GAME_SCREEN_POSITION_Y_STEPS);
+        mStepLabel.setPosition(GameConfig.GAME_SCREEN_POSITION_X_STEPS, GameConfig.GAME_SCREEN_POSITION_Y_STEPS);
         mStepLabel.setContent("0", null);
         mStage.addActor(mStepLabel);
 
@@ -150,17 +150,17 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         Texture textureOn = new Texture(Gdx.files.internal("buttons/img_effect_on.png"));
         mBtnSoundEffect = new ButtonActor(textureOn, new Texture(Gdx.files.internal("buttons/img_effect_off.png")),
                 data.hasSoundEffect() ? ButtonActor.STATUS_ON : ButtonActor.STATUS_OFF);
-        mBtnSoundEffect.setPosition(Constants.GAME_SCREEN_POSITION_X_EFFECT, Constants.GAME_SCREEN_POSITION_Y_EFFECT);
+        mBtnSoundEffect.setPosition(GameConfig.GAME_SCREEN_POSITION_X_EFFECT, GameConfig.GAME_SCREEN_POSITION_Y_EFFECT);
         mBtnSoundEffect.setSize(textureOn.getWidth(), textureOn.getHeight());
-        mBtnSoundEffect.setScale(Constants.GAME_SCREEN_BTN_SCALE);
+        mBtnSoundEffect.setScale(GameConfig.GAME_SCREEN_BTN_SCALE);
         mBtnSoundEffect.addListener(this);
         mStage.addActor(mBtnSoundEffect);
    
         textureOn = new Texture(Gdx.files.internal("buttons/img_music_on.png"));
         mBtnMusic = new ButtonActor(textureOn, new Texture(Gdx.files.internal("buttons/img_music_off.png")),
                 data.hasMusic() ? ButtonActor.STATUS_ON : ButtonActor.STATUS_OFF);
-        mBtnMusic.setPosition(Constants.GAME_SCREEN_POSITION_X_MUSIC, Constants.GAME_SCREEN_POSITION_Y_MUSIC);
-        mBtnMusic.setScale(Constants.GAME_SCREEN_BTN_SCALE);
+        mBtnMusic.setPosition(GameConfig.GAME_SCREEN_POSITION_X_MUSIC, GameConfig.GAME_SCREEN_POSITION_Y_MUSIC);
+        mBtnMusic.setScale(GameConfig.GAME_SCREEN_BTN_SCALE);
         mBtnMusic.setSize(textureOn.getWidth(), textureOn.getHeight());
         mBtnMusic.addListener(this);
         mStage.addActor(mBtnMusic);
