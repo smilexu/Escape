@@ -1262,7 +1262,8 @@ public class GameManager {
     }
 
     private String getShareContent() {
-        return "我在<魔法寻踪>第" + mMission + "-" + mSubmission + "关中，仅以" + mSteps +"步通关，谁敢来挑战!";
+        return "我在<<魔法寻踪>>第" + mMission + "-" + mSubmission + "关中，仅以" + mSteps +"步成功收集了"+ mStarGot + "/" + mStarsTotal
+                +"个魔法能量通关，谁敢来挑战!";
     }
 
     public void weixinShare(String filePath) {
