@@ -29,6 +29,7 @@ import com.smilestudio.wizardescape.actors.NumberUnitActor;
 import com.smilestudio.wizardescape.model.SettingData;
 import com.smilestudio.wizardescape.utils.Constants;
 import com.smilestudio.wizardescape.utils.ResourceHelper;
+import com.smilestudio.wizardescape.utils.ScreenshotFactory;
 
 public class GameScreen implements Screen, GestureListener, EventListener, GameListener {
 
@@ -54,6 +55,8 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
     private ButtonActor mBtnMusic;
     private boolean mHasSoundEffect;
     private boolean mHasMusic;
+    private Image mBtnWeibo;
+    private Image mBtnWeixin;
 
     public GameScreen() {
     }
@@ -193,14 +196,27 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
             Image star = new Image(starTexture);
             star.setSize(starTexture.getWidth(), starTexture.getHeight());
             star.setName(GameManager.NAME_BOARD_STARS[i]);
+            star.setScale(1.2f);
             missionFinishedBoard.addActor(star);
         }
 
-        mBtnNext = new Image(new Texture(Gdx.files.internal("misc/img_button_next_relief.png")));
+        mBtnWeibo = new Image(new Texture(Gdx.files.internal("buttons/img_button_weibo.png")));
+        mBtnWeibo.setSize(mBtnWeibo.getWidth(), mBtnWeibo.getHeight());
+        mBtnWeibo.setPosition(mBgImage.getWidth() / 2 - 80 - mBtnWeibo.getWidth(), 170);
+        mBtnWeibo.setName(GameManager.NAME_BOARD_WEIBO);
+        missionFinishedBoard.addActor(mBtnWeibo);
+
+        mBtnNext = new Image(new Texture(Gdx.files.internal("buttons/img_button_next.png")));
         mBtnNext.setSize(mBtnNext.getWidth(), mBtnNext.getHeight());
-        mBtnNext.setPosition((mBgImage.getWidth() - mBtnNext.getWidth()) / 2, 150);
+        mBtnNext.setPosition((mBgImage.getWidth() - mBtnNext.getWidth()) / 2, 170);
         mBtnNext.setName(GameManager.NAME_BOARD_NEXT);
         missionFinishedBoard.addActor(mBtnNext);
+
+        mBtnWeixin = new Image(new Texture(Gdx.files.internal("buttons/img_button_weixin.png")));
+        mBtnWeixin.setSize(mBtnWeixin.getWidth(), mBtnWeixin.getHeight());
+        mBtnWeixin.setPosition(mBgImage.getWidth() / 2 + 80, 170);
+        mBtnWeixin.setName(GameManager.NAME_BOARD_WEIXIN);
+        missionFinishedBoard.addActor(mBtnWeixin);
 
         mManager.setMissionFinishedBoard(missionFinishedBoard);
         mStage.addActor(missionFinishedBoard);
@@ -334,6 +350,12 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
             releaseAudio();
             mManager.breakMission();
             return true;
+        } else if (actor == mBtnWeibo) {
+            String path = ScreenshotFactory.saveScreenshot();
+            mManager.weiboShare(path);
+        } else if (actor == mBtnWeixin) {
+            String path = ScreenshotFactory.saveScreenshot();
+            mManager.weixinShare(path);
         } else if (actor == mBtnNext) {
             releaseAudio();
             mManager.gotoNext();
@@ -345,9 +367,9 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         } else if (actor == mBtnMusic) {
             mHasMusic = ButtonActor.STATUS_ON == mBtnMusic.toggle();
             GameManager.saveSetting(new SettingData(mHasSoundEffect, mHasMusic));
-            if (!mHasMusic) {
+            if (!mHasMusic && mBkMusic != null) {
                 mBkMusic.stop();
-            } else {
+            } else if (mBkMusic != null){
                 mBkMusic.play();
             }
             return true;

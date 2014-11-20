@@ -19,4 +19,8 @@ public class WizardEscape extends Game{
         GameManager.getInstance().setAdListener(listener);
     }
 
+    public void setGeneralListener(GeneralListener listener) {
+        GameManager.getInstance().setGeneralListener(listener);
+    }
+
 }

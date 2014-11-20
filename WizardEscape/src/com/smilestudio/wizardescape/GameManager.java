@@ -94,6 +94,8 @@ public class GameManager {
     public final static String NAME_BOARD_CONGRAS_TEXT = "mission_board_congras_text";
     public final static String[] NAME_BOARD_STARS = new String[] {"mission_board_star1", "mission_board_star2", "mission_board_star3"};
     public final static String NAME_BOARD_NEXT = "mission_board_next";
+    public final static String NAME_BOARD_WEIBO = "mission_board_weibo";
+    public final static String NAME_BOARD_WEIXIN = "mission_borad_weixin";
 
     private final static String PREFERENCES_SAVE = "save";
     public final static String PREFERENCES_SETTING = "setting";
@@ -126,6 +128,7 @@ public class GameManager {
     private AdListener mAdListener;
     private List<Actor> mForceFrontActors = new ArrayList<Actor>();
     private boolean mGuideMode = false;
+    private GeneralListener mGeneralListener;
 
     public void setMission(int mission, int submission) {
         mMission = mission;
@@ -700,17 +703,30 @@ public class GameManager {
     }
 
     private void generateButtonPlayAnimation() {
+        Image weiboShare = (Image)mMissionFinishedBoard.findActor(NAME_BOARD_WEIBO);
+        weiboShare.setVisible(true);
+        weiboShare.addAction(getRotateAndZoomInActions());
+
         Image buttonNext = (Image)mMissionFinishedBoard.findActor(NAME_BOARD_NEXT);
         buttonNext.setVisible(true);
-        ScaleToAction scaleTo = Actions.scaleTo(1.2f, 1.2f, 0.5f);
+        buttonNext.addAction(Actions.sequence(getRotateAndZoomInActions(),
+                Actions.forever(Actions.sequence(Actions.scaleTo(1.4f, 1.4f, 0.8f), Actions.scaleTo(1.2f, 1.2f, 0.8f)))));
 
-        RotateByAction rotateBy = Actions.rotateBy(720, 0.5f);
-        ParallelAction paralle = Actions.parallel(scaleTo, rotateBy);
-        buttonNext.addAction(paralle);
+        Image weixinShare = (Image)mMissionFinishedBoard.findActor(NAME_BOARD_WEIXIN);
+        weixinShare.setVisible(true);
+        weixinShare.addAction(getRotateAndZoomInActions());
 
         if (mGameListener != null) {
             mGameListener.onGameSuccess();
         }
+    }
+
+    private ParallelAction getRotateAndZoomInActions() {
+        ScaleToAction scaleTo = Actions.scaleTo(1.2f, 1.2f, 0.5f);
+
+        RotateByAction rotateBy = Actions.rotateBy(720, 0.5f);
+        ParallelAction paralle = Actions.parallel(scaleTo, rotateBy);
+        return paralle;
     }
 
     private synchronized void adjustActorsOrder(int flingDirection) {
@@ -1125,22 +1141,37 @@ public class GameManager {
             star.setPosition(0 - star.getWidth(), Constants.STAGE_HEIGHT);
         }
 
+        Image weiboShare = (Image) boardItems.findActor(NAME_BOARD_WEIBO);
+        weiboShare.setVisible(false);
+        weiboShare.clearActions();
+        weiboShare.setOrigin(weiboShare.getWidth() / 2, weiboShare.getHeight() / 2);
+        weiboShare.setScale(Constants.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
+
         Image buttonNext = (Image) boardItems.findActor(NAME_BOARD_NEXT);
         buttonNext.setVisible(false);
+        buttonNext.clearActions();
         buttonNext.setOrigin(buttonNext.getWidth() / 2, buttonNext.getHeight() / 2);
         buttonNext.setScale(Constants.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
+
+        Image weixinShare = (Image) boardItems.findActor(NAME_BOARD_WEIXIN);
+        weixinShare.setVisible(false);
+        weixinShare.clearActions();
+        weixinShare.setOrigin(weixinShare.getWidth() / 2, weixinShare.getHeight() / 2);
+        weixinShare.setScale(Constants.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
     }
 
     public void gotoNext() {
-//        if (mMission <= Constants.MISSION_MAX && mSubmission < Constants.SUB_MISSION_MAX) {
-//            setMission(mMission, mSubmission + 1);
-//            showAdWall();
-//        } else if (mMission < Constants.MISSION_MAX && Constants.SUB_MISSION_MAX == mSubmission) {
-//            setMission(mMission + 1, 1);
-//            showAdWall();
-//        } else {
+        if (mMission <= Constants.MISSION_MAX && mSubmission < Constants.SUB_MISSION_MAX) {
+            setMission(mMission, mSubmission + 1);
+            if (mMission >= 2) {
+                showAdWall();
+            }
+        } else if (mMission < Constants.MISSION_MAX && Constants.SUB_MISSION_MAX == mSubmission) {
+            setMission(mMission + 1, 1);
+            showAdWall();
+        } else {
             mGame.setScreen(new EndingScreen());
-//        }
+        }
     }
 
     public void setGame(Game game) {
@@ -1215,6 +1246,26 @@ public class GameManager {
     public void showAdWall() {
         if (mAdListener != null) {
             mAdListener.showAdWall();
+        }
+    }
+
+    public void setGeneralListener(GeneralListener listener) {
+        mGeneralListener = listener;
+    }
+
+    public void weiboShare(String filePath) {
+        if (mGeneralListener != null) {
+            mGeneralListener.onWeiboShare(filePath, getShareContent());
+        }
+    }
+
+    private String getShareContent() {
+        return "我在<魔法寻踪>第" + mMission + "-" + mSubmission + "关中，仅以" + mSteps +"步通关，谁敢来挑战!";
+    }
+
+    public void weixinShare(String filePath) {
+        if (mGeneralListener != null) {
+            mGeneralListener.onWeixinShare(filePath, getShareContent());
         }
     }
 }

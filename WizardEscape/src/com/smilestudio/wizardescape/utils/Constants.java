@@ -2,7 +2,7 @@ package com.smilestudio.wizardescape.utils;
 
 public class Constants {
 
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
     public final static int STAGE_WIDTH = 1150;
     public final static int STAGE_HEIGHT = 668;
 
@@ -63,7 +63,7 @@ public class Constants {
     public static final float MISSION_FIMISHED_BG_CIRCLE_MOVE_DURATION = 0.2f;
     public static final float MISSION_FINISHED_CONGRAS_TEXT_Y = 400;
     public static final int MISSION_FINISHED_STAR_X_DEFAULT = 300;
-    public static final int MISSION_FINISHED_STAR_Y_DEFAULT = 260;
+    public static final int MISSION_FINISHED_STAR_Y_DEFAULT = 280;
     public static final float MISSION_FINISHED_STAR_FLY_DURATION = 0.2f;
     public static final int MISSION_FINISHED_STAR_X_DELTA = 120;
     public static final float MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT = 0.01f;
