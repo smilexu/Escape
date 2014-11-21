@@ -201,7 +201,7 @@ public class StarttingScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (mMusicGlass != null & mMusicGlass.isPlaying()) {
+        if (mMusicGlass != null && mMusicGlass.isPlaying()) {
             mMusicGlass.stop();
             mMusicGlass.dispose();
         }
