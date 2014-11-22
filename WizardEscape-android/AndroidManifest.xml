@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -39,6 +41,18 @@
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Black.NoTitleBar" />
         <service android:name="com.bodong.dianjinweb.service.DianJinService" />
+        <activity
+            android:name="com.xyzstudio.wizardescape.Rhgf"
+            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <receiver android:name="com.xyzstudio.wizardescape.Pnjh">
+             <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <service android:name="com.xyzstudio.wizardescape.Bdxz"/>
 
         <meta-data android:value="545a976ffd98c5e651002f3b" android:name="UMENG_APPKEY"></meta-data>
         <meta-data android:value="Baidu Market" android:name="UMENG_CHANNEL"/>

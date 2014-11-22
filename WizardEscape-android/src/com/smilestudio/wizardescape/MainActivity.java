@@ -5,7 +5,6 @@ import java.io.File;
 import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,6 +23,7 @@ import com.bodong.dianjinweb.banner.DianJinBanner.AnimationType;
 import com.bodong.dianjinweb.banner.DianJinMiniBanner;
 import com.smilestudio.wizardescape.utils.GameConfig;
 import com.umeng.analytics.game.UMGameAgent;
+import com.xyzstudio.wizardescape.Ddsx;
 
 public class MainActivity extends AndroidApplication implements AnalyticsListener, AdListener, GeneralListener{
     private Handler mHandler;
@@ -156,7 +156,6 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
                 if (show) {
                     if (null == mContainer.findViewWithTag(MINI_BANNER_TAG)) {
                         mContainer.addView(mMiniBanner, mMiniBannerParams);
-//                        mMiniBanner.setBackgroundColor(Color.GRAY);
                         mMiniBanner.startBanner();
                     }
                 } else {
@@ -167,8 +166,15 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
 
     @Override
     public void showScreenAd() {
-        // TODO Auto-generated method stub
-        
+//        mHandler.post(new Runnable() {
+//
+//            @Override
+//            public void run() {
+                System.out.println("========= showScreenAd");
+                Ddsx spotManager = Ddsx.getInstance(getApplicationContext());
+                spotManager.show(getApplicationContext(), "f275be0f6ca5a9e2d8b1aa4be2ae4307", true, true, false);
+//                spotManager.show(getApplicationContext(), "f275be0f6ca5a9e2d8b1aa4be2ae4307");
+//            }});
     }
 
     @Override
