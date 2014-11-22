@@ -181,6 +181,8 @@ public class GameManager {
             stage.clear();
         }
 
+        mForceFrontActors.clear();
+
         mGroup = stage.getRoot();
         mBkGrdActors = bkGrdActors;
         mMask = mask;
@@ -635,10 +637,25 @@ public class GameManager {
         return false;
     }
 
-    protected void removeGuildActors() {
-        mGroup.removeActor(mGroup.findActor(NAME_GUIDE_ARROW));
-        mGroup.removeActor(mGroup.findActor(NAME_GUIDE_HAND));
-        mGroup.removeActor(mGroup.findActor(NAME_GUIDE_TEXT));
+    private void removeGuildActors() {
+        if (null == mGroup) {
+            return;
+        }
+
+        Actor actor = mGroup.findActor(NAME_GUIDE_ARROW);
+        if (actor != null) {
+            mGroup.removeActor(actor);
+        }
+        actor = mGroup.findActor(NAME_GUIDE_HAND);
+        if (actor != null) {
+            mGroup.removeActor(actor);
+        }
+        actor = mGroup.findActor(NAME_GUIDE_TEXT);
+        if (actor != null) {
+            mGroup.removeActor(actor);
+        }
+
+        mForceFrontActors.clear();
     }
 
     protected int calculateScore() {
@@ -1274,7 +1291,7 @@ public class GameManager {
     }
 
     private String getShareContent() {
-        return "我在<<魔法寻踪>>第" + mMission + "-" + mSubmission + "关中，仅以" + mSteps +"步成功收集了"+ mStarGot + "/" + mStarsTotal
+        return "我在#魔法寻踪#第" + mMission + "-" + mSubmission + "关中，仅以" + mSteps +"步成功收集了"+ mStarGot + "/" + mStarsTotal
                 +"个魔法能量通关，谁敢来挑战!";
     }
 

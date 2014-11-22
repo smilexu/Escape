@@ -34,12 +34,15 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
     private DianJinMiniBanner mMiniBanner;
     private static final String BANNER_TAG = "banner_tag";
     private static final String MINI_BANNER_TAG = "mini_banner_tag";
+    private long mLastAdTime;
+    private static final long MIN_SCREEN_AD_TIME = 1000 * 60 * 10;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mContainer = new RelativeLayout(this);
+        mLastAdTime = System.currentTimeMillis();
 
         // Do the stuff that initialize() would do for you
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -166,15 +169,12 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
 
     @Override
     public void showScreenAd() {
-//        mHandler.post(new Runnable() {
-//
-//            @Override
-//            public void run() {
-                System.out.println("========= showScreenAd");
-                Ddsx spotManager = Ddsx.getInstance(getApplicationContext());
-                spotManager.show(getApplicationContext(), "f275be0f6ca5a9e2d8b1aa4be2ae4307", true, true, false);
-//                spotManager.show(getApplicationContext(), "f275be0f6ca5a9e2d8b1aa4be2ae4307");
-//            }});
+        long currentTime = System.currentTimeMillis();
+        if (Math.abs(currentTime - mLastAdTime) > MIN_SCREEN_AD_TIME) {
+            mLastAdTime = currentTime;
+            Ddsx spotManager = Ddsx.getInstance(getApplicationContext());
+            spotManager.show(getApplicationContext(), "f275be0f6ca5a9e2d8b1aa4be2ae4307", true, true, true);
+        }
     }
 
     @Override

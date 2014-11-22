@@ -29,6 +29,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
     private int     mMission;
     private Image mArrowLeft;
     private Image mArrowRight;
+    private boolean mShowAd;
 
     public MissionSelectScreen() {
         this(1, true);
@@ -40,9 +41,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
     public MissionSelectScreen(int mission, boolean showAd) {
         mMission = mission;
-        if (showAd && mission != 1) {
-            GameManager.getInstance().showScreenAd();
-        }
+        mShowAd = showAd;
     }
 
     public MissionSelectScreen(boolean showAd) {
@@ -127,6 +126,10 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         };
         Gdx.input.setInputProcessor(gd);
         Gdx.input.setCatchBackKey(true);
+
+        if (mShowAd && mMission != 1) {
+            GameManager.getInstance().showScreenAd();
+        }
     }
 
     private void setupMissionThumbnail(int indexOfPage) {
