@@ -32,24 +32,24 @@ public class GameConfig {
     public final static int COVER_SCREEN_DELTA_X_MISSION_THUMBNAIL = 150;
 
     public final static int GAME_SCREEN_POSITION_X_REFRESH = 980;
-    public final static int GAME_SCREEN_POSITION_Y_REFRESH = 400;
+    public final static int GAME_SCREEN_POSITION_Y_REFRESH = 380;
     public final static int GAME_SCREEN_POSITION_X_SELECT = 980;
-    public final static int GAME_SCREEN_POSITION_Y_SELECT = 500;
+    public final static int GAME_SCREEN_POSITION_Y_SELECT = 480;
     public final static int GAME_SCREEN_POSITION_X_LEVEL = 970;
-    public final static int GAME_SCREEN_POSITION_Y_LEVEL = 600;
+    public final static int GAME_SCREEN_POSITION_Y_LEVEL = 580;
     public final static int GAME_SCREEN_POSITION_X_PROGRESS = 970;
-    public final static int GAME_SCREEN_POSITION_Y_PROGRESS = 340;
+    public final static int GAME_SCREEN_POSITION_Y_PROGRESS = 320;
     public final static int GAME_SCREEN_POSITION_X_STEPS = 970;
-    public final static int GAME_SCREEN_POSITION_Y_STEPS = 275;
+    public final static int GAME_SCREEN_POSITION_Y_STEPS = 255;
     public final static int GAME_SCREEN_POSITION_X_STAR = 1020;
-    public final static int GAME_SCREEN_POSITION_Y_STAR = 320;
+    public final static int GAME_SCREEN_POSITION_Y_STAR = 300;
     public final static int GAME_SCREEN_POSITION_X_EFFECT = 980;
-    public final static int GAME_SCREEN_POSITION_Y_EFFECT = 160;
+    public final static int GAME_SCREEN_POSITION_Y_EFFECT = 140;
     public final static int GAME_SCREEN_POSITION_X_MUSIC = 980;
-    public final static int GAME_SCREEN_POSITION_Y_MUSIC = 60;
+    public final static int GAME_SCREEN_POSITION_Y_MUSIC = 40;
     public final static float GAME_SCREEN_BTN_SCALE = 1.2f;
 
-    public static final int MISSION_SCREEN_ARROW_PADDING_X = 100;
+    public static final int MISSION_SCREEN_ARROW_PADDING_X = 50;
     public static final int MISSION_SCREEN_ARROW_Y = 20;
     public final static int MISSION_SCREEN_GROUP_LEFT_TOP_X = 550;
     public final static int MISSION_SCREEN_GROUP_LEFT_TOP_Y = 400;

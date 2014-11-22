@@ -85,6 +85,9 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
     @Override
     public void show() {
         mManager = GameManager.getInstance();
+
+        mManager.showMiniBanner(true);
+
         mManager.initGame();
         mManager.setGameListener(this);
 
@@ -286,6 +289,7 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
     @Override
     public void hide() {
         releaseAudio();
+        mManager.showMiniBanner(false);
     }
 
     @Override

@@ -41,7 +41,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
     public MissionSelectScreen(int mission, boolean showAd) {
         mMission = mission;
         if (showAd && mission != 1) {
-            GameManager.getInstance().showAdWall();
+            GameManager.getInstance().showScreenAd();
         }
     }
 
@@ -78,11 +78,15 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
     @Override
     public void show() {
+        GameManager.getInstance().showBanner(true);
+        GameManager.getInstance().showMiniBanner(true);
+
         //initial left & right arrow
         Texture arrowLeftTexture = new Texture(Gdx.files.internal("misc/img_arrow_left.png"));
         mArrowLeft = new Image(arrowLeftTexture);
         mArrowLeft.setSize(arrowLeftTexture.getWidth(), arrowLeftTexture.getHeight());
-        mArrowLeft.setPosition(GameConfig.MISSION_SCREEN_ARROW_PADDING_X, GameConfig.MISSION_SCREEN_ARROW_Y);
+        mArrowLeft.setPosition(GameConfig.MISSION_SCREEN_ARROW_PADDING_X,
+                (GameConfig.STAGE_HEIGHT - mArrowLeft.getHeight()) / 2);
 
         RepeatAction leftRepeat = Actions.forever(Actions.sequence(Actions.moveBy(20, 0, 0.3f), Actions.moveBy(-20, 0, 0.3f)));
         RepeatAction rightRepeat = Actions.forever(Actions.sequence(Actions.moveBy(-20, 0, 0.3f), Actions.moveBy(20, 0, 0.3f)));
@@ -92,7 +96,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         mArrowRight = new Image(arrowRightTexture);
         mArrowRight.setSize(arrowRightTexture.getWidth(), arrowRightTexture.getHeight());
         mArrowRight.setPosition(GameConfig.STAGE_WIDTH - GameConfig.MISSION_SCREEN_ARROW_PADDING_X - mArrowRight.getWidth(),
-                GameConfig.MISSION_SCREEN_ARROW_Y);
+                (GameConfig.STAGE_HEIGHT - mArrowLeft.getHeight()) / 2);
         mArrowRight.addAction(rightRepeat);
 
         mMainStage = new Stage(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, false);
@@ -179,8 +183,8 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
     @Override
     public void hide() {
-        // TODO Auto-generated method stub
-
+        GameManager.getInstance().showBanner(false);
+        GameManager.getInstance().showMiniBanner(false);
     }
 
     @Override
@@ -197,7 +201,6 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
 
     @Override
     public void dispose() {
-        // TODO Auto-generated method stub
 
     }
 

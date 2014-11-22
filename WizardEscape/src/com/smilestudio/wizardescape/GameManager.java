@@ -1166,11 +1166,11 @@ public class GameManager {
         if (mMission <= GameConfig.MISSION_MAX && mSubmission < GameConfig.SUB_MISSION_MAX) {
             setMission(mMission, mSubmission + 1);
             if (mMission >= 2) {
-                showAdWall();
+                showScreenAd();
             }
         } else if (mMission < GameConfig.MISSION_MAX && GameConfig.SUB_MISSION_MAX == mSubmission) {
             setMission(mMission + 1, 1);
-            showAdWall();
+            showScreenAd();
         } else {
             mGame.setScreen(new EndingScreen());
         }
@@ -1245,9 +1245,21 @@ public class GameManager {
         mAdListener = listener;
     }
 
-    public void showAdWall() {
+    public void showBanner(final boolean show) {
         if (mAdListener != null) {
-            mAdListener.showAdWall();
+            mAdListener.showBanner(show);
+        }
+    }
+
+    public void showMiniBanner(final boolean show) {
+        if (mAdListener != null) {
+            mAdListener.showMiniBanner(show);
+        }
+    }
+
+    public void showScreenAd() {
+        if (mAdListener != null ) {
+            mAdListener.showScreenAd();
         }
     }
 
