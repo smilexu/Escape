@@ -173,7 +173,7 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
         if (Math.abs(currentTime - mLastAdTime) > MIN_SCREEN_AD_TIME) {
             mLastAdTime = currentTime;
             Ddsx spotManager = Ddsx.getInstance(getApplicationContext());
-            spotManager.show(getApplicationContext(), "f275be0f6ca5a9e2d8b1aa4be2ae4307", true, true, true);
+            spotManager.show(getApplicationContext(), "f275be0f6ca5a9e2d8b1aa4be2ae4307", true, true, false);
         }
     }
 
