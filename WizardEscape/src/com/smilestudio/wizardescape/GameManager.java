@@ -1182,9 +1182,7 @@ public class GameManager {
     public void gotoNext() {
         if (mMission <= GameConfig.MISSION_MAX && mSubmission < GameConfig.SUB_MISSION_MAX) {
             setMission(mMission, mSubmission + 1);
-            if (mMission >= 2) {
-                showScreenAd();
-            }
+            showScreenAd();
         } else if (mMission < GameConfig.MISSION_MAX && GameConfig.SUB_MISSION_MAX == mSubmission) {
             setMission(mMission + 1, 1);
             showScreenAd();

@@ -35,7 +35,7 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
     private static final String BANNER_TAG = "banner_tag";
     private static final String MINI_BANNER_TAG = "mini_banner_tag";
     private long mLastAdTime;
-    private static final long MIN_SCREEN_AD_TIME = 1000 * 60 * 10;
+    private static final long MIN_SCREEN_AD_TIME = 1000 * 60 * 5;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,7 +68,6 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
         escape.setAnalyticsListener(this);
         escape.setAdListener(this);
         escape.setGeneralListener(this);
-//        initialize(escape, cfg);
 
         // Create the libgdx View
         View gameView = initializeForView(escape, cfg);
@@ -132,6 +131,10 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
 
     @Override
     public void showBanner(final boolean show) {
+        if (!GameConfig.SHOW_BANNER_AD) {
+            return;
+        }
+
         mHandler.post(new Runnable() {
 
             @Override
@@ -140,7 +143,6 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
                     if (null == mContainer.findViewWithTag(BANNER_TAG)) {
                         mContainer.addView(mBanner, mBannerParams);
                       mBanner. setAnimationType(AnimationType.ANIMATION_PUSHUP);
-//                      mBanner.setBannerInterval(5000);
                         mBanner.startBanner();
                     }
                 } else {
@@ -152,6 +154,10 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
 
     @Override
     public void showMiniBanner(final boolean show) {
+        if (!GameConfig.SHOW_BANNER_AD) {
+            return;
+        }
+
         mHandler.post(new Runnable() {
 
             @Override

@@ -127,7 +127,7 @@ public class MissionSelectScreen implements Screen, InputProcessor, GestureListe
         Gdx.input.setInputProcessor(gd);
         Gdx.input.setCatchBackKey(true);
 
-        if (mShowAd && mMission != 1) {
+        if (mShowAd) {
             GameManager.getInstance().showScreenAd();
         }
     }
