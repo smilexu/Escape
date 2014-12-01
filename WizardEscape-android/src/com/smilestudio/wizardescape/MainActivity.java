@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,24 +16,16 @@ import android.widget.Toast;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.bodong.dianjinweb.DianJinPlatform;
-import com.bodong.dianjinweb.banner.DianJinBanner;
-import com.bodong.dianjinweb.banner.DianJinBanner.AnimationType;
-import com.bodong.dianjinweb.banner.DianJinMiniBanner;
+import com.smilestudio.addelegate.AdDelegate;
 import com.smilestudio.wizardescape.utils.GameConfig;
 import com.umeng.analytics.game.UMGameAgent;
-import com.xyzstudio.wizardescape.Ddsx;
 
 public class MainActivity extends AndroidApplication implements AnalyticsListener, AdListener, GeneralListener{
-    private Handler mHandler;
-    private DianJinBanner mBanner;
     private RelativeLayout mContainer;
     private LayoutParams mBannerParams;
     private LayoutParams mMiniBannerParams;
-    private DianJinMiniBanner mMiniBanner;
-    private static final String BANNER_TAG = "banner_tag";
-    private static final String MINI_BANNER_TAG = "mini_banner_tag";
     private long mLastAdTime;
+    private AdDelegate mAdDelegate;
     private static final long MIN_SCREEN_AD_TIME = 1000 * 60 * 5;
 
     @Override
@@ -50,17 +41,11 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 
-        mHandler = new Handler();
-
         //init Umeng
         if (GameConfig.DEBUG) {
             UMGameAgent.setDebugMode(true);
         }
         UMGameAgent.init( this );
-
-        //init ad
-        DianJinPlatform.initialize(this, 61609, "8839a8811fca305d9a9e281493f8d042", 1001);
-        DianJinPlatform.hideFloatView(this);
 
         AndroidApplicationConfiguration cfg = new AndroidApplicationConfiguration();
         cfg.useGL20 = true;
@@ -77,15 +62,15 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
                         RelativeLayout.LayoutParams.WRAP_CONTENT);
             mBannerParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             mBannerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        mBanner = new DianJinBanner (this);
-        mBanner.setTag(BANNER_TAG);
+
 
         mMiniBannerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, 
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
         mMiniBannerParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         mMiniBannerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        mMiniBanner = new DianJinMiniBanner(this);
-        mMiniBanner.setTag(MINI_BANNER_TAG);
+
+        mAdDelegate = new AdDelegate();
+        mAdDelegate.init(this);
 
         setContentView(mContainer);
     }
@@ -106,7 +91,7 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
     protected void onDestroy() {
         super.onDestroy();
 
-        DianJinPlatform.destory(this);
+        mAdDelegate.dispose();
     }
 
     @Override
@@ -135,20 +120,7 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
             return;
         }
 
-        mHandler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                if (show) {
-                    if (null == mContainer.findViewWithTag(BANNER_TAG)) {
-                        mContainer.addView(mBanner, mBannerParams);
-                      mBanner. setAnimationType(AnimationType.ANIMATION_PUSHUP);
-                        mBanner.startBanner();
-                    }
-                } else {
-                    mContainer.removeView(mBanner);
-                }
-            }});
+        mAdDelegate.showButtomBanner(show, mContainer, mBannerParams);
 
     }
 
@@ -158,19 +130,7 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
             return;
         }
 
-        mHandler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                if (show) {
-                    if (null == mContainer.findViewWithTag(MINI_BANNER_TAG)) {
-                        mContainer.addView(mMiniBanner, mMiniBannerParams);
-                        mMiniBanner.startBanner();
-                    }
-                } else {
-                    mContainer.removeView(mMiniBanner);
-                }
-            }});
+        mAdDelegate.showTopBanner(show, mContainer, mMiniBannerParams);
     }
 
     @Override
@@ -178,8 +138,8 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
         long currentTime = System.currentTimeMillis();
         if (Math.abs(currentTime - mLastAdTime) > MIN_SCREEN_AD_TIME) {
             mLastAdTime = currentTime;
-            Ddsx spotManager = Ddsx.getInstance(getApplicationContext());
-            spotManager.show(getApplicationContext(), "f275be0f6ca5a9e2d8b1aa4be2ae4307", true, true, false);
+            System.out.println("======== showScreenAd");
+            mAdDelegate.showInterstitialAd(getApplicationContext());
         }
     }
 
@@ -211,7 +171,7 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
         File file = new File(path);
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
 
-        mHandler.post(new Runnable() {
+        runOnUiThread(new Runnable() {
 
             @Override
             public void run() {

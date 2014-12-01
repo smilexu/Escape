@@ -14,7 +14,6 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -46,6 +45,9 @@
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:theme="@android:style/Theme.Translucent"/>
         <receiver android:name="com.xyzstudio.wizardescape.Pnjh">
              <intent-filter>
                 <action android:name="android.intent.action.USER_PRESENT" />
@@ -55,7 +57,9 @@
         <service android:name="com.xyzstudio.wizardescape.Bdxz"/>
 
         <meta-data android:value="545a976ffd98c5e651002f3b" android:name="UMENG_APPKEY"></meta-data>
-        <meta-data android:value="360" android:name="UMENG_CHANNEL"/>
+        <meta-data android:value="Debug" android:name="UMENG_CHANNEL"/>
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+
     </application>
 
 </manifest>
