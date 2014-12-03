@@ -9,6 +9,7 @@ public class GameConfig {
     public final static int STAGE_HEIGHT = 668;
 
     public static final int MISSION_MAX = 3;
+    public final static int SUB_MISSION_MAX = 15;
 
     public final static int CELL_SIZE_WIDTH = 90;
     public final static int CELL_SIZE_HEIGHT = 50;
@@ -56,7 +57,6 @@ public class GameConfig {
     public final static int MISSION_SCREEN_GROUP_LEFT_TOP_Y = 400;
     public final static int MISSION_SCREEN_GROUP_OFFSET_X = 20;
     public final static int MISSION_SCREEN_GROUP_OFFSET_Y = 20;
-    public final static int SUB_MISSION_MAX = 15;
     public final static int MISSION_SCREEN_MAX_COLUMN = 5;
 
     public static final float MISSION_FINISHED_MASK_ALPHA = 0.7f;

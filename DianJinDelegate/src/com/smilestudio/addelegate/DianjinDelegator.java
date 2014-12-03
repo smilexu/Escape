@@ -55,7 +55,7 @@ public class DianjinDelegator implements AdInterface {
     @Override
     public void showInterstitialAd(Context context) {
         Ddsx spotManager = Ddsx.getInstance(context);
-        spotManager.show(context, "f275be0f6ca5a9e2d8b1aa4be2ae4307", true, true, true);
+        spotManager.show(context, "f275be0f6ca5a9e2d8b1aa4be2ae4307", true, false, false);
     }
 
     @Override

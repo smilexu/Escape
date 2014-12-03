@@ -355,6 +355,7 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         if (actor == mRefreshButton) {
             resetGame();
             mManager.breakMission();
+            mManager.showScreenAd();
             return true;
         } else if (actor == mSelectMissionButton) {
             mManager.getGame().setScreen(new MissionSelectScreen(mManager.getMission()));

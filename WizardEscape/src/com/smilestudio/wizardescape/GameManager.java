@@ -35,6 +35,7 @@ import com.smilestudio.wizardescape.model.GameData;
 import com.smilestudio.wizardescape.model.SettingData;
 import com.smilestudio.wizardescape.screen.EndingScreen;
 import com.smilestudio.wizardescape.screen.GameScreen;
+import com.smilestudio.wizardescape.screen.MissionSelectScreen;
 import com.smilestudio.wizardescape.utils.GameConfig;
 import com.smilestudio.wizardescape.utils.ResourceHelper;
 
@@ -1184,9 +1185,9 @@ public class GameManager {
             setMission(mMission, mSubmission + 1);
             showScreenAd();
         } else if (mMission < GameConfig.MISSION_MAX && GameConfig.SUB_MISSION_MAX == mSubmission) {
-            setMission(mMission + 1, 1);
+           mGame.setScreen(new MissionSelectScreen(mMission));
             showScreenAd();
-        } else {
+        } else if (mMission == GameConfig.MISSION_MAX && mSubmission == GameConfig.SUB_MISSION_MAX) {
             mGame.setScreen(new EndingScreen());
         }
     }

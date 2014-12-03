@@ -26,14 +26,13 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
     private LayoutParams mMiniBannerParams;
     private long mLastAdTime;
     private AdDelegate mAdDelegate;
-    private static final long MIN_SCREEN_AD_TIME = 1000 * 60 * 5;
+    private static final long MIN_SCREEN_AD_TIME = 1000 * 60 * 3;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mContainer = new RelativeLayout(this);
-        mLastAdTime = System.currentTimeMillis();
 
         // Do the stuff that initialize() would do for you
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -138,7 +137,6 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
         long currentTime = System.currentTimeMillis();
         if (Math.abs(currentTime - mLastAdTime) > MIN_SCREEN_AD_TIME) {
             mLastAdTime = currentTime;
-            System.out.println("======== showScreenAd");
             mAdDelegate.showInterstitialAd(getApplicationContext());
         }
     }
