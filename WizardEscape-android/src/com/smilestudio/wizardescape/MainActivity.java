@@ -134,6 +134,10 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
 
     @Override
     public void showScreenAd() {
+        if (!GameConfig.SHOW_INTERSTITIAL_AD) {
+            return;
+        }
+
         long currentTime = System.currentTimeMillis();
         if (Math.abs(currentTime - mLastAdTime) > MIN_SCREEN_AD_TIME) {
             mLastAdTime = currentTime;

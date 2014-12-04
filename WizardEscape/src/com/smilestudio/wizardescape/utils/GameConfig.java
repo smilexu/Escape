@@ -4,6 +4,7 @@ public class GameConfig {
 
     public static boolean DEBUG = false;
     public static boolean SHOW_BANNER_AD = true;
+    public static boolean SHOW_INTERSTITIAL_AD = true;
 
     public final static int STAGE_WIDTH = 1150;
     public final static int STAGE_HEIGHT = 668;
