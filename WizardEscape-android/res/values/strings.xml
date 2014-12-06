@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">魔法寻踪</string>
+    <string name="shared_weibo_no_pic">游戏截图失败,本次共享将没有图片,或请重试。</string>
+    <string name="shared_weixin_no_pic">游戏截图失败，本次共享无法进行，请重试。</string>
+    <string name="shared_content_copied">内容已复制，请长按输入框选择粘贴即可。</string>
 </resources>

@@ -32,6 +32,8 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mLastAdTime = System.currentTimeMillis();
+
         mContainer = new RelativeLayout(this);
 
         // Do the stuff that initialize() would do for you
@@ -151,12 +153,19 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
         ComponentName component = new ComponentName("com.sina.weibo", "com.sina.weibo.EditActivity");
         intent.setComponent(component);
         File file = new File(path);
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        if (file.exists()) {
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        } else {
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, getResources().getString(R.string.shared_weibo_no_pic), Toast.LENGTH_LONG).show();
+                }});
+        }
         intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_SUBJECT, "恭喜过关");
         intent.putExtra(Intent.EXTRA_TEXT, content);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-        Intent.createChooser(intent,"分享你的胜利");
 
         startActivity(intent);
     }
@@ -168,10 +177,21 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
                         "com.tencent.mm.ui.tools.ShareToTimeLineUI");
         intent.setComponent(comp);
         intent.setAction("android.intent.action.SEND");
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_TEXT,content);
+
         File file = new File(path);
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        if (file.exists()) {
+            intent.setType("image/*");
+            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        } else {
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    Toast.makeText(MainActivity.this, getResources().getString(R.string.shared_weixin_no_pic), Toast.LENGTH_LONG).show();
+                }});
+            return;
+        }
+        intent.putExtra(Intent.EXTRA_TEXT,content);
 
         runOnUiThread(new Runnable() {
 
@@ -179,8 +199,7 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
             public void run() {
                 android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 clipboard.setPrimaryClip(ClipData.newPlainText("Copied", content));
-
-                Toast.makeText(MainActivity.this, "内容已复制，请长按输入框选择粘贴即可", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, getResources().getString(R.string.shared_content_copied), Toast.LENGTH_LONG).show();
             }});
 
 
