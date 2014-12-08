@@ -53,6 +53,7 @@ public class GameConfig {
     public final static int GAME_SCREEN_POSITION_X_MUSIC = 980;
     public final static int GAME_SCREEN_POSITION_Y_MUSIC = 40;
     public final static float GAME_SCREEN_BTN_SCALE = 1.2f;
+    public final static int GAME_SCREEN_BTN_RANK_PADDING = 30;
 
     public static final int MISSION_SCREEN_ARROW_PADDING_X = 50;
     public static final int MISSION_SCREEN_ARROW_Y = 20;

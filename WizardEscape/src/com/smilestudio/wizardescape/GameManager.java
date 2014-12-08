@@ -97,6 +97,7 @@ public class GameManager {
     public final static String NAME_BOARD_NEXT = "mission_board_next";
     public final static String NAME_BOARD_WEIBO = "mission_board_weibo";
     public final static String NAME_BOARD_WEIXIN = "mission_borad_weixin";
+    public final static String NAME_BOARD_RANK = "mission_borad_rank";
 
     private final static String PREFERENCES_SAVE = "save";
     public final static String PREFERENCES_SETTING = "setting";
@@ -735,6 +736,10 @@ public class GameManager {
         weixinShare.setVisible(true);
         weixinShare.addAction(getRotateAndZoomInActions());
 
+        Image buttonRank = (Image)mMissionFinishedBoard.findActor(NAME_BOARD_RANK);
+        buttonRank.setVisible(true);
+        buttonRank.addAction(Actions.forever(Actions.sequence(Actions.scaleTo(1.1f, 1.1f, 0.8f), Actions.scaleTo(1f, 1f, 0.8f))));
+
         if (mGameListener != null) {
             mGameListener.onGameSuccess();
         }
@@ -1133,11 +1138,11 @@ public class GameManager {
     }
 
 
-    private String generateStepKey() {
+    public String generateStepKey() {
         return generateStepKey(mMission, mSubmission);
     }
 
-    private String generateStepKey(int mission, int submission) {
+    public String generateStepKey(int mission, int submission) {
         return mission + "-" + submission + "-steps";
     }
 
@@ -1185,6 +1190,12 @@ public class GameManager {
         weixinShare.clearActions();
         weixinShare.setOrigin(weixinShare.getWidth() / 2, weixinShare.getHeight() / 2);
         weixinShare.setScale(GameConfig.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
+
+        Image buttonRank = (Image) boardItems.findActor(NAME_BOARD_RANK);
+        buttonRank.setVisible(false);
+        buttonRank.clearActions();
+        buttonRank.setOrigin(buttonRank.getWidth() / 2, buttonRank.getHeight() / 2);
+        buttonRank.setScale(GameConfig.MISSION_FINISHED_BUTTON_NEXT_SCALE_DEFAULT);
     }
 
     public void gotoNext() {

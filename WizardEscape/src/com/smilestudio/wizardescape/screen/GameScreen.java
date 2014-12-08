@@ -58,6 +58,7 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
     private Image mBtnWeibo;
     private Image mBtnWeixin;
     private Sound mEffectTeleportUnvailable;
+    private Image mBtnRank;
 
     public GameScreen() {
     }
@@ -222,6 +223,13 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
         mBtnWeixin.setName(GameManager.NAME_BOARD_WEIXIN);
         missionFinishedBoard.addActor(mBtnWeixin);
 
+        mBtnRank = new Image(new Texture(Gdx.files.internal("buttons/img_button_rank.png")));
+        mBtnRank.setSize(mBtnRank.getWidth(), mBtnRank.getHeight());
+        mBtnRank.setPosition(mBgImage.getWidth() - mBtnRank.getWidth() - GameConfig.GAME_SCREEN_BTN_RANK_PADDING,
+                GameConfig.GAME_SCREEN_BTN_RANK_PADDING);
+        mBtnRank.setName(GameManager.NAME_BOARD_RANK);
+        missionFinishedBoard.addActor(mBtnRank);
+
         mManager.setMissionFinishedBoard(missionFinishedBoard);
         mStage.addActor(missionFinishedBoard);
 
@@ -384,6 +392,9 @@ public class GameScreen implements Screen, GestureListener, EventListener, GameL
             } else if (mBkMusic != null){
                 mBkMusic.play();
             }
+            return true;
+        } else if (actor == mBtnRank) {
+            mManager.getGame().setScreen(new RankScreen(mManager.generateStepKey(), mManager.getSteps()));
             return true;
         }
         return false;

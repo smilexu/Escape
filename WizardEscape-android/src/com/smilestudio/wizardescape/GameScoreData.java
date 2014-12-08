@@ -18,6 +18,9 @@ public class GameScoreData extends BmobObject {
 
     private int steps;
 
+    private String username;
+
+
     /**
      * Send to Bmob service, used for ranking
      * 
@@ -53,6 +56,14 @@ public class GameScoreData extends BmobObject {
 
     public void setSteps(int steps) {
         this.steps = steps;
+    }
+
+    public void setUserName(String name) {
+        this.username = name;
+    }
+
+    public String getUserName() {
+        return username;
     }
 
 }

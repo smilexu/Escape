@@ -20,6 +20,8 @@ import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
+
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
@@ -232,42 +234,56 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
 
             @Override
             public void onSuccess(List<GameScoreData> list) {
-                System.out.println("============ size : " + list.size());
-                GameScoreData data = list.get(0);
-                data.setSteps(steps);
-                data.save(MainActivity.this, new SaveListener() {
-                    
-                    @Override
-                    public void onSuccess() {
-                        System.out.println("=========== save sucess");
-                    }
-                    
-                    @Override
-                    public void onFailure(int code, String msg) {
-                        System.out.println("=========== save failed : " + code);
-                    }
-                });
+
+                if (0 == list.size()) {
+                    GameScoreData data = new GameScoreData(mUID, mission, steps);
+                    data.save(MainActivity.this, new SaveListener() {
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            showToast(msg);
+                        }
+
+                        @Override
+                        public void onSuccess() {
+                            showToast(getResources().getString(R.string.data_insert_success));
+                        }});
+                } else {
+                    GameScoreData data = new GameScoreData(mUID, mission, steps);
+                    data.setSteps(steps);
+                    data.update(MainActivity.this, list.get(0).getObjectId(), new UpdateListener() {
+
+                        @Override
+                        public void onFailure(int code, String msg) {
+                            showToast(msg);
+                        }
+
+                        @Override
+                        public void onSuccess() {
+                            showToast(getResources().getString(R.string.data_update_success));
+                        }
+
+                    });
+                }
+
             }
-            
+
             @Override
             public void onError(int code, String msg) {
-                System.out.println("=========== code : " + code);
-                GameScoreData data = new GameScoreData(mUID, mission, steps);
-                data.save(MainActivity.this, new SaveListener() {
 
-                    @Override
-                    public void onFailure(int code, String msg) {
-                        System.out.println("======== no record found, insert new one failed : " + code);
-                    }
-
-                    @Override
-                    public void onSuccess() {
-                        System.out.println("======== no record found, insert new one sucsss");
-                    }});
+                showToast(msg);
             }
         });
 
+    }
 
+    private void showToast(final String msg) {
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+            }});
     }
 
 }
