@@ -9,8 +9,10 @@ public class GameConfig {
     public final static int STAGE_WIDTH = 1150;
     public final static int STAGE_HEIGHT = 668;
 
-    public static final int MISSION_MAX = 3;
+    public final static int MISSION_MAX = 3;
     public final static int SUB_MISSION_MAX = 15;
+
+    public final static int MISSION_MAX_STARS = 3;
 
     public final static int CELL_SIZE_WIDTH = 90;
     public final static int CELL_SIZE_HEIGHT = 50;

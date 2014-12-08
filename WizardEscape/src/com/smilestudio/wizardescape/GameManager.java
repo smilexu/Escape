@@ -502,9 +502,8 @@ public class GameManager {
                         @Override
                         public void run() {
                             finishMission();
-                            useSteps();
                             int currentScore = calculateScore();
-                            saveGameIfNeed(currentScore);
+                            saveGameIfNeed(currentScore, mSteps);
 
                             if (isGuildMission()) {
                                 removeGuildActors();
@@ -1066,16 +1065,24 @@ public class GameManager {
         initialMissionBoardStatus(mMissionFinishedBoard);
     }
 
-    public void saveGameIfNeed(int score) {
+    private void saveGameIfNeed(int score, int steps) {
+
+        sendStepsToAnalyse();
+
+        if (GameConfig.MISSION_MAX_STARS == score && mGeneralListener != null) {
+            mGeneralListener.onGameFullStarCompleted(generateStepKey(mMission, mSubmission), steps);
+        }
 
         GameData data = getGameData(mMission, mSubmission);
         if (null == data) {
-            saveGame(new GameData(score, true, mSteps));
+            saveGame(new GameData(score, true, steps));
             return;
         }
 
         if (score > data.getStars()) {
-            saveGame(new GameData(score, true, mSteps));
+            saveGame(new GameData(score, true, steps));
+        } else if (score == data.getStars() && steps < data.getSteps()) {
+            saveGame(new GameData(score, true, steps));
         }
     }
 
@@ -1247,7 +1254,7 @@ public class GameManager {
         mInGame = false;
     }
 
-    public void useSteps() {
+    private void sendStepsToAnalyse() {
         if (mAnalyticsListener != null) {
             mAnalyticsListener.use(mMission + "-" + mSubmission, mSteps);
         }

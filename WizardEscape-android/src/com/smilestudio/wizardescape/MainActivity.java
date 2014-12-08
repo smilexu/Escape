@@ -1,18 +1,25 @@
 package com.smilestudio.wizardescape;
 
 import java.io.File;
+import java.util.List;
 
 import android.content.ClipData;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Toast;
+import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
@@ -27,12 +34,17 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
     private long mLastAdTime;
     private AdDelegate mAdDelegate;
     private static final long MIN_SCREEN_AD_TIME = 1000 * 60 * 3;
+    private static String mUID;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mUID = ((TelephonyManager) getSystemService( Context.TELEPHONY_SERVICE )).getDeviceId();
+
         mLastAdTime = System.currentTimeMillis();
+
+        Bmob.initialize(this, "d8ced21016fab437a633e20d92f9dd9b");
 
         mContainer = new RelativeLayout(this);
 
@@ -204,6 +216,58 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
 
 
         startActivity(intent);
+    }
+
+    @Override
+    public void onGameFullStarCompleted(final String mission, final int steps) {
+        if (null == mUID) {
+            return;
+        }
+
+        //check if have record already
+        BmobQuery<GameScoreData> bmobQuery = new BmobQuery<GameScoreData>();
+        bmobQuery.addWhereEqualTo("uid", mUID);
+        bmobQuery.addWhereEqualTo("mission", mission);
+        bmobQuery.findObjects(this, new FindListener<GameScoreData>() {
+
+            @Override
+            public void onSuccess(List<GameScoreData> list) {
+                System.out.println("============ size : " + list.size());
+                GameScoreData data = list.get(0);
+                data.setSteps(steps);
+                data.save(MainActivity.this, new SaveListener() {
+                    
+                    @Override
+                    public void onSuccess() {
+                        System.out.println("=========== save sucess");
+                    }
+                    
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        System.out.println("=========== save failed : " + code);
+                    }
+                });
+            }
+            
+            @Override
+            public void onError(int code, String msg) {
+                System.out.println("=========== code : " + code);
+                GameScoreData data = new GameScoreData(mUID, mission, steps);
+                data.save(MainActivity.this, new SaveListener() {
+
+                    @Override
+                    public void onFailure(int code, String msg) {
+                        System.out.println("======== no record found, insert new one failed : " + code);
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                        System.out.println("======== no record found, insert new one sucsss");
+                    }});
+            }
+        });
+
+
     }
 
 }
