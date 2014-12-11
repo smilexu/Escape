@@ -16,12 +16,6 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Toast;
-import cn.bmob.v3.Bmob;
-import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.SaveListener;
-import cn.bmob.v3.listener.UpdateListener;
-
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
@@ -45,8 +39,6 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
         mUID = ((TelephonyManager) getSystemService( Context.TELEPHONY_SERVICE )).getDeviceId();
 
         mLastAdTime = System.currentTimeMillis();
-
-        Bmob.initialize(this, "d8ced21016fab437a633e20d92f9dd9b");
 
         mContainer = new RelativeLayout(this);
 
@@ -220,63 +212,6 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
         startActivity(intent);
     }
 
-    @Override
-    public void onGameFullStarCompleted(final String mission, final int steps) {
-        if (null == mUID) {
-            return;
-        }
-
-        //check if have record already
-        BmobQuery<GameScoreData> bmobQuery = new BmobQuery<GameScoreData>();
-        bmobQuery.addWhereEqualTo("uid", mUID);
-        bmobQuery.addWhereEqualTo("mission", mission);
-        bmobQuery.findObjects(this, new FindListener<GameScoreData>() {
-
-            @Override
-            public void onSuccess(List<GameScoreData> list) {
-
-                if (0 == list.size()) {
-                    GameScoreData data = new GameScoreData(mUID, mission, steps);
-                    data.save(MainActivity.this, new SaveListener() {
-
-                        @Override
-                        public void onFailure(int code, String msg) {
-                            showToast(msg);
-                        }
-
-                        @Override
-                        public void onSuccess() {
-                            showToast(getResources().getString(R.string.data_insert_success));
-                        }});
-                } else {
-                    GameScoreData data = new GameScoreData(mUID, mission, steps);
-                    data.setSteps(steps);
-                    data.update(MainActivity.this, list.get(0).getObjectId(), new UpdateListener() {
-
-                        @Override
-                        public void onFailure(int code, String msg) {
-                            showToast(msg);
-                        }
-
-                        @Override
-                        public void onSuccess() {
-                            showToast(getResources().getString(R.string.data_update_success));
-                        }
-
-                    });
-                }
-
-            }
-
-            @Override
-            public void onError(int code, String msg) {
-
-                showToast(msg);
-            }
-        });
-
-    }
-
     private void showToast(final String msg) {
         runOnUiThread(new Runnable() {
 
@@ -284,6 +219,11 @@ public class MainActivity extends AndroidApplication implements AnalyticsListene
             public void run() {
                 Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
             }});
+    }
+
+    @Override
+    public void onGameFullStarCompleted(String mission, int steps) {
+
     }
 
 }
