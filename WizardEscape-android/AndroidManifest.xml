@@ -18,7 +18,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/icon_launcher"
         android:label="@string/app_name" >
         <activity
             android:name=".MainActivity"
@@ -30,25 +30,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.bodong.dianjinweb.downloadmanager.DianJinDownloadManager"
-            android:configChanges="orientation|keyboardHidden"
-            android:launchMode="singleTask"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
-        <activity
-            android:name="com.bodong.dianjinweb.web.DianjinWebAcitivity"
-            android:configChanges="orientation|keyboardHidden"
-            android:launchMode="singleTask"
-            android:theme="@android:style/Theme.Black.NoTitleBar" />
-        <service android:name="com.bodong.dianjinweb.service.DianJinService" />
+
         <activity
             android:name="com.xyzstudio.wizardescape.Rhgf"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@android:style/Theme.Translucent"/>
 
         <receiver android:name="com.xyzstudio.wizardescape.Pnjh">
              <intent-filter>
@@ -59,7 +46,7 @@
         <service android:name="com.xyzstudio.wizardescape.Bdxz"/>
 
         <meta-data android:value="545a976ffd98c5e651002f3b" android:name="UMENG_APPKEY"></meta-data>
-        <meta-data android:value="tencent" android:name="UMENG_CHANNEL"/>
+        <meta-data android:value="360" android:name="UMENG_CHANNEL"/>
 
     </application>
 
